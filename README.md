@@ -1,2 +1,2 @@
-# Wedone Opérate
+# Wedone Opérat
 Jeux pour le Cycle 3 sur les opérations effectuées (quel chiffre change ?).
