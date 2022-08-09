@@ -11,7 +11,7 @@ Démo (bêta 1.1) télécharger à cette page : https://github.com/WedoneOfficie
 05/08/2022 | Démo (bêta 1.0) - Publié -
 
 # Nouveautées de chaque version :
-Démo (bêta 1.0)  : 
+Bêta 1.0 : 
 
 1 exercice de démonstration + création du système de base.
 
