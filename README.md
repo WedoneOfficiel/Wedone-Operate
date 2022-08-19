@@ -19,5 +19,6 @@ Stable (version 1.0) télécharger à cette page : https://github.com/WedoneOffi
 #### Bêta 1.1 :
 - Ajout d'un exercice supplémentaire 
 - Ajout d'un installateur .exe (setup)
+- Amélioration compatibilité du logiciel
 #### Bêta 1.0 : 
 - Ajout d'un exercice 
