@@ -17,7 +17,7 @@ Stable (version 1.0) télécharger à cette page : https://github.com/WedoneOffi
 # Nouveautées de chaques versions :
 #### Stable 1.1 :
 - Ajout d'un exercice
-- Grande amélioration de la gestion des ressources de la mémoire vive (RAM)
+- Amélioration de la gestion des ressources de la mémoire vive (RAM)
 #### Stable 1.0 :
 - Ajout d'exercices
 - Correctif de certains bugs
