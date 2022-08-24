@@ -4,7 +4,7 @@ Jeu pour le Cycle 3 sur les opérations effectuées.
 
 
 # Dernière version :
-Stable (version 1.0) télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.1
+Stable (version 1.1) télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.1
 # Planning de publications :
 24/08/2022 | Stable 1.1 - Publié -
 
