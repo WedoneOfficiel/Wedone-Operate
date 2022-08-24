@@ -1,5 +1,5 @@
 # Wedone Operate
-Jeu pour le Cycle 3 sur les opérations effectuées.
+Jeu pour le Cycle 3 (CM1/CME2/6e) sur les opérations effectuées.
 
 
 
