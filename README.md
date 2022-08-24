@@ -4,8 +4,10 @@ Jeu pour le Cycle 3 sur les opérations effectuées (quel chiffre change ?).
 
 
 # Dernière version :
-Stable (version 1.0) télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.0
+Stable (version 1.0) télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.1
 # Planning de publications :
+24/08/2022 | Stable 1.1 - Publié -
+
 19/08/2022 | Stable 1.0 - Publié -
 
 09/08/2022 | Bêta 1.1 - Publié -
@@ -13,6 +15,9 @@ Stable (version 1.0) télécharger à cette page : https://github.com/WedoneOffi
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautées de chaques versions :
+#### Stable 1.1 :
+- Ajout d'un exercice
+- Grande amélioration de la gestion des ressources de la mémoire vive (RAM)
 #### Stable 1.0 :
 - Ajout d'exercices
 - Correctif de certains bugs
