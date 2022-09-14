@@ -33,4 +33,5 @@ Stable (version 1.1) télécharger à cette page : https://github.com/WedoneOffi
 # Blog
 ## Abandon du canal Bêta
 Il n'y aura plus de mises à jour pour le canal Bêta (plus de nouvelles versions), référez vous aux versions stables.
+
 WedoneOfficiel - le 14/09/2022 à 18:25
