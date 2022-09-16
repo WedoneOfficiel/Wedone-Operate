@@ -16,7 +16,7 @@ Stable (version 1.2) télécharger à cette page : https://github.com/WedoneOffi
 
 05/08/2022 | Bêta 1.0 - Publié -
 
-# Nouveautées de chaques versions :
+# Nouveautés de chaques versions :
 #### Stable 1.2 :
 - Ajout de la fonctionalité bonne/mauvaise réponse
 #### Stable 1.1 :
