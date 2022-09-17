@@ -4,7 +4,7 @@ Jeu pour le Cycle 3 (CM1/CME2/6e) sur les opérations effectuées.
 
 
 # Dernière version :
-Stable (version 1.2) télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.2
+Stable (version 1.2) télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.3
 # Planning de publications :
 17/09/2022 | Stable 1.3 - Publié -
 
