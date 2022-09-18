@@ -1,6 +1,6 @@
 # Wedone Operate
 Jeu pour le Cycle 3 (CM1/CME2/6e) sur les opérations effectuées. 
-### Logiciel disponnible our les ordinateurs équipés de Windows (recommandé à partir de Windows 7) x86 ET x86_64
+##### Logiciel disponnible pour les ordinateurs équipés de Windows (recommandé à partir de  Microsoft Windows 7) x86 ET x86_64
 
 
 
