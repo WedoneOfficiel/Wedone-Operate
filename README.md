@@ -43,7 +43,7 @@ Stable (version 1.3) télécharger à cette page : https://github.com/WedoneOffi
 ## Suppression automatique des anciennes versions lors des mises à jour
 A compter de la version 1.3 (ne s'applique pas aux versions antérieures de la version stable 1.3 -- bêta 1.0/bêta 1.1/stable 1.1/stable 1.2), les mises à jour supprimeront et remplaceront l'exécutable du logiciel contrairement aux versions antérieures qui elles s'installaient à côté des autres versions.
 
-WedoneOfficiel - le 17/09/2022 à 23:43 (modifié le 21/09/2022 à 16:24
+WedoneOfficiel - le 17/09/2022 à 23:43 (modifié le 21/09/2022 à 16:24)
 
 ## Abandon du canal Bêta
 Il n'y aura plus de mises à jour pour le canal Bêta (plus de nouvelles versions), référez vous aux versions stables.
