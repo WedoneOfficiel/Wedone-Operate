@@ -23,7 +23,7 @@ Stable (version 1.4) télécharger à cette page : https://github.com/WedoneOffi
 
 # Nouveautés de chaques versions :
 ### Stable 1.4 :
-- Ajout de 3 épreuves
+- Ajout de 5 épreuves
 - Ajout de la fonctionnalité pourcentage de réussite
 #### Stable 1.3 :
 - Ajout d'une icône au logiciel
