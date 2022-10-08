@@ -22,7 +22,7 @@ Stable (version 1.4) télécharger à cette page : https://github.com/WedoneOffi
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions :
-### Stable 1.4 :
+#### Stable 1.4 :
 - Ajout de 5 épreuves
 - Ajout de la fonctionnalité pourcentage de réussite
 #### Stable 1.3 :
