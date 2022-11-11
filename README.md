@@ -7,7 +7,7 @@ Jeu pour le Cycle 3 (CM1/CME2/6e) sur les opérations effectuées.
 # Dernière version
 Stable version 1.4 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.4
 # Planning de publications
-11/11/2022 | Stable 1.5
+11/11/2022 | Stable 1.5 - Publié -
 
 08/10/2022 | Stable 1.4 - Publié -
 
@@ -24,6 +24,8 @@ Stable version 1.4 - télécharger à cette page : https://github.com/WedoneOffi
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions
+#### Stable 1.5 :
+- Ajout de 6 épreuves
 #### Stable 1.4 :
 - Ajout de 5 épreuves
 - Ajout de la fonctionnalité pourcentage de réussite
