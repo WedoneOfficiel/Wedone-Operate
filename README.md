@@ -6,6 +6,8 @@ Jeu pour le Cycle 3 (CM1/CME2/6e) sur les opérations.
 
 # Dernière version
 Stable version 1.6 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.6
+
+ ![alt text](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/Test%20RAM%20Wedone%20Operate%201-5%20vs%201-6.png?raw=true) 
 # Planning de publications
 22/11/2022 | Stable 1.6 - Publié -
 
