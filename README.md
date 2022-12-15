@@ -9,7 +9,7 @@ Stable version 1.6 - télécharger à cette page : https://github.com/WedoneOffi
 
  ![alt text](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/Test%20RAM%20Wedone%20Operate%201-5%20vs%201-6.png?raw=true) 
 # Planning de publications
-09/12/2022 | Stable 1.7
+20/12/2022 | Stable 1.7
 
 22/11/2022 | Stable 1.6 - Publié -
 
