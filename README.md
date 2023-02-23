@@ -1,6 +1,6 @@
 # Wedone Operate
 Jeu pour le Cycle 3 (CM1/CME2/6e) sur les opérations.
-#### Logiciel disponnible pour les ordinateurs équipés de Windows (compatible SEULEMENT avec les versions 8.1 / 10 / 11 de Microsoft Windows) x86 ET x86_64
+#### Logiciel actuellement disponnible uniquement pour les ordinateurs équipés de Microsoft Windows (nous vous certifions que ce logiciel est compatible avec ces versions de Microsoft Windows : 8.1 / 10 / 11. Les versions non cités ci-avant peuvent s'avérer compatibles avec le présent logiciel mais notre équipe ne l'a actuellement pas vérifié.) x86 ET x86_64
 
 
 
