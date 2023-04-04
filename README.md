@@ -10,7 +10,7 @@ Stable version 1.6 - télécharger à cette page : https://github.com/WedoneOffi
 
  ![alt text](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/Test%20RAM%20Wedone%20Operate%201-5%20vs%201-6.png?raw=true) 
 # Planning de publications
-24/01/2023 | Stable 1.7
+04/04/2023 | Stable 2.00
 
 22/11/2022 | Stable 1.6 - Publié -
 
@@ -60,6 +60,11 @@ Stable version 1.6 - télécharger à cette page : https://github.com/WedoneOffi
 - Ajout d'un exercice 
 
 # Blog
+## Version 2.00
+Bonjour, nous sommes heureux de vous annoncer que la version 2 de Wedone Operate va bientôt arriver. (La version 1.7 ne sera donc jamais publiée).
+
+WedoneOfficiel - le 04/04/2023 à 13:22
+
 ## Suppression automatique des anciennes versions lors des mises à jour
 A compter de la version 1.3, les mises à jour supprimeront et remplaceront l'exécutable du logiciel contrairement aux versions antérieures qui elles s'installaient à côté des autres versions.
 #### Ceci ne s'applique pas aux versions antérieures à la version stable 1.3 (bêta 1.0/bêta 1.1/stable 1.0/stable 1.1/stable 1.2)
