@@ -61,6 +61,12 @@ Stable version 1.7 - télécharger à cette page : https://github.com/WedoneOffi
 #### Bêta 1.0 : 
 - Ajout d'un exercice 
 
+# Comment compiler ?
+1) Installer le compialteur GCC.
+2) Ouvrez dans un terminal l'emplacement où sont stockés les fichiers codes du logiciel.
+3) Exécuter cette comande dans le terminal : gcc main.c icone.o -o main.
+4) Un fichier exécutable apparait alors dans le dossier où sont stockés les fichiers codes du logiciel. Vous pouvez dès lors l'éxécuter !
+
 # Blog
 
 ## Suppression automatique des anciennes versions lors des mises à jour
