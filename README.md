@@ -9,6 +9,8 @@ Jeu pour le Cycle 3 (CM1/CME2/6e) sur les opérations.
 Stable version 1.7 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.7
 
 # Planning de publications
+11/04/2023 | Stable 2.0
+
 05/04/2023 | Stable 1.7 - Publié -
 
 22/11/2022 | Stable 1.6 - Publié -
@@ -71,7 +73,7 @@ Stable version 1.7 - télécharger à cette page : https://github.com/WedoneOffi
 
 ## Suppression automatique des anciennes versions lors des mises à jour
 A compter de la version 1.3, les mises à jour supprimeront et remplaceront l'exécutable du logiciel contrairement aux versions antérieures qui elles s'installaient à côté des autres versions.
-#### Ceci ne s'applique pas aux versions antérieures à la version stable 1.3 (bêta 1.0/bêta 1.1/stable 1.0/stable 1.1/stable 1.2)
+Ceci ne s'applique pas aux versions antérieures à la version stable 1.3 (bêta 1.0/bêta 1.1/stable 1.0/stable 1.1/stable 1.2)
 
 WedoneOfficiel - le 17/09/2022 à 23:43 (modifié le 21/09/2022 à 16:24)
 
