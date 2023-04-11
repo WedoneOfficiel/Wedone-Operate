@@ -1,4 +1,4 @@
-# Wedone Operate
+# Wedone Operate : Tour du logiciel
 <p align="center">
   <img src="https://raw.githubusercontent.com/WedoneOfficiel/Wedone-Operate/main/app-icone.ico" />
 </p>
