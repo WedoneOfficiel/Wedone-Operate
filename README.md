@@ -32,6 +32,12 @@ Stable version 1.7 - télécharger à cette page : https://github.com/WedoneOffi
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions
+#### Stable 2.0 :
+- Changement du logo du logiciel
+- Ajout d'un paramètre pour les caractères spéciaux en français (UTF-8)
+- Correction de bugs
+- Amélioration de la gestion des ressources de la mémoire vive (RAM)
+- Revue complète du code de base du logiciel (= transformation du logiciel) : voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#passage-%C3%A0-la-version-20- "article du blog concernant le passage à la version 2.0")
 #### Stable 1.7 :
 - Ajout de 2 épreuves
 - Ajout de la fonction "quitter" en entrant 999 dans le logiciel
