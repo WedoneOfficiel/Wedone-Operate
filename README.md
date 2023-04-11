@@ -64,6 +64,7 @@ Stable version 1.7 - télécharger à cette page : https://github.com/WedoneOffi
 - Ajout d'un exercice 
 
 # Comment compiler le programme ?
+/!\ La compilation du programme n'est utile que si vous avez modifié le code source /!\
 1) Installez le compialteur GCC.
 2) Ouvrez dans un terminal l'emplacement où sont stockés les fichiers codes du logiciel.
 3) Exécuter cette comande dans le terminal : gcc main.c icone.o -o main.
