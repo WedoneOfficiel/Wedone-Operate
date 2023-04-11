@@ -6,10 +6,10 @@ Wedone Operate est un jeu adressé aux élèves (et classes) de cycle 3 (CM1, CM
 
 
 # Dernière version
-Stable version 1.7 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v1.7
+Stable version 2.0 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.0
 
 # Planning de publications
-11/04/2023 | Stable 2.0
+11/04/2023 | Stable 2.0 - Publié -
 
 05/04/2023 | Stable 1.7 - Publié -
 
