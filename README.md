@@ -72,6 +72,8 @@ Stable version 1.7 - télécharger à cette page : https://github.com/WedoneOffi
 
 # Blog
 
+## Passage à la version 2.0 !
+
 ## Suppression automatique des anciennes versions lors des mises à jour
 A compter de la version 1.3, les mises à jour supprimeront et remplaceront l'exécutable du logiciel contrairement aux versions antérieures qui elles s'installaient à côté des autres versions.
 Ceci ne s'applique pas aux versions antérieures à la version stable 1.3 (bêta 1.0/bêta 1.1/stable 1.0/stable 1.1/stable 1.2)
