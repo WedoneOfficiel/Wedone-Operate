@@ -85,6 +85,17 @@ Stable version 2.0 - télécharger à cette page : https://github.com/WedoneOffi
 # Blog
 
 ## Passage à la version 2.0 !
+Le 11 Avril 2023 marque une rupture dans l'histoire du logiciel Wedone Operate. En effet, le logiciel est sorti en version 2.0. Ce passage à la version 2.0 s'explique par le fait que le code de base du logiciel à complètement été revu. Il y a donc eu de nombreuses modifications au sein même du logiciel :
+- L'utilisateur choisit le nombre d'épreuves qu'il souhaite faire
+- Le choix des opérations est devenu aléatoire
+- Les valeurs des opérations sont devenues aléatoires*
+- Le score ne s'affiche plus après chaque épreuve mais à la fin du "parcours" d'épreuves
+
+*Il existe pour la version 2.0, il y a deux valeurs qui sont définies aléatoirement :
+1) La première partie d'un calcul pour les additions soustractions et multiplications (valeur comprise entre 0 et 50)
+2) La dexuième partir d'un calcul pour les additions soustractions et multiplications (valeur comprise entre 0 et 50)
+
+WedoneOfficiel - le 13/04/2023 à 17:45
 
 ## Suppression automatique des anciennes versions lors des mises à jour
 A compter de la version 1.3, les mises à jour supprimeront et remplaceront l'exécutable du logiciel contrairement aux versions antérieures qui elles s'installaient à côté des autres versions.
