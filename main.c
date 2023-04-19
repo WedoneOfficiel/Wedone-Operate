@@ -21,8 +21,8 @@ int main(void)
     scanf("%d", &nombre_epreuves);
     for(i = 1; i <= nombre_epreuves; i++) // boucle pour répéter les épreuves
     {
-        nombre1 = (rand() % 50) + 1; // générer un nombre entre 1 et 10
-        nombre2 = (rand() % 50) + 1; // générer un autre nombre entre 1 et 10
+        nombre1 = (rand() % 50) + 1; // générer un nombre entre 1 et 50
+        nombre2 = (rand() % 50) + 1; // générer un autre nombre entre 1 et 50
         operation = (rand() % 4) + 1; // générer un nombre entre 1 et 4 pour choisir l'opération
         switch(operation)
         {
