@@ -42,6 +42,7 @@ Stable version 2.0 - télécharger à cette page : https://github.com/WedoneOffi
 # Nouveautés de chaques versions
 #### Stable 2.1 :
 - Correction de bugs
+- Le logo de l'installateur est désormais le même que celui du logiciel
 - Amélioration des propositions de calculs*
 
 *La somme de l'addition ne peut pas être supérieure à 150, le résultat des soustractions ne peut pas être négatif et le premier nombre ne peut pas être soustrait par un nombre de plus de 50, les multiplications vont jusqu'à la table de 10 (idem pour les divisions). Les divisions par 0 et les résultats négatifs ne peuvent pas être proposés comme calculs.
