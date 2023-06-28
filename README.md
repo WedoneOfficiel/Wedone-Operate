@@ -98,6 +98,7 @@ Le 11 Avril 2023 marque une rupture dans l'histoire du logiciel Wedone Operate. 
 - Le choix des opérations est devenu aléatoire
 - Les valeurs des opérations sont devenues aléatoires*
 - Le score ne s'affiche plus après chaque épreuve mais à la fin du "parcours" d'épreuves
+- Supression de la fonctionalité "Arrêt du porgramme" lorsque l'on entre 999 dans le logiciel
 
 *Pour la version 2.0, il y a deux valeurs qui sont définies aléatoirement :
 1) La première partie d'un calcul pour les additions soustractions et multiplications (valeur comprise entre 0 et 50)
