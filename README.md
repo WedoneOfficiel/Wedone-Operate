@@ -44,6 +44,12 @@ Stable version 2.1 - télécharger à cette page : https://github.com/WedoneOffi
 # Nouveautés de chaques versions
 #### Stable 2.1 :
 - Correction de bugs
+- Amélioration de la gestion de la RAM
+- Amélioration des propositions de calculs
+- Recherche automatique de mises à jour
+
+#### Stable 2.1 :
+- Correction de bugs
 - Le logo de l'installateur est désormais le même que celui du logiciel
 - Amélioration des propositions de calculs*
 
