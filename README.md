@@ -46,7 +46,7 @@ Stable version 2.1 - télécharger à cette page : https://github.com/WedoneOffi
 - Correction de bugs
 - Amélioration de la gestion de la RAM
 - Amélioration des propositions de calculs
-- Recherche automatique de mises à jour : voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#recherche-des-mises-%C3%A0-jour-automatique-")
+- Recherche automatique de mises à jour : voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/tree/main#recherche-des-mises-%C3%A0-jour-automatique-)
 
 #### Stable 2.1 :
 - Correction de bugs
