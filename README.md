@@ -101,7 +101,7 @@ Stable version 2.1 - télécharger à cette page : https://github.com/WedoneOffi
 # Blog
 
 ## Recherche des mises à jour automatique !
-A compter de la version 2.2 de Wedone Operate, les mises à jour seront recherchées automatiquemet par le logiciel afin de vous alerter sur la sortie de nouvelle versions.
+A compter de la version 2.2 du logiciel, les mises à jour seront recherchées automatiquemet par le logiciel afin de vous alerter sur la sortie de nouvelle versions.
 Attention, ceci ne s'applique pas au versions antérieures à la version 2.2.
 
 WedoneOfficiel - le 23/07/2023 à 01:32
