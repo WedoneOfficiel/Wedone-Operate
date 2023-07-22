@@ -42,7 +42,7 @@ Stable version 2.1 - télécharger à cette page : https://github.com/WedoneOffi
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions
-#### Stable 2.1 :
+#### Stable 2.2 :
 - Correction de bugs
 - Amélioration de la gestion de la RAM
 - Amélioration des propositions de calculs
