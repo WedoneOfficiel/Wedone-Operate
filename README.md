@@ -12,10 +12,10 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 
  
 # Dernière version
-Stable version 2.1 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.1
+Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.2
 
 # Planning de publications
-23/07/2023 | Stable 2.2
+23/07/2023 | Stable 2.2 - Publié -
 
 27/06/2023 | Stable 2.1 - Publié -
 
