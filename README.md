@@ -15,7 +15,7 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.2
 
 # Planning de publications
-03/08/2023 | Stable 2.3
+05/08/2023 | Stable 2.3
 
 23/07/2023 | Stable 2.2 - Publié -
 
