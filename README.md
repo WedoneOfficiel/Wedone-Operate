@@ -15,6 +15,8 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.2
 
 # Planning de publications
+03/08/2023 | Stable 2.3
+
 23/07/2023 | Stable 2.2 - Publié -
 
 27/06/2023 | Stable 2.1 - Publié -
@@ -42,6 +44,10 @@ Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOffi
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions
+#### Stable 2.3 :
+- Logiciel disponnible pour les distributions Linux utilisant le système de paquet Debian (.deb) telles que Ubuntu, Debian, Linux Mint,...
+- Possibilité de rejouer au jeu après la fin du "parcours" d'épreuves
+
 #### Stable 2.2 :
 - Correction de bugs
 - Amélioration de la gestion de la RAM
