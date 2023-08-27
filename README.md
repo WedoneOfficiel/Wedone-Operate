@@ -45,6 +45,7 @@ Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOffi
 
 # Nouveautés de chaques versions
 #### Stable 2.3 :
+- Amélioration de la compatiblité du logiciel
 - Amélioration de la gestion de la RAM
 - Correction de bugs
 
