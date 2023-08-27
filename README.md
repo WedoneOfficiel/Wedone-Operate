@@ -107,18 +107,17 @@ Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOffi
 
 # Blog
 
-## Recherche des mises à jour automatique !
-A compter de la version 2.2 du logiciel, les mises à jour seront recherchées automatiquemet par le logiciel afin de vous alerter sur la sortie de nouvelle versions.
-Attention, ceci ne s'applique pas au versions antérieures à la version 2.2.
-
-WedoneOfficiel - le 23/07/2023 à 01:32
-
 ## Problème de compatibilité du logiciel avec Windows 11 réglé !
 Le souci que rencontrait Wedone Operate à s'ouvrir sous Microsoft Windows 11 est maintenant réglé !
 Bonne rentrée !
 
 WedoneOfficiel - le 27/08/2023 à 20:09
 
+## Recherche des mises à jour automatique !
+A compter de la version 2.2 du logiciel, les mises à jour seront recherchées automatiquemet par le logiciel afin de vous alerter sur la sortie de nouvelle versions.
+Attention, ceci ne s'applique pas au versions antérieures à la version 2.2.
+
+WedoneOfficiel - le 23/07/2023 à 01:32
 
 ## Passage à la version 2.0 !
 Le 11 Avril 2023 marque une rupture dans l'histoire du logiciel Wedone Operate. En effet, le logiciel est sorti en version 2.0. Ce passage à la version 2.0 s'explique par le fait que le code de base du logiciel à complètement été revu. Il y a donc eu de nombreuses modifications au sein même du logiciel :
