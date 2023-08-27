@@ -45,7 +45,7 @@ Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOffi
 
 # Nouveautés de chaques versions
 #### Stable 2.3 :
-- Amélioration de la compatiblité du logiciel
+- Amélioration de la compatiblité du logiciel : voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#probl%C3%A8me-de-compatibilit%C3%A9-du-logiciel-avec-windows-11-r%C3%A9gl%C3%A9-)
 - Amélioration de la gestion de la RAM
 - Correction de bugs
 
