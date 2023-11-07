@@ -12,7 +12,34 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 
  
 # Dernière version
-Stable version 2.2 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.2
+Stable version 2.3 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.3
+
+# Support...
+Chaque version du logiciel est supporté pour de légés correctifs de bugs et de sécurité sur un an sauf pour la dernière version de chaque version majeure (ici par exemple la 1.7 est la dernière version appartenant aux versions 1 avant de passer à la version 2.0). Ces versions bénéficieront elles d'un support de 2 ans. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas.
+
+Voici donc les date de fin de support pour toutes les versions :
+
+Versions supportées :
+|Numéro de version |Date de fin de support|
+|------------------|----------------------|
+|Stable 2.3        |27/08/2024            |
+|Stable 2.2        |23/07/2024            |
+|Stable 2.1        |27/06/2024            |
+|Stable 2.0        |11/04/2024            |
+|Stable 1.7        |05/04/2025            |
+|Stable 1.6        |22/11/2023            |
+|Stable 1.5        |11/11/2023            |
+
+Versions obsolètes :
+|Numéro de version |Date de fin de support|
+|------------------|----------------------|
+|Stable 1.4        |08/10/2023            |
+|Stable 1.3        |17/09/2023            |
+|Stable 1.2        |16/09/2023            |
+|Stable 1.1        |24/08/2023            |
+|Stable 1.0        |19/08/2023            |
+|Bêta 1.1          |09/08/2023            |
+|Bêta 1.0          |05/08/2023            |
 
 # Planning de publications
 27/08/2023 | Stable 2.3 - Publié -
