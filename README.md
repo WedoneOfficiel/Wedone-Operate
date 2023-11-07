@@ -15,7 +15,7 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 Stable version 2.3 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.3
 
 # Support...
-Chaque version du logiciel est supporté pour de légés correctifs de bugs et de sécurité sur un an sauf pour la dernière version de chaque version majeure (ici par exemple la 1.7 est la dernière version appartenant aux versions 1 avant de passer à la version 2.0). Ces versions bénéficieront elles d'un support de 2 ans. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas.
+Chaque version du logiciel est supporté pour de légés correctifs de bugs et de sécurité sur un an sauf pour la dernière version de chaque version majeure (ici par exemple la 1.7 est la dernière version appartenant aux versions 1 avant de passer à la version 2.0). Ces versions bénéficieront elles d'un support de 2 ans. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas. Il tout de même important de noter que ce système est amené à évoluer et donc changer. Certaines versions peuvent également bénéficiées de mises à jour malgré leur statut obsolète pour des cas extrêmes. Ajoutons également que dans les règles énoncés ci-avant il peut y avoir des exceptions pour certaines versions.
 
 Voici donc les date de fin de support pour toutes les versions :
 
