@@ -12,7 +12,7 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 
  
 # Dernière version
-Stable version 2.3 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v2.3
+Stable version 3.0 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v3.0
 
 # Support...
 Chaque version du logiciel est supporté pour de simples correctifs de bugs et de sécurité sur une durée d'un an sauf pour la dernière version de chaques versions majeures (ici par exemple la version 1.7 est la dernière version appartenant aux versions 1 avant de passer à la version 2.0). Ces versions bénéficieront donc elles d'un support de 2 ans. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas. Il est tout de même important de noter que ce système est amené à évoluer et donc à changer. Certaines versions peuvent également bénéficier de mises à jour malgré leur statut obsolète pour des cas extrêmes. Ajoutons également que dans les règles énoncés ci-avant il peut y avoir des exceptions pour certaines versions.
@@ -22,7 +22,8 @@ Voici donc les dates de fin de support pour toutes les versions :
 Versions supportées :
 |Numéro de version |Date de fin de support|
 |------------------|----------------------|
-|Stable 2.3        |27/08/2024            |
+|Stable 3.0        |08/11/2024            |
+|Stable 2.3        |27/08/2025            |
 |Stable 2.2        |23/07/2024            |
 |Stable 2.1        |27/06/2024            |
 |Stable 2.0        |11/04/2024            |
@@ -42,6 +43,8 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2023            |
 
 # Planning de publications
+08/11/2023 | Stable 3.0 - Publié -
+
 27/08/2023 | Stable 2.3 - Publié -
 
 23/07/2023 | Stable 2.2 - Publié -
@@ -71,6 +74,11 @@ Versions obsolètes :
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions
+#### Stable 3.0 :
+- Interface graphique
+- Changement du code : passage du langage C au langage Python (toutes les fonctionnalités ont été portées !)
+Plus d'informations dans le voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#passage-%C3%A0-la-version-20- "article du blog concernant le passage à la version 2.0")
+
 #### Stable 2.3 :
 - Amélioration de la compatibilité du logiciel : voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#probl%C3%A8me-de-compatibilit%C3%A9-du-logiciel-avec-windows-11-r%C3%A9gl%C3%A9-)
 - Amélioration de la gestion de la RAM
@@ -133,6 +141,12 @@ Versions obsolètes :
 4) Un fichier exécutable apparait alors dans le dossier où sont stockés les fichiers codes du logiciel. Vous pouvez dès lors l'éxécuter !
 
 # Blog
+## La version 3.0 est arrivée !
+Bonjour à tous, c'est avec plaisir que je vous annonce l'arrivée de Wedone Operate 3.0 qui arrive pour la toute première fois avec une interface graphique ! Ce choix n'est tout de même pas sans conséquences puisque pour permettre un développement de qualité et rapide il a fallu changer de langage de prorammation. Le logiciel n'est donc plus à compté de ce jour développé en langage C mais en Python. Le logiciel sera il faut le noter plus lourd mais toutes les fonctionalités de la version 2.3 ont été portées sur la version 3.0 !
+Pensez à désinstaller l'ancien programme avant d'installer le nouveau car vous pourriez rencontrer des erreures (ceci ne sera pas nécessaire pour les futures mises à jour).
+
+WedoneOfficiel - le 08/11/2023 à 21:25
+
 
 ## Problème de compatibilité du logiciel avec Windows 11 réglé !
 Le souci que rencontrait Wedone Operate à s'ouvrir sous Microsoft Windows 11 est maintenant réglé !
