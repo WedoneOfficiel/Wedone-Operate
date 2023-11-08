@@ -77,7 +77,7 @@ Versions obsolètes :
 #### Stable 3.0 :
 - Interface graphique
 - Changement du code : passage du langage C au langage Python (toutes les fonctionnalités ont été portées !)
-Plus d'informations dans le voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#la-version-30-est-arriv%C3%A9e-)
+Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#la-version-30-est-arriv%C3%A9e-)
 
 #### Stable 2.3 :
 - Amélioration de la compatibilité du logiciel : voir les détails dans le [blog](https://github.com/WedoneOfficiel/Wedone-Operate/blob/main/README.md#probl%C3%A8me-de-compatibilit%C3%A9-du-logiciel-avec-windows-11-r%C3%A9gl%C3%A9-)
