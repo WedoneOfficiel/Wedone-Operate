@@ -145,7 +145,7 @@ Plus d'informations dans le voir les détails dans le [blog](https://github.com/
 Bonjour à tous, c'est avec plaisir que je vous annonce l'arrivée de Wedone Operate 3.0 qui arrive pour la toute première fois avec une interface graphique ! Ce choix n'est tout de même pas sans conséquences puisque pour permettre un développement de qualité et rapide il a fallu changer de langage de prorammation. Le logiciel n'est donc plus à compté de ce jour développé en langage C mais en Python. Le logiciel sera il faut le noter plus lourd mais toutes les fonctionalités de la version 2.3 ont été portées sur la version 3.0 !
 Pensez à désinstaller l'ancien programme avant d'installer le nouveau car vous pourriez rencontrer des erreures (ceci ne sera pas nécessaire pour les futures mises à jour).
 
-WedoneOfficiel - le 08/11/2023 à 21:25
+WedoneOfficiel - le 08/11/2023 à 21:30
 
 
 ## Problème de compatibilité du logiciel avec Windows 11 réglé !
