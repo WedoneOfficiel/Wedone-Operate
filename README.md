@@ -22,18 +22,19 @@ Voici donc les dates de fin de support pour toutes les versions :
 Versions supportées :
 |Numéro de version |Date de fin de support|
 |------------------|----------------------|
+|Stable 3.1        |12/01/2025            |
 |Stable 3.0        |08/11/2024            |
 |Stable 2.3        |27/08/2025            |
 |Stable 2.2        |23/07/2024            |
 |Stable 2.1        |27/06/2024            |
 |Stable 2.0        |11/04/2024            |
 |Stable 1.7        |05/04/2025            |
-|Stable 1.6        |22/11/2023            |
-|Stable 1.5        |11/11/2023            |
 
 Versions obsolètes :
 |Numéro de version |Date de fin de support|
 |------------------|----------------------|
+|Stable 1.6        |22/11/2023            |
+|Stable 1.5        |11/11/2023            |
 |Stable 1.4        |08/10/2023            |
 |Stable 1.3        |17/09/2023            |
 |Stable 1.2        |16/09/2023            |
@@ -43,6 +44,8 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2023            |
 
 # Planning de publications
+12/01/2024 | Stable 3.1
+
 08/11/2023 | Stable 3.0 - Publié -
 
 27/08/2023 | Stable 2.3 - Publié -
