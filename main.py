@@ -4,33 +4,36 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLay
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 import requests
+import webbrowser
 
 class WedoneOperateApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Wedone Operate")
-        self.setGeometry(100, 100, 600, 400)
-        self.setWindowIcon(QIcon("icon.png"))  # Utilisez votre icône au format .png
+        self.setGeometry(100, 100, 100, 100)
+        self.setWindowIcon(QIcon("icon.png"))
+        self.setStyleSheet("background-color: white; color: #2b2b2b;")
         self.initUI()
 
     def initUI(self):
-        self.layout = QVBoxLayout()
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(10, 10, 10, 10)
 
-        self.label = QLabel("Bienvenue dans Wedone Operate 3.0 ! Bonne aventure !")
-        self.label.setStyleSheet("font-size: 16px; font-weight: bold; background-color: #c2e59c; padding: 10px; margin: 0;")
+        self.label = QLabel("Bienvenue dans Wedone Operate 3.1 ! Bonne aventure !", self)
+        self.label.setStyleSheet("font-size: 16px; font-weight: bold; color: #2b2b2b;")
         self.layout.addWidget(self.label)
 
-        self.label = QLabel("Combien d'épreuves souhaitez-vous faire ?")
-        self.label.setStyleSheet("font-size: 14px; margin-top: 10px;")
+        self.label = QLabel("Combien d'épreuves souhaitez-vous faire ?", self)
+        self.label.setStyleSheet("font-size: 14px; color: #64b3f4; margin-top: 10px;")
         self.layout.addWidget(self.label)
 
-        self.input = QLineEdit()
-        self.input.setStyleSheet("font-size: 14px")
+        self.input = QLineEdit(self)
+        self.input.setStyleSheet("font-size: 14px; background-color: #f0f0f0; color: #2b2b2b; border: 1px solid #64b3f4; border-radius: 5px;")
         self.layout.addWidget(self.input)
 
-        self.start_button = QPushButton("Commencer")
+        self.start_button = QPushButton("Commencer", self)
         self.start_button.clicked.connect(self.start_game)
-        self.start_button.setStyleSheet("font-size: 14px; background-color: #64b3f4; color: white; font-weight: bold;")
+        self.start_button.setStyleSheet("font-size: 14px; background-color: #64b3f4; color: white; font-weight: bold; border: 1px solid #64b3f4; border-radius: 5px;")
         self.layout.addWidget(self.start_button)
 
         self.setLayout(self.layout)
@@ -78,7 +81,7 @@ class WedoneOperateApp(QWidget):
                 else:  # Division
                     while True:
                         nombre1 = random.randint(1, 10)
-                        nombre2 = random.randint(2, 10)  # Limite la division par 1
+                        nombre2 = random.randint(2, 10)
                         if nombre1 != nombre2 and nombre1 % nombre2 == 0:
                             break
                     resultat = nombre1 // nombre2
@@ -100,43 +103,49 @@ class WedoneOperateApp(QWidget):
         except ValueError:
             QMessageBox.critical(self, "Erreur", "Veuillez entrer un nombre valide pour le nombre d'épreuves.")
 
-def checkForUpdates():
-    versionURL = "https://wedoneofficiel.github.io/Boot-projets-Wedone-Officiel/Wedone-Logiciels-Versions/version-wedone-operate.txt"
+class UpdateMessageBox(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowIcon(QIcon("icon.png"))
+        self.setIcon(QMessageBox.Information)
+        self.setWindowTitle("Mise à jour disponible")
+        self.setTextFormat(Qt.PlainText)
+        self.setStyleSheet("background-color: white; color: #2b2b2b;")
+
+    def show_update_message(self, latest_version):
+        message = f"<b>Une nouvelle version de Wedone Operate est disponible (version {latest_version.strip()})</b>!"
+        message += "Nous vous recommandons de mettre à jour l'application pour obtenir les dernières fonctionnalités et correctifs de sécurité."
+
+
+        self.setText(message)
+
+        download_button = self.addButton("  Télécharger  ", QMessageBox.AcceptRole)
+        download_button.setStyleSheet("font-size: 14px; background-color: #0672BC; color: white; font-weight: bold; border: 1px solid #0672BC; border-radius: 5px;")
+
+        ignore_button = self.addButton("  Ignorer  ", QMessageBox.RejectRole)
+        ignore_button.setStyleSheet("font-size: 14px; background-color: white; color: #3498db; font-weight: bold; border: 1px solid #3498db; border-radius: 5px;")
+
+def check_for_updates():
+    version_url = "https://wedoneofficiel.github.io/Boot-projets-Wedone-Officiel/Wedone-Logiciels-Versions/version-wedone-operate.txt"
 
     try:
-        response = requests.get(versionURL)
+        response = requests.get(version_url)
         if response.status_code == 200:
-            latestVersion = response.text.strip()
-            if latestVersion > "3.0":
-                message = f"<p style='font-size: 16px; font-weight: bold; color: black;'>Une nouvelle version de Wedone Operate est disponible (version {latestVersion}) !</p>\n"
-                message += "Nous vous recommandons de mettre à jour l'application pour obtenir les dernières fonctionnalités et correctifs de sécurité."
-
-                update_box = QMessageBox()
-                update_box.setWindowIcon(QIcon("icon.png"))
-                update_box.setIcon(QMessageBox.Information)
-                update_box.setWindowTitle("Mise à jour disponible")
-                update_box.setText(message)
-                update_box.setTextFormat(Qt.RichText)
-
-                download_button = update_box.addButton("Télécharger", QMessageBox.AcceptRole)
-                download_button.setStyleSheet("font-size: 14px; background-color: #64b3f4; color: white; font-weight; bold;")
-
-                ignore_button = update_box.addButton("Ignorer", QMessageBox.RejectRole)
+            latest_version = response.text.strip()
+            if float(latest_version) > 3.1:  # Comparaison en tant que nombre flottant
+                update_box = UpdateMessageBox()
+                update_box.show_update_message(latest_version)
 
                 result = update_box.exec_()
                 if result == QMessageBox.AcceptRole:
-                    import webbrowser
                     webbrowser.open("https://github.com/WedoneOfficiel/Wedone-Operate/releases")
-            else:
-                pass
-        else:
-            print("Impossible de récupérer la version la plus récente.")
     except requests.exceptions.RequestException:
         print("Impossible de récupérer la version la plus récente.")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    checkForUpdates()
+    app.setAttribute(Qt.AA_EnableHighDpiScaling)
+    check_for_updates()
     window = WedoneOperateApp()
     window.show()
     sys.exit(app.exec_())
