@@ -149,7 +149,7 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 
 # Blog
 ## Fichiers non suprimmés avec la mise à jour 3.1
-Avec la version 3.1 un dossier contenant de nombreux fichiers se nommant "_internal" est contenu dans le dossier ou est installé Wedone Operate mais ne sert plus... Il faut donc aller le retirer manuellement (si vous avez installé la version administrateur sans changer le répertoire d'installation ce dossier devrait se trouver dans le répertoire C:\Program Files (x86)\Wedone Operate.
+Avec la version 3.1 un dossier contenant de nombreux fichiers se nommant "_internal" est contenu dans le dossier ou est installé Wedone Operate mais ne sert plus... Il faut donc aller le retirer manuellement (si vous avez installé la version administrateur sans changer le répertoire d'installation ce dossier devrait se trouver dans le répertoire C:\Program Files (x86)\Wedone Operate).
 
 WedoneOfficiel - le 12/01/2024 à 23:07
 
