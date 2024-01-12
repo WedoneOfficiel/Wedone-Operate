@@ -44,7 +44,7 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2023            |
 
 # Planning de publications
-12/01/2024 | Stable 3.1
+12/01/2024 | Stable 3.1 - Publié -
 
 08/11/2023 | Stable 3.0 - Publié -
 
