@@ -77,6 +77,10 @@ Versions obsolètes :
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions
+#### Stable 3.1 :
+- Evolution de l'interface graphique pour un design plus épuré
+- Correctif de bugs
+
 #### Stable 3.0 :
 - Interface graphique
 - Changement du code : passage du langage C au langage Python (toutes les fonctionnalités ont été portées !)
