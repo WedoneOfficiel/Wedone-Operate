@@ -148,6 +148,12 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 4) Un fichier exécutable apparait alors dans le dossier où sont stockés les fichiers codes du logiciel. Vous pouvez dès lors l'éxécuter !
 
 # Blog
+## Fichiers non suprimmés avec la mise à jour 3.1
+Avec la version 3.1 un dossier contenant de nombreux fichiers se nommant "_internal" est contenu dans le dossier ou est installé Wedone Operate mais ne sert plus... Il faut donc aller le retirer manuellement (si vous avez installé la version administrateur sans changer le répertoire d'installation ce dossier devrait se trouver dans le répertoire C:\Program Files (x86)\Wedone Operate.
+
+WedoneOfficiel - le 12/01/2024 à 23:07
+
+
 ## La version 3.0 est arrivée !
 Bonjour à tous, c'est avec plaisir que je vous annonce l'arrivée de Wedone Operate 3.0 qui arrive pour la toute première fois avec une interface graphique ! Ce choix n'est tout de même pas sans conséquences puisque pour permettre un développement de qualité et rapide il a fallu changer de langage de prorammation. Le logiciel n'est donc plus à compté de ce jour développé en langage C mais en Python. Le logiciel sera il faut le noter plus lourd mais toutes les fonctionalités de la version 2.3 ont été portées sur la version 3.0 !
 Pensez à désinstaller l'ancien programme avant d'installer le nouveau car vous pourriez rencontrer des erreures (ceci ne sera pas nécessaire pour les futures mises à jour).
