@@ -15,7 +15,7 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 Stable version 3.1 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v3.1
 
 # Contact
-Pour toute demande d'assistance, contactez bous à cette adresse mail où sur notre compte Mastodon :
+Pour toute demande d'assistance, contactez nous à cette adresse mail où sur notre compte Mastodon :
 - Mail : wedoneofficiel@outlook.fr
 - Mastodon : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
 
