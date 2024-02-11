@@ -50,7 +50,7 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2023            |
 
 # Planning de publications
-11/02/2024 | Stable 3.1 - Publié -
+11/02/2024 | Stable 3.2 - Publié -
 
 12/01/2024 | Stable 3.1 - Publié -
 
@@ -85,7 +85,7 @@ Versions obsolètes :
 05/08/2022 | Bêta 1.0 - Publié -
 
 # Nouveautés de chaques versions
-#### Stable 3.1 :
+#### Stable 3.2 :
 - Correctif de bugs
 
 #### Stable 3.1 :
