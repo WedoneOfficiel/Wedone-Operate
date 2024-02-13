@@ -153,6 +153,7 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 
 # Comment compiler le programme (version en C) ? 
 (OBSOLETE : Concerne la version en C : entre les versions bêta 1.0 et stable 2.3)
+
 /!\ La compilation du programme n'est utile que si vous avez modifié le code source /!\
 1) Installez le compialteur GCC.
 2) Ouvrez dans un terminal l'emplacement où sont stockés les fichiers codes du logiciel.
