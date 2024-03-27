@@ -25,64 +25,29 @@ Chaque version du logiciel est supporté pour de simples correctifs de bugs et d
 Voici donc les dates de fin de support pour toutes les versions :
 
 Versions supportées :
-|Numéro de version |Date de fin de support|
-|------------------|----------------------|
-|Stable 3.2        |11/02/2025            |
-|Stable 3.1        |12/01/2025            |
-|Stable 3.0        |08/11/2024            |
-|Stable 2.3        |27/08/2025            |
-|Stable 2.2        |23/07/2024            |
-|Stable 2.1        |27/06/2024            |
-|Stable 2.0        |11/04/2024            |
-|Stable 1.7        |05/04/2025            |
+|Numéro de version |Date de sortie |Date de fin de support|
+|------------------|---------------|----------------------|
+|Stable 3.2        |11/02/2024     |11/02/2025            |
+|Stable 3.1        |12/01/2024     |12/01/2025            |
+|Stable 3.0        |08/11/2023     |08/11/2024            |
+|Stable 2.3        |27/08/2023     |27/08/2025            |
+|Stable 2.2        |23/07/2023     |23/07/2024            |
+|Stable 2.1        |27/06/2023     |27/06/2024            |
+|Stable 2.0        |11/04/2023     |11/04/2024            |
+|Stable 1.7        |05/04/2023     |05/04/2025            |
 
 Versions obsolètes :
-|Numéro de version |Date de fin de support|
-|------------------|----------------------|
-|Stable 1.6        |22/11/2023            |
-|Stable 1.5        |11/11/2023            |
-|Stable 1.4        |08/10/2023            |
-|Stable 1.3        |17/09/2023            |
-|Stable 1.2        |16/09/2023            |
-|Stable 1.1        |24/08/2023            |
-|Stable 1.0        |19/08/2023            |
-|Bêta 1.1          |09/08/2023            |
-|Bêta 1.0          |05/08/2023            |
-
-# Planning de publications
-11/02/2024 | Stable 3.2 - Publié -
-
-12/01/2024 | Stable 3.1 - Publié -
-
-08/11/2023 | Stable 3.0 - Publié -
-
-27/08/2023 | Stable 2.3 - Publié -
-
-23/07/2023 | Stable 2.2 - Publié -
-
-27/06/2023 | Stable 2.1 - Publié -
-
-11/04/2023 | Stable 2.0 - Publié -
-
-05/04/2023 | Stable 1.7 - Publié -
-
-22/11/2022 | Stable 1.6 - Publié -
-
-11/11/2022 | Stable 1.5 - Publié -
-
-08/10/2022 | Stable 1.4 - Publié -
-
-17/09/2022 | Stable 1.3 - Publié -
-
-16/09/2022 | Stable 1.2 - Publié -
-
-24/08/2022 | Stable 1.1 - Publié -
-
-19/08/2022 | Stable 1.0 - Publié -
-
-09/08/2022 | Bêta 1.1 - Publié -
-
-05/08/2022 | Bêta 1.0 - Publié -
+|Numéro de version |Date de sortie |Date de fin de support|
+|------------------|---------------|----------------------|
+|Stable 1.6        |22/11/2022     |22/11/2023            |
+|Stable 1.5        |11/11/2022     |11/11/2023            |
+|Stable 1.4        |08/10/2022     |08/10/2023            |
+|Stable 1.3        |17/09/2022     |17/09/2023            |
+|Stable 1.2        |16/09/2022     |16/09/2023            |
+|Stable 1.1        |24/08/2022     |24/08/2023            |
+|Stable 1.0        |19/08/2022     |19/08/2023            |
+|Bêta 1.1          |09/08/2022     |09/08/2023            |
+|Bêta 1.0          |05/08/2022     |05/08/2023            |
 
 # Nouveautés de chaques versions
 #### Stable 3.2 :
