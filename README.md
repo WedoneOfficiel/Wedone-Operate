@@ -52,7 +52,7 @@ Versions obsolètes :
 
 # Nouveautés de chaques versions
 #### Stable 3.3 :
-- Amélioration de l'accessibilité (interface graphique avec notamment les couleurs) 
+- Amélioration de l'accessibilité (interface graphique avec notamment le choix des couleurs) 
 
 #### Stable 3.2 :
 - Correctif de bugs
