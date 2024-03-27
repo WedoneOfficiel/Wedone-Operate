@@ -18,21 +18,21 @@ class WedoneOperateApp(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(10, 10, 10, 10)
 
-        self.label = QLabel("Bienvenue dans Wedone Operate 3.2 ! Bonne aventure !", self)
+        self.label = QLabel("Bienvenue dans Wedone Operate 3.3 ! Bonne aventure !", self)
         self.label.setStyleSheet("font-size: 16px; font-weight: bold; color: #2b2b2b;")
         self.layout.addWidget(self.label)
 
         self.label = QLabel("Combien d'épreuves souhaitez-vous faire ?", self)
-        self.label.setStyleSheet("font-size: 14px; color: #64b3f4; margin-top: 10px;")
+        self.label.setStyleSheet("font-size: 14px; color: #0672BC; margin-top: 10px;")
         self.layout.addWidget(self.label)
 
         self.input = QLineEdit(self)
-        self.input.setStyleSheet("font-size: 14px; background-color: #f0f0f0; color: #2b2b2b; border: 1px solid #64b3f4; border-radius: 5px;")
+        self.input.setStyleSheet("font-size: 14px; background-color: #f0f0f0; color: #2b2b2b; border: 1px solid #0672BC; border-radius: 5px;")
         self.layout.addWidget(self.input)
 
         self.start_button = QPushButton("Commencer", self)
         self.start_button.clicked.connect(self.start_game)
-        self.start_button.setStyleSheet("font-size: 14px; background-color: #64b3f4; color: white; font-weight: bold; border: 1px solid #64b3f4; border-radius: 5px;")
+        self.start_button.setStyleSheet("font-size: 14px; background-color: #0672BC; color: white; font-weight: bold; border: 1px solid #0672BC; border-radius: 5px;")
         self.layout.addWidget(self.start_button)
 
         self.setLayout(self.layout)
@@ -138,7 +138,7 @@ def check_for_updates():
         response = requests.get(version_url)
         if response.status_code == 200:
             latest_version = response.text.strip()
-            if float(latest_version) > 3.2:  # Comparaison en tant que nombre flottant
+            if float(latest_version) > 3.3:  # Comparaison en tant que nombre flottant
                 update_box = UpdateMessageBox()
                 update_box.show_update_message(latest_version)
 
