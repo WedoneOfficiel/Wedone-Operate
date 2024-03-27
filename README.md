@@ -27,6 +27,7 @@ Voici donc les dates de fin de support pour toutes les versions :
 Versions supportées :
 |Numéro de version |Date de sortie |Date de fin de support|
 |------------------|---------------|----------------------|
+|Stable 3.3        |27/03/2024     |27/03/2025            |
 |Stable 3.2        |11/02/2024     |11/02/2025            |
 |Stable 3.1        |12/01/2024     |12/01/2025            |
 |Stable 3.0        |08/11/2023     |08/11/2024            |
@@ -50,6 +51,9 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2022     |05/08/2023            |
 
 # Nouveautés de chaques versions
+#### Stable 3.3 :
+- Amélioration de l'accessibilité (interface graphique avec notamment les couleurs) 
+
 #### Stable 3.2 :
 - Correctif de bugs
 
