@@ -12,7 +12,7 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 
  
 # Dernière version
-Stable version 3.2 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v3.2
+Stable version 3.3 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v3.3
 
 # Contact
 Pour toute demande d'assistance, contactez nous à cette adresse mail où sur notre compte Mastodon :
