@@ -16,7 +16,6 @@ Stable version 3.3 - télécharger à cette page : https://github.com/WedoneOffi
 
 # Contact
 Pour toute demande d'assistance, contactez nous à cette adresse mail où sur notre compte Mastodon :
-- Mail : wedoneofficiel@outlook.fr 
 - Mastodon (à prioriser) : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
 
 # Support
