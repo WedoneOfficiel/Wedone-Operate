@@ -51,6 +51,12 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2022     |05/08/2023            |
 
 # Nouveautés de chaques versions
+#### Stable 3.4 :
+- Amélioration de la facilité d'utilisation/la praticité du logiciel (utilisation de la touche entrée dans les zones de texte)
+- Refonte de la fenêtre des mises à jour
+- Uniformisation du design du logiciel (transformation de toutes les boîtes de dialogue en fenêtres à part entière)
+- Optimisation du code
+
 #### Stable 3.3 :
 - Amélioration de l'accessibilité (interface graphique avec notamment le choix des couleurs) 
 
