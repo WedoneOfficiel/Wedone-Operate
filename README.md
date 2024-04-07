@@ -119,15 +119,6 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 #### Bêta 1.0 : 
 - Ajout d'un exercice 
 
-# Comment compiler le programme (version en C) ? 
-(OBSOLETE : Concerne la version en C : entre les versions bêta 1.0 et stable 2.3)
-
-/!\ La compilation du programme n'est utile que si vous avez modifié le code source /!\
-1) Installez le compialteur GCC.
-2) Ouvrez dans un terminal l'emplacement où sont stockés les fichiers codes du logiciel.
-3) Exécuter cette comande dans le terminal : gcc main.c icone.o -o main.    
-4) Un fichier exécutable apparait alors dans le dossier où sont stockés les fichiers codes du logiciel. Vous pouvez dès lors l'éxécuter !
-
 # Blog
 ## Fichiers non suprimmés avec la mise à jour 3.1
 Avec la version 3.1 un dossier contenant de nombreux fichiers se nommant "_internal" est contenu dans le dossier ou est installé Wedone Operate mais ne sert plus... Il faut donc aller le retirer manuellement (si vous avez installé la version administrateur sans changer le répertoire d'installation ce dossier devrait se trouver dans le répertoire C:\Program Files (x86)\Wedone Operate).
