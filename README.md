@@ -16,7 +16,7 @@ Stable version 3.3 - télécharger à cette page : https://github.com/WedoneOffi
 
 # Contact
 Pour toute demande d'assistance, contactez nous à cette adresse mail où sur notre compte Mastodon :
-- Mastodon (à prioriser) : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
+- Mastodon : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
 
 # Support
 Chaque version du logiciel est supporté pour de simples correctifs de bugs et de sécurité sur une durée d'un an sauf pour la dernière version de chaques versions majeures (ici par exemple la version 1.7 est la dernière version appartenant aux versions 1 avant de passer à la version 2.0). Ces versions bénéficieront donc elles d'un support de 2 ans. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas. Il est tout de même important de noter que ce système est amené à évoluer et donc à changer. Certaines versions peuvent également bénéficier de mises à jour malgré leur statut obsolète pour des cas extrêmes. Ajoutons également que dans les règles énoncés ci-avant il peut y avoir des exceptions pour certaines versions.
