@@ -6,7 +6,7 @@ Wedone Operate est un jeu adressé aux élèves (et classes) de cycle 3 (CM1, CM
 
 Logiciel actuellement disponible uniquement pour les ordinateurs équipés de Microsoft Windows (x86 ET x86_64).
 
-Nous vous certifions que ce logiciel est compatible avec ces versions de Microsoft Windows : 8.1 / 10 / 11. Les versions non citées ci-avant peuvent s'avérer compatibles avec le présent logiciel mais notre équipe ne l'a actuellement pas vérifié.
+Nous vous certifions que ce logiciel est compatible avec ces versions de Microsoft Windows : 10 / 11. Les versions non citées ci-avant peuvent s'avérer compatibles avec le présent logiciel mais notre équipe ne l'a actuellement pas vérifié.
 
 Nous vous recommandons donc d'utiliser une des éditions citées précédemment pour un rendu de qualité.
 
