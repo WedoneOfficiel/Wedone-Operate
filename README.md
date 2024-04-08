@@ -4,7 +4,7 @@
 </p>
 Wedone Operate est un jeu adressé aux élèves (et classes) de cycle 3 (CM1, CM2 et 6ème). Ce jeu s'appuie sur le principe du calcul à mental, il consiste à demander le résultat d'un opération (ajoutée, multiplié, soustraite, divisée) en fonction d'un calcul qui est affiché à l'écran.
 
-Logiciel actuellement disponible uniquement pour les ordinateurs équipés de Microsoft Windows (x86 ET x86_64).
+Logiciel actuellement disponible uniquement pour les ordinateurs équipés de Microsoft Windows (x86_64 ET x86 pour les versions antérieures à la version 3.0).
 
 Nous vous certifions que ce logiciel est compatible avec ces versions de Microsoft Windows : 10 / 11. Les versions non citées ci-avant peuvent s'avérer compatibles avec le présent logiciel mais notre équipe ne l'a actuellement pas vérifié.
 
