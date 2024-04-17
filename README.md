@@ -26,6 +26,7 @@ Voici donc les dates de fin de support pour toutes les versions :
 Versions supportées :
 |Numéro de version |Date de sortie |Date de fin de support|
 |------------------|---------------|----------------------|
+|Stable 3.5        |17/04/2024     |17/04/2025            |
 |Stable 3.4        |07/04/2024     |07/04/2025            |
 |Stable 3.3        |27/03/2024     |27/03/2025            |
 |Stable 3.2        |11/02/2024     |11/02/2025            |
@@ -34,12 +35,12 @@ Versions supportées :
 |Stable 2.3        |27/08/2023     |27/08/2025            |
 |Stable 2.2        |23/07/2023     |23/07/2024            |
 |Stable 2.1        |27/06/2023     |27/06/2024            |
-|Stable 2.0        |11/04/2023     |11/04/2024            |
 |Stable 1.7        |05/04/2023     |05/04/2025            |
 
 Versions obsolètes :
 |Numéro de version |Date de sortie |Date de fin de support|
 |------------------|---------------|----------------------|
+|Stable 2.0        |11/04/2023     |11/04/2024            |
 |Stable 1.6        |22/11/2022     |22/11/2023            |
 |Stable 1.5        |11/11/2022     |11/11/2023            |
 |Stable 1.4        |08/10/2022     |08/10/2023            |
@@ -53,7 +54,7 @@ Versions obsolètes :
 # Nouveautés de chaques versions
 #### Stable 3.5 :
 - Correction de bugs de l'interface graphique
-- Mise en place de la recherche automatique des patchs de sécurité et de bugs (qui sont différents des mises à jours et concernent une seule version à chaque fois)
+- Mise en place de la recherche automatique des patchs de sécurité et de bugs (ce qui est différent des mises à jours et ne concerne qu'une seule version à chaque fois)
 
 #### Stable 3.4 :
 - Amélioration de la facilité d'utilisation/la praticité du logiciel (utilisation de la touche entrée dans les zones de texte)
