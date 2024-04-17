@@ -51,6 +51,10 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2022     |05/08/2023            |
 
 # Nouveautés de chaques versions
+#### Stable 3.5 :
+- Correction de bugs
+- Mise en place de la recherche automatique des patchs de sécurité et de bugs (qui sont différents des mises à jours et concernent une seule version à chaque fois)
+
 #### Stable 3.4 :
 - Amélioration de la facilité d'utilisation/la praticité du logiciel (utilisation de la touche entrée dans les zones de texte)
 - Refonte de la fenêtre des mises à jour
