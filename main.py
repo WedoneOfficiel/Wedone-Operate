@@ -18,7 +18,7 @@ class WedoneOperateApp(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(10, 10, 10, 10)
 
-        self.label = QLabel("Bienvenue dans Wedone Operate 3.4 ! Bonne aventure !", self)
+        self.label = QLabel("Bienvenue dans Wedone Operate 3.5 ! Bonne aventure !", self)
         self.label.setStyleSheet("font-size: 16px; font-weight: bold; color: #2b2b2b;")
         self.layout.addWidget(self.label)
 
@@ -36,6 +36,10 @@ class WedoneOperateApp(QWidget):
         self.layout.addWidget(self.start_button)
 
         self.setLayout(self.layout)
+        self.center()
+
+    def showEvent(self, event):
+        super().showEvent(event)
         self.center()
 
     def center(self):
@@ -197,7 +201,7 @@ class AnswerDialog(QDialog):
         return None
 
 class UpdateWindow(QDialog):
-    def __init__(self, latest_version):
+    def __init__(self, version, message="", is_patch=False):
         super().__init__()
         self.setWindowTitle("Mise à jour disponible")
         self.setWindowIcon(QIcon("icon.png"))
@@ -205,7 +209,10 @@ class UpdateWindow(QDialog):
 
         layout = QVBoxLayout(self)
 
-        label = QLabel(f"Une nouvelle version de Wedone Operate est disponible (version {latest_version}) !\n\nNous vous recommandons de mettre à jour l'application pour obtenir les dernières fonctionnalités et correctifs de sécurité.")
+        if is_patch:
+            label = QLabel(f"Un patch de sécurité ou de bugs est disponible pour la version {version} !\n\n{message}")
+        else:
+            label = QLabel(f"Une nouvelle version de Wedone Operate est disponible (version {version}) !\n\nNous vous recommandons de mettre à jour l'application pour obtenir les dernières fonctionnalités et correctifs de sécurité.")
         label.setStyleSheet("font-size: 14px;")
         layout.addWidget(label)
 
@@ -230,6 +237,24 @@ class UpdateWindow(QDialog):
     def download_update(self):
         webbrowser.open("https://github.com/WedoneOfficiel/Wedone-Operate/releases")
 
+def check_for_patches(current_version):
+    patch_url = "https://wedoneofficiel.github.io/Boot-projets-Wedone-Officiel/Wedone-Logiciels-Versions/Patchs/WedoneOperate/Stable_3-5.txt"
+
+    try:
+        response = requests.get(patch_url)
+        if response.status_code == 200:
+            patches_info = response.text.strip().split("\n")
+            for patch_info in patches_info:
+                if "|" in patch_info:
+                    version, message = patch_info.split("|", 1)  # Divise seulement une fois
+                    if version == current_version:
+                        return message
+                else:
+                    # Si la ligne ne contient pas de séparateur "|", traitons-la comme un simple message de patch
+                    return patch_info
+    except requests.exceptions.RequestException as e:
+        print("Impossible de récupérer les patchs de sécurité:", e)
+
 def check_for_updates():
     version_url = "https://wedoneofficiel.github.io/Boot-projets-Wedone-Officiel/Wedone-Logiciels-Versions/version-wedone-operate.txt"
 
@@ -237,11 +262,17 @@ def check_for_updates():
         response = requests.get(version_url)
         if response.status_code == 200:
             latest_version = response.text.strip()
-            if float(latest_version) > 3.4:  # Comparaison en tant que nombre flottant
-                update_window = UpdateWindow(latest_version)
+            if float(latest_version) > 3.5:  # Comparaison en tant que nombre flottant
+                update_window = UpdateWindow(latest_version, is_patch=False)
                 update_window.exec_()
+            else:
+                current_version = "3.5"  # Changer ceci en la version actuelle de l'application
+                patch_message = check_for_patches(current_version)
+                if patch_message:
+                    update_window = UpdateWindow(current_version, patch_message, is_patch=True)
+                    update_window.exec_()
     except requests.exceptions.RequestException:
-        print("Impossible de récupérer la version la plus récente.")
+        print("Impossible de récupérer la version la plus récente ou les patchs de sécurité.")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
