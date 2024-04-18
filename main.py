@@ -67,7 +67,7 @@ class WedoneOperateApp(QWidget):
             score = 0
             for i in range(1, nombre_epreuves + 1):
                 operation, nombre1, nombre2, operation_str, resultat = self.generate_operation()
-                
+
                 dialog = AnswerDialog(f"Épreuve {i}", f"{nombre1} {operation_str} {nombre2} = ?")
                 user_input = dialog.get_answer()
                 if user_input is None:
@@ -201,7 +201,7 @@ class AnswerDialog(QDialog):
         return None
 
 class UpdateWindow(QDialog):
-    def __init__(self, version, message="", is_patch=False):
+    def __init__(self, latest_version):
         super().__init__()
         self.setWindowTitle("Mise à jour disponible")
         self.setWindowIcon(QIcon("icon.png"))
@@ -209,10 +209,7 @@ class UpdateWindow(QDialog):
 
         layout = QVBoxLayout(self)
 
-        if is_patch:
-            label = QLabel(f"Un patch de sécurité ou de bugs est disponible pour la version {version} !\n\n{message}")
-        else:
-            label = QLabel(f"Une nouvelle version de Wedone Operate est disponible (version {version}) !\n\nNous vous recommandons de mettre à jour l'application pour obtenir les dernières fonctionnalités et correctifs de sécurité.")
+        label = QLabel(f"Une nouvelle version de Wedone Operate est disponible (version {latest_version}) !\n\nNous vous recommandons de mettre à jour l'application pour obtenir les dernières fonctionnalités et correctifs de sécurité.")
         label.setStyleSheet("font-size: 14px;")
         layout.addWidget(label)
 
@@ -237,24 +234,6 @@ class UpdateWindow(QDialog):
     def download_update(self):
         webbrowser.open("https://github.com/WedoneOfficiel/Wedone-Operate/releases")
 
-def check_for_patches(current_version):
-    patch_url = "https://wedoneofficiel.github.io/Boot-projets-Wedone-Officiel/Wedone-Logiciels-Versions/Patchs/WedoneOperate/Stable_3-5.txt"
-
-    try:
-        response = requests.get(patch_url)
-        if response.status_code == 200:
-            patches_info = response.text.strip().split("\n")
-            for patch_info in patches_info:
-                if "|" in patch_info:
-                    version, message = patch_info.split("|", 1)  # Divise seulement une fois
-                    if version == current_version:
-                        return message
-                else:
-                    # Si la ligne ne contient pas de séparateur "|", traitons-la comme un simple message de patch
-                    return patch_info
-    except requests.exceptions.RequestException as e:
-        print("Impossible de récupérer les patchs de sécurité:", e)
-
 def check_for_updates():
     version_url = "https://wedoneofficiel.github.io/Boot-projets-Wedone-Officiel/Wedone-Logiciels-Versions/version-wedone-operate.txt"
 
@@ -263,21 +242,65 @@ def check_for_updates():
         if response.status_code == 200:
             latest_version = response.text.strip()
             if float(latest_version) > 3.5:  # Comparaison en tant que nombre flottant
-                update_window = UpdateWindow(latest_version, is_patch=False)
+                update_window = UpdateWindow(latest_version)
                 update_window.exec_()
-            else:
-                current_version = "3.5"  # Changer ceci en la version actuelle de l'application
-                patch_message = check_for_patches(current_version)
-                if patch_message:
-                    update_window = UpdateWindow(current_version, patch_message, is_patch=True)
-                    update_window.exec_()
     except requests.exceptions.RequestException:
-        print("Impossible de récupérer la version la plus récente ou les patchs de sécurité.")
+        print("Impossible de récupérer la version la plus récente.")
+
+def check_for_security_patches():
+    patch_url = "https://wedoneofficiel.github.io/Boot-projets-Wedone-Officiel/Wedone-Logiciels-Versions/Patchs/WedoneOperate/Stable_3-5.txt"
+
+    try:
+        response = requests.get(patch_url)
+        if response.status_code == 200:
+            patch_version = response.text.strip()
+            if patch_version == "":
+                patch_version = "3.5"
+            if patch_version != "3.5":
+                security_patch_window = SecurityPatchWindow(patch_version)
+                security_patch_window.exec_()
+    except requests.exceptions.RequestException:
+        print("Impossible de récupérer la version du patch de sécurité.")
+
+class SecurityPatchWindow(QDialog):
+    def __init__(self, latest_patch):
+        super().__init__()
+        self.setWindowTitle("Mise à jour de sécurité disponible")
+        self.setWindowIcon(QIcon("icon.png"))
+        self.setStyleSheet("background-color: white; color: #2b2b2b;")
+
+        layout = QVBoxLayout(self)
+
+        label = QLabel(f"Un nouveau patch de sécurité est disponible pour Wedone Operate (version {latest_patch}) !\n\nIl est impératif de télécharger et d'installer ce patch pour garantir la sécurité et la stabilité de l'application.")
+        label.setStyleSheet("font-size: 14px;")
+        layout.addWidget(label)
+
+        buttons_layout = QHBoxLayout()
+        layout.addLayout(buttons_layout)
+
+        # Ajout d'un espace blanc entre les boutons Télécharger et Ignorer
+        buttons_layout.addStretch()
+
+        ignore_button = QPushButton(" Ignorer ")
+        ignore_button.clicked.connect(self.close)
+        ignore_button.setStyleSheet("font-size: 14px; background-color: #E7E3E3; color: #2b2b2b; font-weight: bold; border: 1px solid #E7E3E3; border-radius: 5px;")
+        buttons_layout.addWidget(ignore_button)
+
+        download_button = QPushButton(" Télécharger ")
+        download_button.clicked.connect(self.download_patch)
+        download_button.setStyleSheet("font-size: 14px; background-color: #0672BC; color: white; font-weight: bold; border: 1px solid #0672BC; border-radius: 5px;")
+        buttons_layout.addWidget(download_button)
+
+        self.setLayout(layout)
+
+    def download_patch(self):
+        webbrowser.open("https://github.com/WedoneOfficiel/Wedone-Operate/releases")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_EnableHighDpiScaling)
     check_for_updates()
+    check_for_security_patches()
     window = WedoneOperateApp()
     window.show()
     sys.exit(app.exec_())
