@@ -26,7 +26,7 @@ Voici donc les dates de fin de support pour toutes les versions :
 Versions supportées :
 |Numéro de version |Date de sortie |Date de fin de support|
 |------------------|---------------|----------------------|
-|Stable 3.5        |inconnu        |inconnu               |
+|Stable 3.5        |18/04/2024     |18/04/2025            |
 |Stable 3.4        |07/04/2024     |07/04/2025            |
 |Stable 3.3        |27/03/2024     |27/03/2025            |
 |Stable 3.2        |11/02/2024     |11/02/2025            |
