@@ -54,7 +54,7 @@ Versions obsolètes :
 # Nouveautés de chaques versions
 #### Stable 3.5 :
 - Correction de bugs de l'interface graphique
-- Mise en place de la recherche automatique des patchs de sécurité et de bugs (ce qui est différent des mises à jours et ne concerne qu'une seule version à chaque fois)
+- Mise en place de la recherche automatique des patchs de sécurité et de bugs (ce qui est différent des mises à jours et ne concerne qu'une version spécifique à chaque fois)
 
 #### Stable 3.4 :
 - Amélioration de la facilité d'utilisation/la praticité du logiciel (utilisation de la touche entrée dans les zones de texte)
