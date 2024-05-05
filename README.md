@@ -53,6 +53,13 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2022     |05/08/2023            |
 
 # Nouveautés de chaques versions
+#### Stable 4.0 :
+- Ajout d'une fenêtre de paramètres avec :
+-  Options du logiciel : Ensemble paramètres qui permetteront d'activer ou de désactiver des types d'opérations dans les propositions faites lors des épreuves
+-  Recherche des mises à jour : Paramètres qui permetteront d'activer ou de désactiver la recherche automatique des mises à jour pour les mises à jours ainsi que les patchs
+-  Recherche manuelle des mises à jour : Deux options qui permettront par un simple clic d'enclencher manuellement la recherche des mises à jour ou des patchs
+-  A Propos : Page qui rassemblera l'ensemble des informations sur le présent logiciel comme son numéro de version, la licence, ... 
+
 #### Stable 3.5 :
 - Correction de bugs de l'interface graphique
 - Mise en place de la recherche automatique des patchs de sécurité et de bugs (ce qui est différent des mises à jours et ne concerne qu'une version spécifique à chaque fois)
