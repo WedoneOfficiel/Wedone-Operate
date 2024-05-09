@@ -150,7 +150,7 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 
 # Blog
 ## Changements concernant le support du logiciel
-Depuis quelque temps, la politique de support des versions du logiciel stipulait que les versions bêtas ne bénéficiaient d'aucun support, que les versions stables profitaient elles d'un support de 1 an et que la dernière version d'une version majeure (exemple : Stable 3.5 avant 4.0), elles bénéficiaient de 2 ans de support logiciel mais il a été décidé qu'afin d'uniformiser et simplifier la gestion globale du logiciel, ce support serait réduit à 1 an.
+Depuis quelque temps, la politique de support des versions du logiciel stipulait que les versions bêtas ne bénéficiaient d'aucun support, que les versions stables profitaient elles d'un support de 1 an et que la dernière version d'une version majeure (exemple : Stable 3.5 avant Stable 4.0), elles bénéficiaient de 2 ans de support logiciel mais il a été décidé qu'afin d'uniformiser et simplifier la gestion globale du logiciel, ce support serait réduit à 1 an et ce pour toutes les versions confondues (hors betas), même pour les versions antécédentes à la Stable 4.0.
 
 WedoneOfficiel - le 09/05/2024 à 23:47
 
