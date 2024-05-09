@@ -149,6 +149,11 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 - Ajout d'un exercice 
 
 # Blog
+## Passage à la version 4.0 !
+Le 9 mai 2024, à été introduis la nouvelle version majeure de Wedone Operate. En dehors des nombreuses améliorations qui ont été apportées au présent logiciel, il faut néanmoins noté que l'installation pour tous les utilisateurs sous Windows à été bloquée car le système de gestion du logiciel faisait crasher le logiciel. Nous vous recommandons donc de désinstaller votre version actuelle puis de réinstaller la nouvelle version cette fois avec le mode (sélectionné automatiquement) "installer seulement pour moi" qui lui ne présente pas de problèmes à l'utilisation du logiciel !
+
+WedoneOfficiel - le 09/05/2024 à 23:57
+
 ## Changements concernant le support du logiciel
 Depuis quelque temps, la politique de support des versions du logiciel stipulait que les versions bêtas ne bénéficiaient d'aucun support, que les versions stables profitaient elles d'un support de 1 an et que la dernière version d'une version majeure (exemple : Stable 3.5 avant Stable 4.0), elles bénéficiaient de 2 ans de support logiciel mais il a été décidé qu'afin d'uniformiser et simplifier la gestion globale du logiciel, ce support serait réduit à 1 an et ce pour toutes les versions confondues (hors betas), même pour les versions antécédentes à la Stable 4.0.
 
