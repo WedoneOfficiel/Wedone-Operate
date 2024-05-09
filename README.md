@@ -18,7 +18,8 @@ Stable version 4.0 - télécharger à cette page : https://github.com/WedoneOffi
 
 # Contact
 Pour toute demande d'assistance, contactez nous à cette adresse mail où sur notre compte Mastodon :
-- Mastodon : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
+- Mastodon (à privilégier) : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
+- Mail : wedoneofficiel@outlook.fr
 
 # Support
 Chaque version du logiciel est supporté pour de simples correctifs de bugs et de sécurité sur une durée d'un an. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas. Il est tout de même important de noter que ce système est amené à évoluer et donc à changer. Certaines versions peuvent également bénéficier de mises à jour malgré leur statut obsolète pour des cas extrêmes. Ajoutons également que dans les règles énoncés ci-avant il peut y avoir des exceptions pour certaines versions.
