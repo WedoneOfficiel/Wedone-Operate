@@ -150,7 +150,7 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 
 # Blog
 ## Passage à la version 4.0 !
-Le 9 mai 2024, à été introduis la nouvelle version majeure de Wedone Operate. En dehors des nombreuses améliorations qui ont été apportées au présent logiciel, il faut néanmoins noté que l'installation pour tous les utilisateurs sous Windows à été bloquée car le système de gestion du logiciel faisait crasher le logiciel. Nous vous recommandons donc de désinstaller votre version actuelle puis de réinstaller la nouvelle version cette fois avec le mode (sélectionné automatiquement) "installer seulement pour moi" qui lui ne présente pas de problèmes à l'utilisation du logiciel !
+Le 9 mai 2024, à été introduis la nouvelle version majeure de Wedone Operate. En dehors des nombreuses améliorations qui ont été apportées au présent logiciel, il faut néanmoins noter que l'installation pour tous les utilisateurs sous Windows à été bloquée car le système de gestion du logiciel faisait crasher le logiciel. Nous vous recommandons donc de désinstaller votre version actuelle puis de réinstaller la nouvelle version cette fois avec le mode (sélectionné automatiquement) "installer seulement pour moi" qui lui ne présente pas de problèmes à l'utilisation du logiciel !
 
 WedoneOfficiel - le 09/05/2024 à 23:57
 
