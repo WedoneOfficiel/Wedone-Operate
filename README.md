@@ -21,7 +21,7 @@ Pour toute demande d'assistance, contactez nous à cette adresse mail où sur no
 - Mastodon : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
 
 # Support
-Chaque version du logiciel est supporté pour de simples correctifs de bugs et de sécurité sur une durée d'un an sauf pour la dernière version de chaques versions majeures (ici par exemple la version 1.7 est la dernière version appartenant aux versions 1 avant de passer à la version 2.0). Ces versions bénéficieront donc elles d'un support de 2 ans. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas. Il est tout de même important de noter que ce système est amené à évoluer et donc à changer. Certaines versions peuvent également bénéficier de mises à jour malgré leur statut obsolète pour des cas extrêmes. Ajoutons également que dans les règles énoncés ci-avant il peut y avoir des exceptions pour certaines versions.
+Chaque version du logiciel est supporté pour de simples correctifs de bugs et de sécurité sur une durée d'un an. Pour les version bêtas (dont le canal est désormais abandonné), le support n'existe pas. Il est tout de même important de noter que ce système est amené à évoluer et donc à changer. Certaines versions peuvent également bénéficier de mises à jour malgré leur statut obsolète pour des cas extrêmes. Ajoutons également que dans les règles énoncés ci-avant il peut y avoir des exceptions pour certaines versions.
 
 Il faut égallement préciser que les patchs ne sont distribués qu'en cas de problème de sécurité ou de bugs majeurs mais pas dans le cas d'un bug mineur (qui n'influence pas la façon dont on utilise le logiciel), dans ce cas précis, si cela dérange quelqu'un, il faudra nous contacter via Mastodon et nous pourront envisager le déploiement d'un patch pour une version spéciale.
 
@@ -33,21 +33,21 @@ Versions supportées :
 |Numéro de version |Date de sortie |Date de fin de support|
 |------------------|---------------|----------------------|
 |Stable 4.0        |09/05/2024     |09/05/2024            |
-|Stable 3.5        |18/04/2024     |18/04/2026            |
+|Stable 3.5        |18/04/2024     |18/04/2025            |
 |Stable 3.4        |07/04/2024     |07/04/2025            |
 |Stable 3.3        |27/03/2024     |27/03/2025            |
 |Stable 3.2        |11/02/2024     |11/02/2025            |
 |Stable 3.1        |12/01/2024     |12/01/2025            |
 |Stable 3.0        |08/11/2023     |08/11/2024            |
-|Stable 2.3        |27/08/2023     |27/08/2025            |
+|Stable 2.3        |27/08/2023     |27/08/2024            |
 |Stable 2.2        |23/07/2023     |23/07/2024            |
 |Stable 2.1        |27/06/2023     |27/06/2024            |
-|Stable 1.7        |05/04/2023     |05/04/2025            |
 
 Versions obsolètes :
 |Numéro de version |Date de sortie |Date de fin de support|
 |------------------|---------------|----------------------|
 |Stable 2.0        |11/04/2023     |11/04/2024            |
+|Stable 1.7        |05/04/2023     |05/04/2024            |
 |Stable 1.6        |22/11/2022     |22/11/2023            |
 |Stable 1.5        |11/11/2022     |11/11/2023            |
 |Stable 1.4        |08/10/2022     |08/10/2023            |
@@ -149,6 +149,11 @@ Plus d'informationsdans le [blog](https://github.com/WedoneOfficiel/Wedone-Opera
 - Ajout d'un exercice 
 
 # Blog
+## Changements concernant le support du logiciel
+Depuis quelque temps, la politique de support des versions des logiciels stipulait que les versions bêtas ne bénéficiaient d'aucun support, que les versions stables profitaient elles d'un support de 1 an et que la dernière version d'une version majeure (exemple : Stable 3.5 avant 4.0), elles bénéficiaient de 2 ans de support logiciel mais il a été décidé qu'afin d'uniformiser et simplifier la gestion globale du logiciel, ce support serait réduit à 1 an.
+
+WedoneOfficiel - le 09/05/2024 à 23:47
+
 ## Fichiers non suprimmés avec la mise à jour 3.1
 Avec la version 3.1 un dossier contenant de nombreux fichiers se nommant "_internal" est contenu dans le dossier ou est installé Wedone Operate mais ne sert plus... Il faut donc aller le retirer manuellement (si vous avez installé la version administrateur sans changer le répertoire d'installation ce dossier devrait se trouver dans le répertoire C:\Program Files (x86)\Wedone Operate).
 
