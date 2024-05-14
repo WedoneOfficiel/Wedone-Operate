@@ -204,7 +204,6 @@ A compter de la version 1.3, les mises à jour supprimeront et remplaceront l'ex
 Ceci ne s'applique pas aux versions antérieures à la version stable 1.3 (bêta 1.0/bêta 1.1/stable 1.0/stable 1.1/stable 1.2)
 
 WedoneOfficiel - le 17/09/2022 à 23:43 (modifié le 21/09/2022 à 16:24)
-
 ## Abandon du canal Bêta
 Il n'y aura plus de mises à jour pour le canal Bêta (plus de nouvelles versions), référez vous aux versions stables.
 
