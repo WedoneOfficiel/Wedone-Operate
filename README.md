@@ -12,7 +12,6 @@ Nous vous recommandons donc d'utiliser une des éditions citées précédemment 
 
 Le logiciel ne requiert par ailleurs aucun droit d'administrateur pour être installé.
 
- 
 # Dernière version
 Stable version 4.0 - télécharger à cette page : https://github.com/WedoneOfficiel/Wedone-Operate/releases/tag/Stable-v4.0
 
