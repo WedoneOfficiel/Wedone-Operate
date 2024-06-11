@@ -1,6 +1,6 @@
 # Wedone Operate : Tour du logiciel 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/WedoneOfficiel/Wedone-Operate/main/icon.png" />
+  <img src="https://raw.githubusercontent.com/WedoneOfficiel/Wedone-Operate/main/icon.png"/>
 </p>
 Wedone Operate est un jeu adressé aux élèves (et classes) de cycle 3 (CM1, CM2 et 6ème). Ce jeu s'appuie sur le principe du calcul à mental, il consiste à demander le résultat d'un opération (ajoutée, multiplié, soustraite, divisée) en fonction d'un calcul qui est affiché à l'écran.
 
