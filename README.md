@@ -62,7 +62,7 @@ Versions obsolètes :
 # Nouveautés de chaques versions
 #### Stable 4.1 :
 - Optimisation du code
-- Optiomisation du logiciel
+- Optimisation du logiciel
 - Ajout d'un système pour gérer automatiquement les logiciels dont les versions seraient obsolètes
 - Modifications mineures de l'interface
 
