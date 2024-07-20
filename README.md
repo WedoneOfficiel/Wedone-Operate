@@ -32,6 +32,7 @@ Voici donc les dates de fin de support pour toutes les versions :
 Versions supportées :
 |Numéro de version |Date de sortie |Date de fin de support|
 |------------------|---------------|----------------------|
+|Stable 4.1        |20/07/2024     |20/07/2025            |
 |Stable 4.0        |09/05/2024     |09/05/2025            |
 |Stable 3.5        |18/04/2024     |18/04/2025            |
 |Stable 3.4        |07/04/2024     |07/04/2025            |
@@ -59,6 +60,12 @@ Versions obsolètes :
 |Bêta 1.0          |05/08/2022     |05/08/2023            |
 
 # Nouveautés de chaques versions
+#### Stable 4.1 :
+- Optimisation du code
+- Optiomisation du logiciel
+- Ajout d'un système pour gérer automatiquement les logiciels dont les versions seraient obsolètes
+- Modifications mineures de l'interface
+
 #### Stable 4.0 :
 - Supression automatique des fichiers installés par des version précédentes (ne concerne que les version Stable 4.0 et ultérieur)
 - Obligation d'installation sous forme non administrateur pour des raisons de compatibilité avec Windows
