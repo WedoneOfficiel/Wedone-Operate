@@ -643,7 +643,7 @@ class ObsoleteVersionAlert(QDialog):
 
 def check_for_security_patches(auto_patch):
     if auto_patch:
-        patch_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/Patchs/Stable_4-0.txt"
+        patch_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/Patchs/Stable_4-1.txt"
         obsolete_versions_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/versions-obsoletes-wedone-operate-stable.txt"
 
         try:
