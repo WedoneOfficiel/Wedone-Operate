@@ -10,11 +10,12 @@ from PyQt5.QtCore import Qt, pyqtSlot, QDate
 class WedoneOperateApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.settings = self.load_settings()  # Charger ou créer les paramètres
+        self.settings = self.load_settings()
         self.initUI()
         self.setWindowTitle("Wedone Operate")
         self.setWindowIcon(QIcon("icon.png"))
         self.setStyleSheet("background-color: white; color: #2b2b2b;")
+        self.check_obsolete_version()
 
     def load_settings(self):
         default_settings = {
@@ -36,29 +37,11 @@ class WedoneOperateApp(QWidget):
                 json.dump(default_settings, file)
         return default_settings
 
-
-    def generate_operation(self):
-        available_operations = []
-        if self.settings['addition_enabled']:
-            available_operations.append(1)  # Addition
-        if self.settings['subtraction_enabled']:
-            available_operations.append(2)  # Soustraction
-        if self.settings['multiplication_enabled']:
-            available_operations.append(3)  # Multiplication
-        if self.settings['division_enabled']:
-            available_operations.append(4)  # Division
-
-        if not available_operations:
-            raise ValueError("Aucune opération n'est activée. Veuillez activer au moins un type d'opération dans les paramètres.")
-
-        operation = random.choice(available_operations)
-        # La logique pour générer l'opération basée sur le type sélectionné continue ici...
-
     def initUI(self):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(10, 10, 10, 10)
 
-        self.label = QLabel("Bienvenue dans Wedone Operate 4.0 ! Bonne aventure !", self)
+        self.label = QLabel("Bienvenue dans Wedone Operate 4.1 ! Bonne aventure !", self)
         self.label.setStyleSheet("font-size: 16px; font-weight: bold; color: #2b2b2b;")
         self.layout.addWidget(self.label)
 
@@ -183,6 +166,23 @@ class WedoneOperateApp(QWidget):
         settings_window = SettingsWindow()
         settings_window.load_settings()
         settings_window.exec_()
+
+    def check_obsolete_version(self):
+        current_version = "4.1"  # Remplacez par la version actuelle de votre logiciel
+        obsolete_versions_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/versions-obsoletes-wedone-operate-stable.txt"
+        
+        try:
+            response = requests.get(obsolete_versions_url)
+            if response.status_code == 200:
+                obsolete_versions = response.text.strip().split('\n')
+                if current_version in obsolete_versions:
+                    self.show_obsolete_version_alert(current_version)
+        except requests.exceptions.RequestException:
+            print("Impossible de vérifier les versions obsolètes.")
+
+    def show_obsolete_version_alert(self, version):
+        alert = ObsoleteVersionAlert(version)
+        alert.exec_()
 
 class MessageWindow(QDialog):
     def __init__(self, title, message):
@@ -310,7 +310,7 @@ class SettingsWindow(QDialog):
         self.sections_layout.setAlignment(Qt.AlignTop)
         main_layout.addLayout(self.sections_layout)
 
-        self.add_section_button(" Options du logiciel ", self.show_options_section)  
+        self.add_section_button(" Epreuves ", self.show_options_section)  
         self.add_section_button(" Mises à jour ", self.show_updates_section)
         self.add_section_button(" À propos ", self.show_about_section)  
         # Ajoutez d'autres sections ici si nécessaire
@@ -376,7 +376,7 @@ class SettingsWindow(QDialog):
 
     def show_options_section(self):  # Fonction pour afficher la section "Options du logiciel"
         self.stacked_layout.setCurrentIndex(2)
-        self.highlight_selected_section(" Options du logiciel ")
+        self.highlight_selected_section(" Epreuves ")
 
     def highlight_selected_section(self, section_name):
         for i in range(self.sections_layout.count()):
@@ -401,13 +401,13 @@ class SettingsWindow(QDialog):
 
         # Bouton de recherche manuelle des mises à jour
         manual_update_button = QPushButton(" Rechercher manuellement les mises à jour ")
-        manual_update_button.setStyleSheet("font-size: 14px; background-color: #f0f0f0; color: #2b2b2b; border: 1px solid #0672BC; border-radius: 5px;")
+        manual_update_button.setStyleSheet("font-size: 14px; background-color: #f0f0f0; color: #2b2b2b; border: 2px solid #f0f0f0; border-radius: 5px;")
         manual_update_button.clicked.connect(self.manual_update)
         layout.addWidget(manual_update_button)
 
         # Bouton de recherche manuelle des patchs
         manual_patch_button = QPushButton(" Rechercher manuellement les patchs ")
-        manual_patch_button.setStyleSheet("font-size: 14px; background-color: #f0f0f0; color: #2b2b2b; border: 1px solid #0672BC; border-radius: 5px;")
+        manual_patch_button.setStyleSheet("font-size: 14px; background-color: #f0f0f0; color: #2b2b2b; border: 2px solid #f0f0f0; border-radius: 5px;")
         manual_patch_button.clicked.connect(self.manual_patch)
         layout.addWidget(manual_patch_button)
 
@@ -423,7 +423,7 @@ class SettingsWindow(QDialog):
 
         # Numéro de version
         version_layout = QHBoxLayout()
-        version_label = QLabel("Wedone Operate | Version : Stable 4.0")
+        version_label = QLabel("Wedone Operate | Version : Stable 4.1")
         version_label.setStyleSheet("font-size: 14px; color: black;")
         version_layout.addWidget(version_label)
         layout.addLayout(version_layout)
@@ -442,7 +442,7 @@ class SettingsWindow(QDialog):
 
         self.setLayout(layout)
 
-    def create_options_section(self):  # Fonction pour créer la section "Options du logiciel"
+    def create_options_section(self):  # Fonction pour créer la section "Epreuves"
         layout = QVBoxLayout(self.options_section)
 
         version_layout = QHBoxLayout()
@@ -595,32 +595,75 @@ class ConfirmationDialog(QDialog):
 def check_for_updates(auto_update):
     if auto_update:
         version_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/version-wedone-operate.txt"
+        obsolete_versions_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/versions-obsoletes-wedone-operate-stable.txt"
 
         try:
             response = requests.get(version_url)
-            if response.status_code == 200:
+            obsolete_response = requests.get(obsolete_versions_url)
+            
+            if response.status_code == 200 and obsolete_response.status_code == 200:
                 latest_version = response.text.strip()
-                if float(latest_version) > 4.0:  # Comparaison en tant que nombre flottant
+                obsolete_versions = obsolete_response.text.strip().split('\n')
+                current_version = "4.1"  # Remplacez par la version actuelle de votre logiciel
+                
+                if current_version in obsolete_versions:
+                    # Ne rien faire si la version est obsolète
+                    return
+                
+                if float(latest_version) > float(current_version):
                     update_window = UpdateWindow(latest_version)
                     update_window.exec_()
         except requests.exceptions.RequestException:
-            print("Impossible de récupérer la version la plus récente.")
+            print("Impossible de récupérer la version la plus récente ou la liste des versions obsolètes.")
+
+class ObsoleteVersionAlert(QDialog):
+    def __init__(self, version):
+        super().__init__()
+        self.setWindowTitle("Version obsolète")
+        self.setWindowIcon(QIcon("icon.png"))
+        self.setStyleSheet("background-color: white; color: #2b2b2b;")
+
+        layout = QVBoxLayout(self)
+
+        label = QLabel(f"Attention : La version actuelle ({version}) de Wedone Operate est obsolète et ne reçoit plus de support.\n\nCela peut entraîner des problèmes de sécurité et de fonctionnalité. Nous vous recommandons fortement de mettre à jour l'application vers la dernière version disponible.")
+        label.setStyleSheet("font-size: 14px; color: red; font-weight: bold;")
+        label.setWordWrap(True)
+        layout.addWidget(label)
+
+        download_button = QPushButton("Télécharger la dernière version")
+        download_button.clicked.connect(self.download_update)
+        download_button.setStyleSheet("font-size: 14px; background-color: #0672BC; color: white; font-weight: bold; border: 1px solid #0672BC; border-radius: 5px;")
+        layout.addWidget(download_button)
+
+        self.setLayout(layout)
+
+    def download_update(self):
+        webbrowser.open("https://github.com/WedoneOfficiel/Wedone-Operate/releases")
+
 
 def check_for_security_patches(auto_patch):
     if auto_patch:
         patch_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/Patchs/Stable_4-0.txt"
+        obsolete_versions_url = "https://wedoneofficiel.github.io/Gestion-Mises-A-Jour/Wedone-Operate/versions-obsoletes-wedone-operate-stable.txt"
 
         try:
             response = requests.get(patch_url)
-            if response.status_code == 200:
-                patch_version = response.text.strip()
-                if patch_version == "":
-                    patch_version = "4.0"
-                if patch_version != "4.0":
-                    security_patch_window = SecurityPatchWindow(patch_version)
-                    security_patch_window.exec_()
+            obsolete_response = requests.get(obsolete_versions_url)
+            
+            if response.status_code == 200 and obsolete_response.status_code == 200:
+                latest_version = response.text.strip()
+                obsolete_versions = obsolete_response.text.strip().split('\n')
+                current_version = "4.1"  # Remplacez par la version actuelle de votre logiciel
+                
+                if current_version in obsolete_versions:
+                    # Ne rien faire si la version est obsolète
+                    return
+                
+                if float(latest_version) > float(current_version):
+                    update_window = UpdateWindow(latest_version)
+                    update_window.exec_()
         except requests.exceptions.RequestException:
-            print("Impossible de récupérer la version du patch de sécurité.")
+            print("Impossible de récupérer la version la plus récente ou la liste des versions obsolètes.")
 
 class SecurityPatchWindow(QDialog):
     def __init__(self, latest_patch):
@@ -641,12 +684,12 @@ class SecurityPatchWindow(QDialog):
         # Ajout d'un espace blanc entre les boutons Télécharger et Ignorer
         buttons_layout.addStretch()
 
-        ignore_button = QPushButton(" Annuler ")
+        ignore_button = QPushButton(" Ignorer ")
         ignore_button.clicked.connect(self.close)
-        ignore_button.setStyleSheet("font-size: 14px; background-color: #E7E3E3; color: #2b2b2b; font-weight: bold; border: 1px solid #E7E3E3; border-radius: 5px;")
+        ignore_button.setStyleSheet("font-size: 14px; background-color: #E7E3E3; color: #2b2b2b; border: 1px solid #E7E3E3; border-radius: 5px;")
         buttons_layout.addWidget(ignore_button)
 
-        download_button = QPushButton(" Ignorer ")
+        download_button = QPushButton(" Télécharger ")
         download_button.clicked.connect(self.download_patch)
         download_button.setStyleSheet("font-size: 14px; background-color: #0672BC; color: white; font-weight: bold; border: 1px solid #0672BC; border-radius: 5px;")
         buttons_layout.addWidget(download_button)
@@ -671,12 +714,13 @@ if __name__ == '__main__':
     except FileNotFoundError:
         pass
 
+    window = WedoneOperateApp()
+    window.show()
+
     if auto_update:
         check_for_updates(True)
 
     if auto_patch:
         check_for_security_patches(True)
 
-    window = WedoneOperateApp()
-    window.show()
     sys.exit(app.exec_())
