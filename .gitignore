@@ -1,0 +1,41 @@
+# Données locales (générées à l'exécution)
+users.json
+groups.json
+classes.json
+scores.json
+templates.json
+settings.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environnements virtuels
+venv/
+.venv/
+env/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# PyInstaller / packaging
+*.spec
+*.exe
+*.flatpak
