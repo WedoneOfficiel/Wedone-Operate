@@ -4,7 +4,7 @@
   <p><em>Logiciel de calcul mental pour l'école — du CP au Lycée</em></p>
 
   <p>
-    <img src="https://img.shields.io/badge/version-2026.03.17-0672BC?style=flat-square" alt="version"/>
+    <img src="https://img.shields.io/badge/version-Stable%202026.03.17-0672BC?style=flat-square" alt="version"/>
     <img src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="python"/>
     <img src="https://img.shields.io/badge/PyQt6-6.4%2B-41CD52?style=flat-square" alt="pyqt6"/>
     <img src="https://img.shields.io/badge/licence-Apache%202.0-lightgrey?style=flat-square" alt="licence"/>
@@ -51,9 +51,9 @@ Les exécutables `.exe` (Windows) et `.flatpak` (Linux, install locale sans Flat
 
 ## Première connexion
 
-| Rôle | Identifiant | Mot de passe par défaut |
-|------|-------------|------------------------|
-| Administrateur | *(onglet Admin)* | `admin1234` |
+| Rôle | Mot de passe par défaut |
+|------|------------------------|
+| Administrateur | `admin1234` |
 
 > ⚠️ **Modifiez ce mot de passe dès la première connexion** via Paramètres → Mot de passe.
 
@@ -123,8 +123,8 @@ Un professeur peut créer une configuration de session (niveau, opérations, nom
 
 ## Versionnage
 
-Ce projet utilise le format **`année.mois.jour`** (ex. `2026.03.17`).  
-Chaque nouvelle version rend la précédente obsolète. Les mises à jour sont vérifiées au démarrage via l'**API GitHub Releases**.
+Ce projet utilise le format **`Stable année.mois.jour`** (ex. `Stable 2026.03.17`).  
+Chaque nouvelle version rend automatiquement la précédente obsolète. Seule la version la plus récente est supportée. Les mises à jour sont vérifiées au démarrage via l'**API GitHub Releases**.
 
 ---
 
@@ -139,7 +139,7 @@ Pour toute demande d'assistance :
 
 ## Historique des versions
 
-### 2026.03.17 — Refonte majeure
+### Stable 2026.03.17 — Refonte majeure
 
 - **Migration PyQt5 → PyQt6**
 - Nouveau système de rôles : Admin, Professeur, Élève
@@ -152,7 +152,7 @@ Pour toute demande d'assistance :
 - Jauge circulaire animée sur l'écran de résultats
 - Export CSV des stats de groupe
 - Mises à jour via API GitHub Releases (remplace les fichiers .txt)
-- Nouveau format de versionnage `année.mois.jour`
+- Nouveau format de versionnage `Stable année.mois.jour`
 
 ### Stable 4.1 — 20/07/2024
 
@@ -279,46 +279,42 @@ Pour toute demande d'assistance :
 
 ---
 
-## Support
+## Versions obsolètes
 
-Chaque version est supportée pour des correctifs de bugs et de sécurité pendant **1 an** à compter de sa date de sortie.
+| Version | Date de sortie |
+|---------|---------------|
+| Stable 4.1 | 20/07/2024 |
+| Stable 4.0 | 09/05/2024 |
+| Stable 3.5 | 18/04/2024 |
+| Stable 3.4 | 07/04/2024 |
+| Stable 3.3 | 27/03/2024 |
+| Stable 3.2 | 11/02/2024 |
+| Stable 3.1 | 12/01/2024 |
+| Stable 3.0 | 08/11/2023 |
+| Stable 2.3 | 27/08/2023 |
+| Stable 2.2 | 23/07/2023 |
+| Stable 2.1 | 27/06/2023 |
+| Stable 2.0 | 11/04/2023 |
+| Stable 1.7 | 05/04/2023 |
+| Stable 1.6 | 22/11/2022 |
+| Stable 1.5 | 11/11/2022 |
+| Stable 1.4 | 08/10/2022 |
+| Stable 1.3 | 17/09/2022 |
+| Stable 1.2 | 16/09/2022 |
+| Stable 1.1 | 24/08/2022 |
+| Stable 1.0 | 19/08/2022 |
+| Bêta 1.1 | 09/08/2022 |
+| Bêta 1.0 | 05/08/2022 |
 
-| Version | Date de sortie | Fin de support |
-|---------|---------------|----------------|
-| **2026.03.17** | 17/03/2026 | 17/03/2027 |
-| Stable 4.1 | 20/07/2024 | 27/04/2025 *(obsolète)* |
-| Stable 4.0 | 09/05/2024 | 27/04/2025 *(obsolète)* |
-| Stable 3.5 | 18/04/2024 | 18/04/2025 *(obsolète)* |
-| Stable 3.4 | 07/04/2024 | 07/04/2025 *(obsolète)* |
-| Stable 3.3 | 27/03/2024 | 27/03/2025 *(obsolète)* |
-| Stable 3.2 | 11/02/2024 | 11/02/2025 *(obsolète)* |
-| Stable 3.1 | 12/01/2024 | 12/01/2025 *(obsolète)* |
-| Stable 3.0 | 08/11/2023 | 08/11/2024 *(obsolète)* |
-| Stable 2.3 | 27/08/2023 | 27/08/2024 *(obsolète)* |
-| Stable 2.2 | 23/07/2023 | 23/07/2024 *(obsolète)* |
-| Stable 2.1 | 27/06/2023 | 27/06/2024 *(obsolète)* |
-| Stable 2.0 | 11/04/2023 | 11/04/2024 *(obsolète)* |
-| Stable 1.7 | 05/04/2023 | 05/04/2024 *(obsolète)* |
-| Stable 1.6 | 22/11/2022 | 22/11/2023 *(obsolète)* |
-| Stable 1.5 | 11/11/2022 | 11/11/2023 *(obsolète)* |
-| Stable 1.4 | 08/10/2022 | 08/10/2023 *(obsolète)* |
-| Stable 1.3 | 17/09/2022 | 17/09/2023 *(obsolète)* |
-| Stable 1.2 | 16/09/2022 | 16/09/2023 *(obsolète)* |
-| Stable 1.1 | 24/08/2022 | 24/08/2023 *(obsolète)* |
-| Stable 1.0 | 19/08/2022 | 19/08/2023 *(obsolète)* |
-| Bêta 1.1 | 09/08/2022 | — *(canal abandonné)* |
-| Bêta 1.0 | 05/08/2022 | — *(canal abandonné)* |
-
-> Les versions bêtas ne bénéficient d'aucun support. Le canal bêta est définitivement abandonné.  
-> Des exceptions peuvent s'appliquer pour des bugs critiques sur des versions obsolètes, sur demande via Mastodon.
+> Toutes ces versions sont obsolètes et ne reçoivent plus aucun support. Seule la version la plus récente est maintenue. Le canal bêta est définitivement abandonné.
 
 ---
 
 ## Blog
 
-### Passage à la version 2026.03.17 — refonte complète
+### Passage à la Stable 2026.03.17 — refonte complète
 
-La version 2026.03.17 marque une rupture majeure dans l'histoire du logiciel. Wedone Operate passe de PyQt5 à **PyQt6** et s'enrichit d'un vrai système multi-utilisateurs avec trois rôles (Admin, Professeur, Élève), une hiérarchie de classes et de groupes, des niveaux scolaires du CP au Lycée, un tableau de bord enseignant avec alertes automatiques, et des modèles de session personnalisables. Le format de versionnage change également : finis les numéros 4.x, le projet adopte désormais le format `année.mois.jour`.
+La Stable 2026.03.17 marque une rupture majeure dans l'histoire du logiciel. Wedone Operate passe de PyQt5 à **PyQt6** et s'enrichit d'un vrai système multi-utilisateurs avec trois rôles (Admin, Professeur, Élève), une hiérarchie de classes et de groupes, des niveaux scolaires du CP au Lycée, un tableau de bord enseignant avec alertes automatiques, et des modèles de session personnalisables. Le format de versionnage change également : finis les numéros 4.x, le projet adopte désormais le format `Stable année.mois.jour`.
 
 *WedoneOfficiel — 17/03/2026*
 
