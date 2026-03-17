@@ -1,12 +1,14 @@
 <div align="center">
+  <img src="https://raw.githubusercontent.com/WedoneOfficiel/Wedone-Operate/main/icon.png" width="96"/>
   <h1>Wedone Operate</h1>
-  <p><strong>Logiciel de calcul mental pour l'école</strong></p>
+  <p><em>Logiciel de calcul mental pour l'école — du CP au Lycée</em></p>
+
   <p>
-    <img src="https://img.shields.io/badge/version-2026.03.17-blue" alt="version"/>
-    <img src="https://img.shields.io/badge/python-3.10%2B-green" alt="python"/>
-    <img src="https://img.shields.io/badge/PyQt6-6.4%2B-orange" alt="pyqt6"/>
-    <img src="https://img.shields.io/badge/licence-Apache%202.0-lightgrey" alt="licence"/>
-    <img src="https://img.shields.io/badge/plateforme-Windows%20%7C%20Linux-informational" alt="plateforme"/>
+    <img src="https://img.shields.io/badge/version-2026.03.17-0672BC?style=flat-square" alt="version"/>
+    <img src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="python"/>
+    <img src="https://img.shields.io/badge/PyQt6-6.4%2B-41CD52?style=flat-square" alt="pyqt6"/>
+    <img src="https://img.shields.io/badge/licence-Apache%202.0-lightgrey?style=flat-square" alt="licence"/>
+    <img src="https://img.shields.io/badge/plateforme-Windows%20%7C%20Linux-informational?style=flat-square" alt="plateforme"/>
   </p>
 </div>
 
@@ -14,30 +16,17 @@
 
 ## Présentation
 
-Wedone Operate est un logiciel de calcul mental destiné aux élèves du **CP au Lycée**. Il permet aux enseignants de créer des classes, des groupes de niveaux et des modèles de session personnalisés, tout en offrant un suivi détaillé des progrès de chaque élève.
+Wedone Operate est un logiciel de calcul mental destiné aux élèves du **CP au Lycée**. Il repose sur un principe simple : afficher une opération à l'écran et demander à l'élève d'en trouver le résultat — addition, soustraction, multiplication ou division.
 
-### Fonctionnalités principales
+Le logiciel est pensé pour un usage en établissement scolaire avec une gestion complète des classes, des groupes et des profils élèves, et un suivi des progrès par les enseignants.
 
-- **Trois rôles** : Administrateur (établissement), Professeur, Élève
-- **Hiérarchie** : Classes → Groupes (avec niveau scolaire CP→Lycée) → Élèves
-- **Niveaux scolaires** : plages de calcul adaptées à chaque classe, du CP au Lycée
-- **Modèles de session** : le prof définit une configuration par défaut pour son groupe (l'élève peut la modifier)
-- **Recommandations automatiques** : analyse des résultats pour adapter le niveau proposé
-- **Tableau de bord** admin/prof : stats rapides + alertes élèves en difficulté
-- **Statistiques détaillées** : historique, progression, export CSV par groupe
-- **Thème clair/sombre** : automatique selon le système (Windows/GNOME) ou manuel
-- **Mises à jour automatiques** via l'API GitHub Releases
+**Compatibilité :** Windows 10/11 et Linux (Fedora, Ubuntu, et toute distribution supportant Flatpak).
 
 ---
 
 ## Installation
 
-### Prérequis
-
-- Python 3.10 ou supérieur
-- pip
-
-### Étapes
+### Depuis les sources (Windows & Linux)
 
 ```bash
 # 1. Cloner le dépôt
@@ -46,151 +35,373 @@ cd Wedone-Operate
 
 # 2. Installer les dépendances
 pip install -r requirements.txt
+# Sur Linux : pip install -r requirements.txt --break-system-packages
 
-# 3. Lancer l'application
+# 3. Lancer
 python main.py
 ```
 
-> **Linux (Fedora/Ubuntu)** : si pip échoue, utiliser `pip install -r requirements.txt --break-system-packages`
+### Depuis un binaire (releases)
+
+Les exécutables `.exe` (Windows) et `.flatpak` (Linux, install locale sans Flathub) sont disponibles sur la page [**Releases**](https://github.com/WedoneOfficiel/Wedone-Operate/releases).
+
+> Le logiciel ne requiert aucun droit administrateur pour être installé.
 
 ---
 
-## Première utilisation
+## Première connexion
 
-### Connexion administrateur
+| Rôle | Identifiant | Mot de passe par défaut |
+|------|-------------|------------------------|
+| Administrateur | *(onglet Admin)* | `admin1234` |
 
-Au premier lancement, connectez-vous avec le compte administrateur :
-
-| Champ | Valeur |
-|-------|--------|
-| Mot de passe | `admin1234` |
-
-> ⚠️ **Changez ce mot de passe dès la première connexion** via Paramètres → Mot de passe.
+> ⚠️ **Modifiez ce mot de passe dès la première connexion** via Paramètres → Mot de passe.
 
 ### Mise en place recommandée
 
-1. **Admin** : créer les comptes professeurs (Gestion → Professeurs)
-2. **Prof** : créer les classes (Gestion → Classes)
-3. **Prof** : créer les groupes avec leur niveau scolaire (Gestion → Groupes)
-4. **Prof** : ajouter les élèves et les assigner aux groupes (Gestion → Élèves)
-5. **Prof** *(optionnel)* : créer un modèle de session pour chaque groupe (Gestion → Modèles)
-6. **Élève** : se connecter en sélectionnant Classe → Groupe → Profil
+1. **Admin** → créer les comptes professeurs *(Gestion → Professeurs)*
+2. **Prof** → créer les classes et les groupes avec leur niveau scolaire *(Gestion → Classes / Groupes)*
+3. **Prof** → ajouter les élèves et les assigner aux groupes *(Gestion → Élèves)*
+4. **Prof** *(optionnel)* → créer un modèle de session pour chaque groupe *(Gestion → Modèles)*
+5. **Élève** → se connecter en sélectionnant Classe → Groupe → Profil
 
 ---
 
-## Structure du projet
+## Fonctionnalités
 
-```
-wedone-operate/
-├── main.py              # Point d'entrée
-├── constants.py         # Niveaux scolaires, plages de calcul, palettes
-├── database.py          # Couche de données JSON (users, classes, groupes, scores)
-├── session.py           # Session utilisateur courante (rôle, permissions)
-├── settings.py          # Paramètres applicatifs (settings.json)
-├── updater.py           # Vérification des mises à jour via GitHub API
-├── requirements.txt
-├── icon.png             # Icône de l'application (à fournir)
-└── ui/
-    ├── theme.py             # Feuilles de style Qt (thème clair/sombre)
-    ├── screen_login.py      # Connexion : Admin/Prof (mdp) + Élève (3 étapes)
-    ├── screen_dashboard.py  # Tableau de bord admin/prof
-    ├── screen_main.py       # Écran de jeu élève
-    ├── screen_game.py       # Déroulé des épreuves + chronomètre
-    ├── screen_results.py    # Résultats avec jauge circulaire animée
-    ├── screen_stats.py      # Statistiques personnelles + groupe + export CSV
-    ├── screen_admin.py      # Gestion classes/groupes/élèves/profs/modèles
-    ├── screen_settings.py   # Paramètres (filtrés selon le rôle)
-    └── dialog_update.py     # Dialogue de mise à jour disponible
-```
+### Rôles et permissions
 
-### Fichiers de données (générés automatiquement)
+Trois types de comptes avec des accès distincts :
 
-| Fichier | Contenu |
-|---------|---------|
-| `users.json` | Comptes admin, profs et élèves |
-| `classes.json` | Classes de l'établissement |
-| `groups.json` | Groupes avec niveau scolaire |
-| `scores.json` | Historique des sessions par élève |
-| `templates.json` | Modèles de session créés par les profs |
-| `settings.json` | Préférences (thème, mise à jour…) |
+| Action | Admin | Prof | Élève |
+|--------|:-----:|:----:|:-----:|
+| Créer / supprimer des profs | ✅ | — | — |
+| Créer des classes et groupes | ✅ | ✅ | — |
+| Créer / supprimer des élèves | ✅ | ✅ | — |
+| Créer des modèles de session | ✅ | ✅ | — |
+| Voir les stats de ses groupes | ✅ | ✅ | — |
+| Jouer | — | — | ✅ |
+| Voir ses propres stats | — | — | ✅ |
+| Mises à jour | ✅ | ✅ | — |
+| Changer son mot de passe | ✅ | ✅ | — |
 
-> Ces fichiers sont exclus du dépôt Git (`.gitignore`). Ils sont créés au premier lancement.
+### Niveaux scolaires
 
----
+Plages de calcul adaptées aux programmes officiels, du CP au Lycée :
 
-## Niveaux scolaires et plages de calcul
+| Niveau | Addition | Multiplication | Chrono |
+|--------|----------|----------------|--------|
+| CP | 1 – 9 | tables ×2 | 45 s |
+| CE1 | 1 – 20 | tables ×5 | 40 s |
+| CE2 | 1 – 50 | tables ×5 | 35 s |
+| CM1 | 1 – 100 | tables ×9 | 30 s |
+| CM2 | 1 – 500 | tables ×10 | 25 s |
+| 6e | 1 – 999 | tables ×12 | 20 s |
+| 5e | 1 – 9 999 | ×2–15 | 18 s |
+| 4e | 1 – 9 999 | ×2–20 | 15 s |
+| 3e | 1 – 99 999 | ×2–25 | 12 s |
+| Lycée | 1 – 99 999 | ×2–50 | 10 s |
 
-| Niveau | Addition | Soustraction | Multiplication | Division | Chrono |
-|--------|----------|--------------|----------------|----------|--------|
-| CP | 1–9 | 1–10 | tables ×2 | ÷1–2 | 45 s |
-| CE1 | 1–20 | 1–20 | tables ×5 | ÷1–5 | 40 s |
-| CE2 | 1–50 | 1–50 | tables ×5 | ÷1–5 | 35 s |
-| CM1 | 1–100 | 1–100 | tables ×9 | ÷1–9 | 30 s |
-| CM2 | 1–500 | 1–500 | tables ×10 | ÷1–10 | 25 s |
-| 6e | 1–999 | 1–999 | tables ×12 | ÷1–12 | 20 s |
-| 5e | 1–9 999 | 1–9 999 | ×2–15 | ÷2–15 | 18 s |
-| 4e | 1–9 999 | 1–9 999 | ×2–20 | ÷2–20 | 15 s |
-| 3e | 1–99 999 | 1–99 999 | ×2–25 | ÷2–25 | 12 s |
-| Lycée | 1–99 999 | 1–99 999 | ×2–50 | ÷2–50 | 10 s |
+### Tableau de bord (admin / prof)
+
+- Résumé rapide : nombre de groupes, d'élèves, de sessions, moyenne globale
+- **Alertes automatiques** : élèves dont la moyenne est inférieure à 50 % sur les 3 dernières sessions
+- **Recommandations de niveau** générées automatiquement selon les résultats
+- Aperçu par groupe avec code couleur (vert / orange / rouge)
+
+### Modèles de session
+
+Un professeur peut créer une configuration de session (niveau, opérations, nombre d'épreuves, chronomètre) et l'assigner à un groupe. L'élève la retrouve pré-remplie à la connexion et peut la modifier librement avant de lancer.
+
+### Statistiques
+
+- Historique complet des sessions par élève
+- Stats de groupe : moyenne, meilleur score, progression
+- **Export CSV** des résultats d'un groupe
 
 ---
 
 ## Versionnage
 
 Ce projet utilise le format **`année.mois.jour`** (ex. `2026.03.17`).  
-Chaque nouvelle version rend la précédente obsolète. Il n'y a pas de système de patch séparé.
-
-Les mises à jour sont vérifiées au démarrage via l'**API GitHub Releases** et peuvent être désactivées dans les paramètres.
+Chaque nouvelle version rend la précédente obsolète. Les mises à jour sont vérifiées au démarrage via l'**API GitHub Releases**.
 
 ---
 
-## Distribution
+## Contact
 
-| Plateforme | Format | Outil |
-|------------|--------|-------|
-| Windows | `.exe` | PyInstaller |
-| Linux (universel) | `.flatpak` | Flatpak (install local sans Flathub) |
+Pour toute demande d'assistance :
 
-Les binaires sont disponibles dans les [Releases GitHub](https://github.com/WedoneOfficiel/Wedone-Operate/releases).
+- **Mastodon** *(à privilégier)* : [@wedoneofficiel@mastodon.social](https://mastodon.social/@wedoneofficiel)
+- **Mail** : wedoneofficiel@outlook.fr
 
 ---
 
-## Développement
+## Historique des versions
 
-```bash
-# Lancer en mode développement
-python main.py
+### 2026.03.17 — Refonte majeure
 
-# Vérifier la syntaxe de tous les fichiers
-python -c "
-import ast, os
-for r, d, files in os.walk('.'):
-    for f in files:
-        if f.endswith('.py'):
-            p = os.path.join(r, f)
-            try: ast.parse(open(p).read()); print(f'✔ {p}')
-            except SyntaxError as e: print(f'✘ {p}: {e}')
-"
-```
+- **Migration PyQt5 → PyQt6**
+- Nouveau système de rôles : Admin, Professeur, Élève
+- Hiérarchie Classe → Groupe (avec niveau scolaire) → Élève
+- Connexion élève en 3 étapes : Classe → Groupe → Profil (cartes visuelles)
+- Tableau de bord admin/prof avec alertes et recommandations automatiques
+- Modèles de session assignables par groupe
+- Niveaux scolaires CP → Lycée (remplace Facile/Moyen/Difficile)
+- Thème sombre automatique (Windows/GNOME) ou manuel
+- Jauge circulaire animée sur l'écran de résultats
+- Export CSV des stats de groupe
+- Mises à jour via API GitHub Releases (remplace les fichiers .txt)
+- Nouveau format de versionnage `année.mois.jour`
 
-### Contribuer
+### Stable 4.1 — 20/07/2024
 
-1. Fork le dépôt
-2. Créer une branche (`git checkout -b feature/ma-feature`)
-3. Commiter (`git commit -m 'Ajout de ma feature'`)
-4. Pusher (`git push origin feature/ma-feature`)
-5. Ouvrir une Pull Request
+- Optimisation du code et des performances
+- Ajout d'un système de détection automatique des versions obsolètes
+- Modifications mineures de l'interface
+
+### Stable 4.0 — 09/05/2024
+
+- Suppression automatique des fichiers installés par les versions précédentes
+- Installation forcée en mode non-administrateur (compatibilité Windows)
+- Changement de répertoire GitHub pour la gestion des mises à jour
+- Ajout d'une fenêtre de paramètres complète :
+  - **Options du logiciel** : activation/désactivation des types d'opérations
+  - **Mises à jour** : recherche automatique et manuelle (mises à jour + patchs)
+  - **À propos** : numéro de version, licence, informations du logiciel
+
+### Stable 3.5 — 18/04/2024
+
+- Correction de bugs de l'interface graphique
+- Mise en place de la recherche automatique des patchs de sécurité
+
+### Stable 3.4 — 07/04/2024
+
+- Utilisation de la touche Entrée dans les zones de texte
+- Refonte de la fenêtre des mises à jour
+- Uniformisation du design (toutes les boîtes de dialogue deviennent des fenêtres)
+- Optimisation du code
+
+### Stable 3.3 — 27/03/2024
+
+- Amélioration de l'accessibilité (choix des couleurs de l'interface)
+
+### Stable 3.2 — 11/02/2024
+
+- Correctif de bugs
+
+### Stable 3.1 — 12/01/2024
+
+- Refonte de l'interface graphique, design plus épuré
+- Correctif de bugs
+
+### Stable 3.0 — 08/11/2023
+
+- **Interface graphique** (première version avec GUI)
+- **Passage du C au Python** — toutes les fonctionnalités portées
+
+### Stable 2.3 — 27/08/2023
+
+- Correction du problème de compatibilité avec Windows 11
+- Amélioration de la gestion de la RAM
+- Correction de bugs
+
+### Stable 2.2 — 23/07/2023
+
+- **Recherche automatique des mises à jour** (première implémentation)
+- Amélioration de la gestion de la RAM
+- Amélioration des propositions de calculs
+
+### Stable 2.1 — 27/06/2023
+
+- Correction de bugs
+- Le logo de l'installateur correspond désormais à celui du logiciel
+- Amélioration des propositions de calculs : somme ≤ 150, résultats positifs garantis, multiplications et divisions jusqu'à la table de 10
+
+### Stable 2.0 — 11/04/2023
+
+- Nouveau logo
+- Encodage UTF-8 (caractères spéciaux français)
+- Refonte complète du code de base
+- L'utilisateur choisit le nombre d'épreuves
+- Opérations et valeurs aléatoires
+- Score affiché en fin de session (plus après chaque épreuve)
+
+### Stable 1.7 — 05/04/2023
+
+- Ajout de 2 épreuves
+- Ajout de la commande de sortie (saisir 999)
+
+### Stable 1.6 — 22/11/2022
+
+- Ajout d'une épreuve
+- Correction de bugs, amélioration de la gestion RAM
+
+### Stable 1.5 — 11/11/2022
+
+- Ajout de 6 épreuves
+
+### Stable 1.4 — 08/10/2022
+
+- Ajout de 5 épreuves
+- Ajout du pourcentage de réussite
+
+### Stable 1.3 — 17/09/2022
+
+- Ajout d'une icône au logiciel
+- Ajout du score
+- Ajout de 2 épreuves
+- Les mises à jour remplacent désormais l'exécutable automatiquement
+
+### Stable 1.2 — 16/09/2022
+
+- Ajout du retour bonne/mauvaise réponse
+
+### Stable 1.1 — 24/08/2022
+
+- Ajout d'un exercice
+- Amélioration de la gestion RAM
+
+### Stable 1.0 — 19/08/2022
+
+- Ajout d'exercices
+- Correctifs de bugs
+
+### Bêta 1.1 — 09/08/2022
+
+- Exercice supplémentaire
+- Ajout d'un installateur `.exe`
+- Amélioration de la compatibilité
+
+### Bêta 1.0 — 05/08/2022
+
+- Premier exercice
+
+---
+
+## Support
+
+Chaque version est supportée pour des correctifs de bugs et de sécurité pendant **1 an** à compter de sa date de sortie.
+
+| Version | Date de sortie | Fin de support |
+|---------|---------------|----------------|
+| **2026.03.17** | 17/03/2026 | 17/03/2027 |
+| Stable 4.1 | 20/07/2024 | 27/04/2025 *(obsolète)* |
+| Stable 4.0 | 09/05/2024 | 27/04/2025 *(obsolète)* |
+| Stable 3.5 | 18/04/2024 | 18/04/2025 *(obsolète)* |
+| Stable 3.4 | 07/04/2024 | 07/04/2025 *(obsolète)* |
+| Stable 3.3 | 27/03/2024 | 27/03/2025 *(obsolète)* |
+| Stable 3.2 | 11/02/2024 | 11/02/2025 *(obsolète)* |
+| Stable 3.1 | 12/01/2024 | 12/01/2025 *(obsolète)* |
+| Stable 3.0 | 08/11/2023 | 08/11/2024 *(obsolète)* |
+| Stable 2.3 | 27/08/2023 | 27/08/2024 *(obsolète)* |
+| Stable 2.2 | 23/07/2023 | 23/07/2024 *(obsolète)* |
+| Stable 2.1 | 27/06/2023 | 27/06/2024 *(obsolète)* |
+| Stable 2.0 | 11/04/2023 | 11/04/2024 *(obsolète)* |
+| Stable 1.7 | 05/04/2023 | 05/04/2024 *(obsolète)* |
+| Stable 1.6 | 22/11/2022 | 22/11/2023 *(obsolète)* |
+| Stable 1.5 | 11/11/2022 | 11/11/2023 *(obsolète)* |
+| Stable 1.4 | 08/10/2022 | 08/10/2023 *(obsolète)* |
+| Stable 1.3 | 17/09/2022 | 17/09/2023 *(obsolète)* |
+| Stable 1.2 | 16/09/2022 | 16/09/2023 *(obsolète)* |
+| Stable 1.1 | 24/08/2022 | 24/08/2023 *(obsolète)* |
+| Stable 1.0 | 19/08/2022 | 19/08/2023 *(obsolète)* |
+| Bêta 1.1 | 09/08/2022 | — *(canal abandonné)* |
+| Bêta 1.0 | 05/08/2022 | — *(canal abandonné)* |
+
+> Les versions bêtas ne bénéficient d'aucun support. Le canal bêta est définitivement abandonné.  
+> Des exceptions peuvent s'appliquer pour des bugs critiques sur des versions obsolètes, sur demande via Mastodon.
+
+---
+
+## Blog
+
+### Passage à la version 2026.03.17 — refonte complète
+
+La version 2026.03.17 marque une rupture majeure dans l'histoire du logiciel. Wedone Operate passe de PyQt5 à **PyQt6** et s'enrichit d'un vrai système multi-utilisateurs avec trois rôles (Admin, Professeur, Élève), une hiérarchie de classes et de groupes, des niveaux scolaires du CP au Lycée, un tableau de bord enseignant avec alertes automatiques, et des modèles de session personnalisables. Le format de versionnage change également : finis les numéros 4.x, le projet adopte désormais le format `année.mois.jour`.
+
+*WedoneOfficiel — 17/03/2026*
+
+---
+
+### Passage à la version 4.0 — 09/05/2024
+
+Le 9 mai 2024 a été introduite la nouvelle version majeure de Wedone Operate. En dehors des nombreuses améliorations apportées, il faut noter que l'installation pour tous les utilisateurs sous Windows a été bloquée car le système de gestion du logiciel faisait crasher le logiciel. Nous vous recommandons donc de désinstaller votre version actuelle puis de réinstaller la nouvelle version avec le mode "installer seulement pour moi" (sélectionné automatiquement), qui lui ne présente pas de problèmes.
+
+*WedoneOfficiel — 09/05/2024*
+
+---
+
+### Changements concernant le support du logiciel — 09/05/2024
+
+La politique de support stipulait que la dernière version d'une version majeure bénéficiait de 2 ans de support. Il a été décidé d'uniformiser et simplifier la gestion globale : le support est désormais de **1 an pour toutes les versions** (hors bêtas), y compris pour les versions antérieures à la Stable 4.0.
+
+*WedoneOfficiel — 09/05/2024*
+
+---
+
+### Fichiers non supprimés avec la mise à jour 3.1 — 12/01/2024
+
+Avec la version 3.1, un dossier `_internal` contenant de nombreux fichiers est présent dans le répertoire d'installation de Wedone Operate mais ne sert plus. Il faut le retirer manuellement. Si vous avez installé la version administrateur sans changer le répertoire, ce dossier se trouve dans `C:\Program Files (x86)\Wedone Operate`.
+
+*WedoneOfficiel — 12/01/2024*
+
+---
+
+### La version 3.0 est arrivée ! — 08/11/2023
+
+C'est avec plaisir que j'annonce l'arrivée de Wedone Operate 3.0 qui arrive pour la toute première fois avec une interface graphique ! Ce choix n'est pas sans conséquences : pour permettre un développement de qualité et rapide, il a fallu changer de langage de programmation. Le logiciel n'est donc plus développé en C mais en Python. Il sera un peu plus lourd, mais toutes les fonctionnalités de la version 2.3 ont été portées. Pensez à désinstaller l'ancien programme avant d'installer le nouveau.
+
+*WedoneOfficiel — 08/11/2023*
+
+---
+
+### Problème de compatibilité avec Windows 11 réglé ! — 27/08/2023
+
+Le souci que rencontrait Wedone Operate à s'ouvrir sous Windows 11 est maintenant réglé !
+
+*WedoneOfficiel — 27/08/2023*
+
+---
+
+### Recherche des mises à jour automatique ! — 23/07/2023
+
+À compter de la version 2.2, les mises à jour sont recherchées automatiquement par le logiciel afin de vous alerter sur la sortie de nouvelles versions. Ceci ne s'applique pas aux versions antérieures à la version 2.2.
+
+*WedoneOfficiel — 23/07/2023*
+
+---
+
+### Passage à la version 2.0 ! — 13/04/2023
+
+Le 11 avril 2023 marque une rupture dans l'histoire du logiciel. Le code de base a été complètement revu :
+- L'utilisateur choisit lui-même le nombre d'épreuves
+- Le choix des opérations est devenu aléatoire
+- Les valeurs des opérations sont devenues aléatoires (entre 0 et 50 pour chaque terme)
+- Le score s'affiche en fin de session et non plus après chaque épreuve
+- Suppression de la commande d'arrêt par saisie de 999
+
+*WedoneOfficiel — 13/04/2023*
+
+---
+
+### Suppression automatique des anciennes versions lors des mises à jour — 17/09/2022
+
+À compter de la version 1.3, les mises à jour suppriment et remplacent l'exécutable du logiciel, contrairement aux versions antérieures qui s'installaient à côté des autres versions. Ceci ne s'applique pas aux versions antérieures à la Stable 1.3.
+
+*WedoneOfficiel — 17/09/2022*
+
+---
+
+### Abandon du canal Bêta — 14/09/2022
+
+Il n'y aura plus de mises à jour pour le canal Bêta. Référez-vous aux versions stables.
+
+*WedoneOfficiel — 14/09/2022*
 
 ---
 
 ## Licence
 
-Distribué sous licence **Apache 2.0**.  
-Voir [LICENSE](LICENSE) pour plus de détails.
-
----
-
-## Crédits
-
-Développé par [WedoneOfficiel](https://github.com/WedoneOfficiel)  
+Distribué sous licence **Apache 2.0** — voir [LICENSE](LICENSE).  
 © 2022–2026 WedoneOfficiel
