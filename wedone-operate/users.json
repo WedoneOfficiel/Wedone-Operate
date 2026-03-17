@@ -1,0 +1,24 @@
+{
+  "admin": {
+    "password_hash": "ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270",
+    "first_login": false
+  },
+  "teachers": [
+    {
+      "id": "t_00400a30",
+      "prenom": "Marie",
+      "nom": "Curie",
+      "password_hash": "e02ee2653d88a47df30eadbec8837483e30ba18d3b6ef50a6d59f6cf87b11c16",
+      "first_login": true
+    }
+  ],
+  "students": [
+    {
+      "id": "s_78e2fc7e",
+      "prenom": "Lucas",
+      "nom": "Bernard",
+      "group_id": "g_03cdd624",
+      "created_by": "t_00400a30"
+    }
+  ]
+}

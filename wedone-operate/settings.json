@@ -1,0 +1,11 @@
+{
+  "theme": "light",
+  "auto_update": true,
+  "addition_enabled": false,
+  "subtraction_enabled": false,
+  "multiplication_enabled": false,
+  "division_enabled": false,
+  "difficulty": "Facile",
+  "timer_enabled": false,
+  "last_profile": null
+}
