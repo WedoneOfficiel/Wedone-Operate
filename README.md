@@ -141,13 +141,13 @@ Pour toute demande d'assistance :
 
 ### Stable 2026.03.17 — 18/03/2026
 
-- **Migration PyQt5 → PyQt6**
+- Migration PyQt5 → PyQt6
 - Nouveau système de rôles : Admin, Professeur, Élève
 - Hiérarchie Classe → Groupe (avec niveau scolaire) → Élève
 - Connexion élève en 3 étapes : Classe → Groupe → Profil (cartes visuelles)
 - Tableau de bord admin/prof avec alertes et recommandations automatiques
 - Modèles de session assignables par groupe
-- Niveaux scolaires CP → Lycée (remplace Facile/Moyen/Difficile)
+- Niveaux scolaires CP → Lycée
 - Thème sombre automatique (Windows/GNOME) ou manuel
 - Jauge circulaire animée sur l'écran de résultats
 - Export CSV des stats de groupe
