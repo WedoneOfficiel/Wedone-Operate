@@ -139,7 +139,7 @@ Pour toute demande d'assistance :
 
 ## Historique des versions
 
-### Stable 2026.03.17 — Refonte majeure
+### Stable 2026.03.17 — 18/03/2026
 
 - **Migration PyQt5 → PyQt6**
 - Nouveau système de rôles : Admin, Professeur, Élève
@@ -314,7 +314,7 @@ Pour toute demande d'assistance :
 
 ### Passage à la Stable 2026.03.17 — refonte complète
 
-La Stable 2026.03.17 marque une rupture majeure dans l'histoire du logiciel. Wedone Operate passe de PyQt5 à **PyQt6** et s'enrichit d'un vrai système multi-utilisateurs avec trois rôles (Admin, Professeur, Élève), une hiérarchie de classes et de groupes, des niveaux scolaires du CP au Lycée, un tableau de bord enseignant avec alertes automatiques, et des modèles de session personnalisables. Le format de versionnage change également : finis les numéros 4.x, le projet adopte désormais le format `Stable année.mois.jour`.
+La version Stable 2026.03.17 sortira le 18 mars 2026. Wedone Operate passe de PyQt5 à **PyQt6** et s'enrichit d'un vrai système multi-utilisateurs avec trois rôles (Admin, Professeur, Élève), une hiérarchie de classes et de groupes, des niveaux scolaires du CP au Lycée, un tableau de bord enseignant avec alertes automatiques, et des modèles de session personnalisables. Le format de versionnage change également : finis les numéros 4.x, le projet adopte désormais le format `Stable année.mois.jour`.
 
 *WedoneOfficiel — 17/03/2026*
 
