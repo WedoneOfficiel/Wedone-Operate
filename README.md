@@ -20,7 +20,7 @@ Wedone Operate est un logiciel de calcul mental destiné aux élèves du **CP au
 
 Le logiciel est pensé pour un usage en établissement scolaire avec une gestion complète des classes, des groupes et des profils élèves, et un suivi des progrès par les enseignants.
 
-**Compatibilité :** Windows 10/11 et Linux (Fedora, Ubuntu, et toute distribution supportant Flatpak).
+**Compatibilité :** Windows 10/11 et Linux (Fedora, et toute distribution supportant les paquets RPM).
 
 ---
 
@@ -43,7 +43,7 @@ python main.py
 
 ### Depuis un binaire (releases)
 
-Les exécutables `.exe` (Windows) et `.flatpak` (Linux, install locale sans Flathub) sont disponibles sur la page [**Releases**](https://github.com/WedoneOfficiel/Wedone-Operate/releases).
+Les exécutables `.exe` (Windows) et `.rpm` (Linux, paquet RPM) sont disponibles sur la page [**Releases**](https://github.com/WedoneOfficiel/Wedone-Operate/releases).
 
 > Le logiciel ne requiert aucun droit administrateur pour être installé.
 
