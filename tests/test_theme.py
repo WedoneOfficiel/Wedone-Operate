@@ -9,8 +9,8 @@ class ThemeTests(unittest.TestCase):
         self.assertEqual(set(LIGHT), set(DARK))
 
     def test_wedone_blue_is_the_primary_accent(self):
-        self.assertEqual(LIGHT["primary"], "#0672BC")
-        self.assertEqual(DARK["primary"], "#2996D8")
+        self.assertEqual(LIGHT["primary"], "#0879C9")
+        self.assertEqual(DARK["primary"], "#2998E5")
 
     def test_stylesheets_are_generated_for_both_themes(self):
         for theme in ("light", "dark"):
