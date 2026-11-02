@@ -5,6 +5,7 @@ from .paths import get_phoenix_data_dir, get_database_path
 from .practice_repository import PracticeRepository
 from .classroom_repository import ClassroomRepository
 from .data_transfer import export_json, import_json, reset_data
+from .progress_repository import ProgressRepository
 
 __all__ = [
     "Database",
@@ -17,4 +18,5 @@ __all__ = [
     "export_json",
     "import_json",
     "reset_data",
+    "ProgressRepository",
 ]
