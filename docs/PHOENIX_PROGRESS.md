@@ -16,6 +16,7 @@ Dernière mise à jour : 2 novembre 2026
 - Générateurs déterministes pour additions, soustractions, multiplications, divisions exactes et premiers calculs sur les nombres relatifs.
 - Détection des doublons dans une séance, y compris les opérations commutatives.
 - Cycle de séance persisté : démarrage, réponses, validation, résultat final et abandon avec conservation des réponses déjà données.
+- Temps de réponse mesuré et enregistré question par question pour alimenter les statistiques de durée.
 - L'usage individuel arrive directement sur la configuration de séance, sans écran de connexion ni profil fictif.
 - Tableau de bord initial avec nombre de séances, réponses traitées et précision calculée sur les réponses réellement données.
 - Progression individuelle et progression par élève, avec agrégation pondérée par question et ventilation par compétence.
@@ -30,10 +31,9 @@ Dernière mise à jour : 2 novembre 2026
 
 ## À vérifier avant de considérer cette étape comme terminée
 
-- CI confirmée verte sur macOS, Windows et Linux pour le commit `307feeb` : smoke test QML, compilation Python et suite de tests unitaires réussis.
-- Packaging PyInstaller en cours de validation sur Windows, macOS et Linux ; les artefacts ne sont pas considérés comme livrables avant la fin des trois builds.
+- CI confirmée verte sur macOS, Windows et Linux pour le commit `a39ff20` : smoke test QML, compilation Python et suite de tests unitaires réussis.
+- Packaging PyInstaller confirmé réussi sur Windows x64, macOS Apple Silicon et Linux x64 pour le commit `c67e734` ; les trois archives sont disponibles dans les artefacts GitHub Actions.
 - Vérification visuelle manuelle du prototype QML sur les trois systèmes.
-- Exécution confirmée des workflows CI et de packaging : les workflows sont configurés, mais aucun résultat d'exécution n'est encore disponible ici.
 - Compléter l'édition/archivage des classes, groupes et élèves dans l'espace professeur, les écrans de progression et l'édition complète des profils.
 - Vérifier les dialogues natifs de sélection de fichiers et la lisibilité du centre de données aux petites tailles de fenêtre.
 - Enrichir progressivement les compétences collège/lycée après validation pédagogique et tests de correction.
