@@ -44,7 +44,7 @@ class GameScreen(QWidget):
         self._session_bar.setFixedHeight(5)
         self._session_bar.setStyleSheet(
             "QProgressBar{border:none;border-radius:0;background:rgba(128,128,128,0.1);}"
-            "QProgressBar::chunk{background:#0672BC;border-radius:0;}"
+            "QProgressBar::chunk{background:#0879C9;border-radius:0;}"
         )
         root.addWidget(self._session_bar)
 
@@ -230,11 +230,11 @@ class GameScreen(QWidget):
         self._chrono_bar.setValue(int(self._time_left * 10))
 
         if ratio > 0.5:
-            color, cls = "#2EBD6E", "timer-green"
+            color, cls = "#269B70", "timer-green"
         elif ratio > 0.25:
             color, cls = "#F0A030", "timer-orange"
         else:
-            color, cls = "#E05555", "timer-red"
+            color, cls = "#E24B5F", "timer-red"
 
         self._chrono_lbl.setStyleSheet(
             f"font-size:16px;font-weight:500;color:{color};"
@@ -259,7 +259,8 @@ class GameScreen(QWidget):
 
         if timed_out:
             self._set_bg_feedback("error")
-            self._feedback_lbl.setStyleSheet("font-size:16px;font-weight:500;color:#E05555;")
+            self._feedback_lbl.setObjectName("feedback")
+            self._feedback_lbl.setStyleSheet("color:#E24B5F;")
             self._feedback_lbl.setText(f"⏱  Temps écoulé !  La réponse était  {q['result']}")
         else:
             try:
@@ -267,7 +268,8 @@ class GameScreen(QWidget):
                     correct = True
                     self._score += 1
                     self._set_bg_feedback("success")
-                    self._feedback_lbl.setStyleSheet("font-size:16px;font-weight:500;color:#1C8A4E;")
+                    self._feedback_lbl.setObjectName("feedback")
+                    self._feedback_lbl.setStyleSheet("color:#269B70;")
                     self._feedback_lbl.setText("✔  Bonne réponse !")
                 else:
                     self._set_bg_feedback("error")
@@ -275,7 +277,8 @@ class GameScreen(QWidget):
                     self._feedback_lbl.setText(f"✘  Incorrect.  La réponse était  {q['result']}")
             except ValueError:
                 # Saisie invalide : on relance
-                self._feedback_lbl.setStyleSheet("font-size:15px;color:#E07B00;")
+                self._feedback_lbl.setObjectName("feedback")
+                self._feedback_lbl.setStyleSheet("color:#B87516;")
                 self._feedback_lbl.setText("⚠  Entrez un nombre entier.")
                 self._answer_input.setEnabled(True)
                 self._validate_btn.setEnabled(True)
