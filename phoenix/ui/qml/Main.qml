@@ -499,6 +499,15 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                 }
 
+                Label {
+                    visible: appBridge.questionTotal === 0 && appBridge.feedback !== ""
+                    text: appBridge.feedback
+                    color: "#B45309"
+                    font.pixelSize: 14
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+
                 ColumnLayout {
                     visible: appBridge.questionTotal === 0
                     Layout.fillWidth: true
