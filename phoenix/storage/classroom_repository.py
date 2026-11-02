@@ -7,16 +7,18 @@ import sqlite3
 from uuid import uuid4
 
 from .database import Database
+from ..security import hash_password, verify_password
 
 
 class ClassroomRepository:
     def __init__(self, database: Database):
         self.database = database
 
-    def create_teacher(self, display_name: str, credential_hash: str | None = None) -> str:
+    def create_teacher(self, display_name: str, password: str) -> str:
         name = display_name.strip()
         if not name:
             raise ValueError("Le nom du professeur est obligatoire.")
+        credential_hash = hash_password(password)
         teacher_id = str(uuid4())
         with self.database.transaction() as connection:
             connection.execute(
@@ -24,6 +26,14 @@ class ClassroomRepository:
                 (teacher_id, name, credential_hash),
             )
         return teacher_id
+
+    def authenticate_teacher(self, teacher_id: str, password: str) -> bool:
+        with self.database.connect() as connection:
+            row = connection.execute(
+                "SELECT credential_hash FROM teachers WHERE id=? AND archived_at IS NULL",
+                (teacher_id,),
+            ).fetchone()
+        return row is not None and verify_password(password, row["credential_hash"])
 
     def update_teacher(self, teacher_id: str, display_name: str) -> None:
         name = display_name.strip()
