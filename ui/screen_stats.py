@@ -85,7 +85,7 @@ class StatsScreen(QWidget):
         sid = session.current.user_id
         self._clear(self.personal_layout)
         if not sid:
-            self.personal_summary.setText("Connecté en tant qu'admin."); return
+            self.personal_summary.setText("Mode invité : les sessions ne sont pas enregistrées."); return
         scores = db.get_scores(sid)
         if not scores:
             self.personal_summary.setText("Aucune session enregistrée.")
