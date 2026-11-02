@@ -1,0 +1,58 @@
+"""Wedone Operate visual tokens.
+
+Blue is the primary brand color. Keep light and dark themes aligned by semantic role.
+"""
+
+LIGHT = {
+    "bg": "#F5F8FC",
+    "bg_secondary": "#EDF3F9",
+    "surface": "#FFFFFF",
+    "surface_hover": "#F7FAFD",
+    "input": "#FFFFFF",
+    "border": "#DFE7F0",
+    "border_hover": "#B9CDE0",
+    "primary": "#0672BC",
+    "primary_alt": "#168AD2",
+    "primary_hover": "#055F9D",
+    "primary_pressed": "#064D7D",
+    "primary_text": "#FFFFFF",
+    "accent_soft": "#E8F3FB",
+    "accent_ink": "#07558E",
+    "accent_border": "#B9D9F2",
+    "text": "#172536",
+    "text_secondary": "#607286",
+    "text_muted": "#91A0B0",
+    "success": "#21865A",
+    "error": "#C94343",
+    "error_hover": "#A93434",
+    "warning": "#B87516",
+    "disabled": "#E3EAF1",
+    "scroll": "#C9D5E1",
+}
+
+DARK = {
+    "bg": "#111A24",
+    "bg_secondary": "#172432",
+    "surface": "#1B2A39",
+    "surface_hover": "#24384A",
+    "input": "#152331",
+    "border": "#304456",
+    "border_hover": "#46647E",
+    "primary": "#2996D8",
+    "primary_alt": "#48A9E5",
+    "primary_hover": "#55B2EA",
+    "primary_pressed": "#1474B2",
+    "primary_text": "#FFFFFF",
+    "accent_soft": "#173B55",
+    "accent_ink": "#B9E1FA",
+    "accent_border": "#285D80",
+    "text": "#EDF4FA",
+    "text_secondary": "#B3C2D0",
+    "text_muted": "#8194A6",
+    "success": "#62C995",
+    "error": "#F07C7C",
+    "error_hover": "#E36565",
+    "warning": "#E9B65F",
+    "disabled": "#354656",
+    "scroll": "#526A7D",
+}
