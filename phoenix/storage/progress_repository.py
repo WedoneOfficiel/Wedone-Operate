@@ -58,6 +58,30 @@ class ProgressRepository:
 
         answered = int(totals["answered"] or 0)
         correct = int(totals["correct"] or 0)
+        return {
+            "sessions": int(totals["sessions"] or 0),
+            "completed": int(totals["completed"] or 0),
+            "abandoned": int(totals["abandoned"] or 0),
+            "answered": answered,
+            "correct": correct,
+            "accuracy": round(correct / answered * 100, 1) if answered else None,
+            "elapsed_ms": int(totals["elapsed_ms"] or 0),
+            "recent": [dict(row) for row in recent],
+            "skills": [
+                {
+                    "skill_id": row["skill_id"],
+                    "answered": int(row["answered"]),
+                    "correct": int(row["correct"]),
+                    "accuracy": round(row["correct"] / row["answered"] * 100, 1),
+                    "average_elapsed_ms": (
+                        round(row["average_elapsed_ms"], 1)
+                        if row["average_elapsed_ms"] is not None else None
+                    ),
+                }
+                for row in skills
+            ],
+        }
+
     def class_report(self, class_id: str, teacher_id: str) -> list[dict]:
         """Return a teacher-scoped, question-weighted report for every active student."""
         with self.database.connect() as connection:
@@ -97,27 +121,3 @@ class ProgressRepository:
             )
             report.append(item)
         return report
-
-        return {
-            "sessions": int(totals["sessions"] or 0),
-            "completed": int(totals["completed"] or 0),
-            "abandoned": int(totals["abandoned"] or 0),
-            "answered": answered,
-            "correct": correct,
-            "accuracy": round(correct / answered * 100, 1) if answered else None,
-            "elapsed_ms": int(totals["elapsed_ms"] or 0),
-            "recent": [dict(row) for row in recent],
-            "skills": [
-                {
-                    "skill_id": row["skill_id"],
-                    "answered": int(row["answered"]),
-                    "correct": int(row["correct"]),
-                    "accuracy": round(row["correct"] / row["answered"] * 100, 1),
-                    "average_elapsed_ms": (
-                        round(row["average_elapsed_ms"], 1)
-                        if row["average_elapsed_ms"] is not None else None
-                    ),
-                }
-                for row in skills
-            ],
-        }
