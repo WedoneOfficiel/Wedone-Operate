@@ -12,7 +12,13 @@ from .storage import (
     Database,
     PracticeRepository,
     get_database_path,
+    get_phoenix_data_dir,
+    export_json,
+    import_json,
+    reset_data,
 )
+from .storage.backup import create_backup, restore_backup
+from datetime import datetime
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -33,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
         modeChanged = Signal(str)
         practiceChanged = Signal()
         classroomChanged = Signal()
+        settingsChanged = Signal()
 
         def __init__(self, database: Database):
             super().__init__()
@@ -50,6 +57,10 @@ def main(argv: list[str] | None = None) -> int:
             self._teacher_id: str | None = None
             self._active_student_id: str | None = None
             self._classroom_message = ""
+            self._ui_scale = float(database.get_setting("ui_scale", 1.0))
+            self._high_contrast = bool(database.get_setting("high_contrast", False))
+            self._reduce_motion = bool(database.get_setting("reduce_motion", False))
+            self._data_message = ""
 
         @Property(str, notify=modeChanged)
         def mode(self) -> str:
@@ -100,6 +111,102 @@ def main(argv: list[str] | None = None) -> int:
         @Property(str, notify=classroomChanged)
         def classroomMessage(self) -> str:
             return self._classroom_message
+
+        @Property(float, notify=settingsChanged)
+        def uiScale(self) -> float:
+            return self._ui_scale
+
+        @Property(bool, notify=settingsChanged)
+        def highContrast(self) -> bool:
+            return self._high_contrast
+
+        @Property(bool, notify=settingsChanged)
+        def reduceMotion(self) -> bool:
+            return self._reduce_motion
+
+        @Property(str, notify=settingsChanged)
+        def dataMessage(self) -> str:
+            return self._data_message
+
+        @Slot(float)
+        def setUiScale(self, value: float) -> None:
+            self._ui_scale = min(1.25, max(0.85, float(value)))
+            self._database.set_setting("ui_scale", self._ui_scale)
+            self.settingsChanged.emit()
+
+        @Slot(bool)
+        def setHighContrast(self, enabled: bool) -> None:
+            self._high_contrast = bool(enabled)
+            self._database.set_setting("high_contrast", self._high_contrast)
+            self.settingsChanged.emit()
+
+        @Slot(bool)
+        def setReduceMotion(self, enabled: bool) -> None:
+            self._reduce_motion = bool(enabled)
+            self._database.set_setting("reduce_motion", self._reduce_motion)
+            self.settingsChanged.emit()
+
+        def _safety_path(self, label: str) -> Path:
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            return get_phoenix_data_dir() / "backups" / f"{label}-{stamp}.sqlite3"
+
+        @Slot()
+        def createBackup(self) -> None:
+            try:
+                path = get_phoenix_data_dir() / "backups" / (
+                    "backup-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".sqlite3"
+                )
+                create_backup(self._database, path)
+                self._data_message = f"Sauvegarde créée : {path}"
+            except Exception as exc:
+                self._data_message = f"Échec de la sauvegarde : {exc}"
+            self.settingsChanged.emit()
+
+        @Slot(str)
+        def restoreBackup(self, source: str) -> None:
+            try:
+                path = Path(source)
+                restore_backup(self._database, path, self._safety_path("before-restore"))
+                self._reload_after_data_change("Sauvegarde restaurée.")
+            except Exception as exc:
+                self._data_message = f"Restauration impossible : {exc}"
+            self.settingsChanged.emit()
+
+        @Slot(str)
+        def exportData(self, destination: str) -> None:
+            try:
+                export_json(self._database, destination)
+                self._data_message = f"Export créé : {destination}"
+            except Exception as exc:
+                self._data_message = f"Export impossible : {exc}"
+            self.settingsChanged.emit()
+
+        @Slot(str)
+        def importData(self, source: str) -> None:
+            try:
+                import_json(self._database, source)
+                self._reload_after_data_change("Données importées. Une sauvegarde de sécurité a été créée.")
+            except Exception as exc:
+                self._data_message = f"Import impossible : {exc}"
+            self.settingsChanged.emit()
+
+        @Slot()
+        def resetData(self) -> None:
+            try:
+                reset_data(self._database)
+                self._reload_after_data_change("Données réinitialisées. Une sauvegarde de sécurité a été créée.")
+            except Exception as exc:
+                self._data_message = f"Réinitialisation impossible : {exc}"
+            self.settingsChanged.emit()
+
+        def _reload_after_data_change(self, message: str) -> None:
+            self._mode = self._database.get_mode() or ""
+            self._teacher_id = None
+            self._active_student_id = None
+            self._data_message = message
+            self.modeChanged.emit(self._mode)
+            self.classroomChanged.emit()
+            self.practiceChanged.emit()
 
         @Slot(str)
         def chooseMode(self, mode: str) -> None:
