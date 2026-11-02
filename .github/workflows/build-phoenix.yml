@@ -94,6 +94,18 @@ jobs:
           iconutil -c icns Phoenix.iconset -o phoenix.icns
       - name: Build macOS application bundle
         run: pyinstaller --noconfirm --clean phoenix-macos.spec
+      - name: Normalize nested macOS code signatures
+        run: |
+          app="dist/Wedone Operate Phoenix.app"
+          # The embedded Python framework may carry a Python.org Team ID.
+          # This ad-hoc local build must use one signature identity throughout,
+          # otherwise macOS Library Validation refuses to load the Python runtime.
+          codesign --force --deep --sign - --timestamp=none "$app"
+          app_team="$(codesign -dv --verbose=4 "$app" 2>&1 | sed -n 's/^TeamIdentifier=//p')"
+          python_team="$(codesign -dv --verbose=4 "$app/Contents/Frameworks/Python.framework" 2>&1 | sed -n 's/^TeamIdentifier=//p')"
+          echo "App TeamIdentifier: ${app_team:-<none>}"
+          echo "Python TeamIdentifier: ${python_team:-<none>}"
+          test "$app_team" = "$python_team" || { echo "::error::App and embedded Python TeamIdentifiers differ"; exit 1; }
       - name: Validate bundle structure and signature
         run: |
           app="dist/Wedone Operate Phoenix.app"
