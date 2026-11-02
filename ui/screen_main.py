@@ -104,15 +104,15 @@ class MainScreen(QWidget):
         self.welcome_lbl.setText(f"Bonjour, {s.display_name()} !")
 
         # Niveau du groupe
-        student_level = db.get_student_level(s.user_id) if s.user_id else "CM2"
-        g = db.get_group(db.get_student(s.user_id).get("group_id")) if s.user_id and db.get_student(s.user_id) else None
+        student_level = db.get_student_level(s.user_id) if s.is_student() and s.user_id else "CM2"
+        student = db.get_student(s.user_id) if s.is_student() and s.user_id else None\n        g = db.get_group(student.get("group_id")) if student and student.get("group_id") else None
         group_name = g["name"] if g else ""
         self.info_lbl.setText(f"Groupe : {group_name}  •  Niveau {student_level}" if group_name else f"Niveau {student_level}")
 
         self.combo_level.setCurrentText(student_level)
 
         # Modèle assigné par le prof
-        group_id = db.get_student(s.user_id).get("group_id") if s.user_id and db.get_student(s.user_id) else None
+        group_id = student.get("group_id") if student else None
         template = db.get_group_default_template(group_id) if group_id else None
         if template:
             self.template_lbl.setText(
