@@ -165,13 +165,13 @@ class StatsScreen(QWidget):
         card.setProperty("class", "card-compact")
         l = QHBoxLayout(card); l.setSpacing(18)
         pct = s.get("percent", 0)
-        color = "#269B70" if pct >= 80 else ("#B87516" if pct >= 50 else "#E24B5F")
         ops_map = {"addition":"+","soustraction":"−","multiplication":"×","division":"÷"}
         for text, w in [(s.get("date","")[:10], 90), (s.get("difficulty",""), 80),
                         (" ".join(ops_map.get(o,o) for o in s.get("operations",[])), 80)]:
             lbl = QLabel(text); lbl.setFixedWidth(w); lbl.setObjectName("subtitle"); l.addWidget(lbl)
         score_lbl = QLabel(f"{s['correct']}/{s['total']}  —  {pct:.1f} %")
-        score_lbl.setStyleSheet(f"font-weight:bold;color:{color};"); l.addWidget(score_lbl)
+        score_lbl.setProperty("class", "success" if pct >= 80 else ("warning" if pct >= 50 else "error"))
+        score_lbl.setStyleSheet("font-weight:bold;"); l.addWidget(score_lbl)
         if s.get("elapsed_seconds") is not None:
             e = s["elapsed_seconds"]
             l.addWidget(QLabel(f"⏱ {int(e)//60}m{int(e)%60:02d}s"))
