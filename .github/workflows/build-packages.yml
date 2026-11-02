@@ -25,11 +25,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt pyinstaller
+          python -m pip install -r requirements.txt pyinstaller pillow
       - name: Build executable
-        run: python -m pip install pillow
-          python -c "from PIL import Image; Image.open('icon.png').save('icon.ico')"
-          pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.ico --add-data "icon.png;." main.py
+        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.png --add-data "icon.png;." main.py
       - name: Package
         run: Compress-Archive -Path "dist/Wedone Operate" -DestinationPath "Wedone-Operate-Windows-x64.zip"
       - uses: actions/upload-artifact@v4
@@ -50,10 +48,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt pyinstaller
+          python -m pip install -r requirements.txt pyinstaller pillow
       - name: Build application
-        run: sips -s format icns icon.png --out icon.icns
-          pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.icns --add-data "icon.png:." main.py
+        run: |
+          pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.png --add-data "icon.png:." main.py
       - name: Package
         run: ditto -c -k --sequesterRsrc --keepParent "dist/Wedone Operate.app" "Wedone-Operate-macOS-arm64.zip"
       - uses: actions/upload-artifact@v4
@@ -80,7 +78,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
       - name: Build application bundle
-        run: pyinstaller --noconfirm --clean --windowed --name wedone-operate --add-data "icon.png:." main.py
+        run: |
+          pyinstaller --noconfirm --clean --windowed --name wedone-operate --add-data "icon.png:." main.py
       - name: Build RPM
         shell: bash
         run: |
@@ -88,10 +87,10 @@ jobs:
           VERSION="$(python -c 'from constants import APP_VERSION; print(APP_VERSION)')"
           TOP="$RUNNER_TEMP/rpmbuild"
           mkdir -p "$TOP"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-          mkdir -p "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/opt/wedone-operate"
-          cp -a dist/wedone-operate/. "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/opt/wedone-operate/"
-          mkdir -p "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/usr/share/applications"
-          cat > "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/usr/share/applications/wedone-operate.desktop" <<'DESKTOP'
+          ROOT="$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64"
+          mkdir -p "$ROOT/opt/wedone-operate" "$ROOT/usr/share/applications"
+          cp -a dist/wedone-operate/. "$ROOT/opt/wedone-operate/"
+          cat > "$ROOT/usr/share/applications/wedone-operate.desktop" <<'DESKTOP'
           [Desktop Entry]
           Name=Wedone Operate
           Comment=Logiciel de calcul mental pour l'école
@@ -115,7 +114,7 @@ jobs:
           /opt/wedone-operate
           /usr/share/applications/wedone-operate.desktop
           SPEC
-          rpmbuild --define "_topdir $TOP" --buildroot "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64" -bb "$TOP/SPECS/wedone-operate.spec"
+          rpmbuild --define "_topdir $TOP" --buildroot "$ROOT" -bb "$TOP/SPECS/wedone-operate.spec"
           cp "$TOP/RPMS/x86_64/"*.rpm Wedone-Operate-Fedora-x86_64.rpm
       - uses: actions/upload-artifact@v4
         with:
