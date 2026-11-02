@@ -173,7 +173,8 @@ class GameScreen(QWidget):
             result.append({"op": op, "a": a, "b": b, "result": res, "sym": sym})
         return result
 
-    def _make_op(self, op, r):
+    @staticmethod
+    def _make_op(op, r):
         if op == "addition":
             a, b = random.randint(r[0], r[1]), random.randint(r[2], r[3])
             return a, b, a + b, "+"
