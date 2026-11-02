@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from time import perf_counter_ns
 from pathlib import Path
 
 from .domain.questions import Question, generate_session
@@ -57,6 +58,7 @@ def main(argv: list[str] | None = None) -> int:
             self._finished = False
             self._feedback = ""
             self._score_text = ""
+            self._question_started_ns: int | None = None
             self._teacher_id: str | None = None
             self._active_student_id: str | None = None
             self._classroom_message = ""
@@ -364,6 +366,7 @@ def main(argv: list[str] | None = None) -> int:
             self._finished = False
             self._feedback = ""
             self._score_text = ""
+            self._question_started_ns = perf_counter_ns()
             self.practiceChanged.emit()
 
         @Slot(str)
@@ -371,9 +374,12 @@ def main(argv: list[str] | None = None) -> int:
             if not self._session_id or not self._questions or self._answered or self._finished:
                 return
             question = self._questions[self._question_index]
+            elapsed_ms = None
+            if self._question_started_ns is not None:
+                elapsed_ms = max(0, (perf_counter_ns() - self._question_started_ns) // 1_000_000)
             correct = self._practice.record_answer(
                 self._session_id, question.skill_id, question.prompt,
-                question.answer, response,
+                question.answer, response, elapsed_ms=int(elapsed_ms) if elapsed_ms is not None else None,
             )
             self._answered = True
             self._feedback = (
@@ -390,6 +396,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._question_index += 1
                 self._answered = False
                 self._feedback = ""
+                self._question_started_ns = perf_counter_ns()
             else:
                 result = self._practice.finish_session(self._session_id)
                 self._finished = True
@@ -410,6 +417,7 @@ def main(argv: list[str] | None = None) -> int:
             self._finished = False
             self._feedback = ""
             self._score_text = ""
+            self._question_started_ns = None
             self.practiceChanged.emit()
             self.progressChanged.emit()
 
