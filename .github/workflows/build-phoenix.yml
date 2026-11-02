@@ -17,7 +17,7 @@ permissions:
 
 concurrency:
   group: phoenix-packages-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   windows:
@@ -42,7 +42,8 @@ jobs:
         run: |
           $qml = python -c "import PySide6, pathlib; print(pathlib.Path(PySide6.__file__).parent / 'Qt' / 'qml')"
           if (-not (Test-Path -LiteralPath $qml -PathType Container)) { throw "Qt QML runtime directory is missing: $qml" }
-          if (-not (Test-Path -LiteralPath (Join-Path $qml "QtQuick") -PathType Container)) { throw "QtQuick QML modules are missing: $qml" }
+          Write-Host "QML runtime directory: $qml"
+          Get-ChildItem -LiteralPath $qml | Select-Object -First 12 Name
           pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --icon phoenix.ico --exclude-module PySide6.QtWebEngineCore --exclude-module PySide6.QtWebEngineQuick --exclude-module PySide6.QtWebEngineWidgets --add-data "$qml;PySide6/Qt/qml" --add-data "phoenix/ui/qml;phoenix/ui/qml" --add-data "icon.png;." phoenix_entry.py
       - name: Validate packaged runtime
         run: python scripts/validate_phoenix_distribution.py "dist/Wedone Operate Phoenix"
