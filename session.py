@@ -5,7 +5,7 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
-Role = Literal["admin", "teacher", "student"]
+Role = Literal["guest", "admin", "teacher", "student"]
 
 @dataclass
 class Session:
@@ -16,11 +16,11 @@ class Session:
     group_id:   str | None  = None   # groupe de l'élève, ou None
 
     # ── Helpers ────────────────────────────────────────────────────────
-    def is_admin(self)   -> bool: return self.role == "admin"
+    def is_guest(self)   -> bool: return self.role == "guest"\n    def is_admin(self)   -> bool: return self.role == "admin"
     def is_teacher(self) -> bool: return self.role == "teacher"
     def is_student(self) -> bool: return self.role == "student"
 
-    def can_see_updates(self)      -> bool: return self.role in ("admin", "teacher")
+    def can_see_updates(self)      -> bool: return self.role == "teacher"
     def can_manage_students(self)  -> bool: return self.role in ("admin", "teacher")
     def can_manage_teachers(self)  -> bool: return self.role == "admin"
     def can_manage_groups(self)    -> bool: return self.role in ("admin", "teacher")
@@ -33,7 +33,7 @@ class Session:
         return f"{self.prenom} {self.nom}"
 
     def role_label(self) -> str:
-        return {"admin": "Admin", "teacher": "Professeur", "student": "Élève"}.get(self.role, "")
+        return {"guest": "Invité", "admin": "Admin", "teacher": "Professeur", "student": "Élève"}.get(self.role, "")
 
     def clear(self):
         self.role     = "student"
@@ -47,7 +47,7 @@ class Session:
 current = Session()
 
 
-def login_admin() -> None:
+def login_guest() -> None:\n    current.role = "guest"\n    current.user_id = None\n    current.prenom = "Invité"\n    current.nom = ""\n\n\ndef login_admin() -> None:
     current.role    = "admin"
     current.user_id = None
     current.prenom  = "Admin"
