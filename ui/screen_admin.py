@@ -499,11 +499,10 @@ class EditStudentDialog(QDialog):
         if idx >= 0: self.class_combo.setCurrentIndex(idx)
         layout.addWidget(self.class_combo)
         layout.addWidget(QLabel("Groupe (facultatif)"))
-        self.group_combo = QComboBox(); self.group_combo.addItem("— Sans groupe —", userData=None)
-        for group in db.get_groups(owner_id=owner_id):
-            self.group_combo.addItem(f"{group['name']} · {group.get('level', 'CM2')}", userData=group["id"])
-        idx = self.group_combo.findData(student.get("group_id"))
-        if idx >= 0: self.group_combo.setCurrentIndex(idx)
+        self.group_combo = QComboBox()
+        self._owner_id = owner_id
+        self.class_combo.currentIndexChanged.connect(self._refresh_groups)
+        self._refresh_groups()
         layout.addWidget(self.group_combo)
         self.error = QLabel(""); self.error.setObjectName("error"); self.error.hide(); layout.addWidget(self.error)
         buttons = QHBoxLayout()
@@ -511,6 +510,20 @@ class EditStudentDialog(QDialog):
         save = QPushButton("Enregistrer"); save.clicked.connect(self._save)
         buttons.addWidget(cancel); buttons.addWidget(save); layout.addLayout(buttons)
         _wire_enter(self, save)
+
+    def _refresh_groups(self):
+        class_id = self.class_combo.currentData()
+        previous = self.group_combo.currentData() if self.group_combo.count() else self._student.get("group_id")
+        self.group_combo.blockSignals(True)
+        self.group_combo.clear()
+        self.group_combo.addItem("— Sans groupe —", userData=None)
+        for group in db.get_groups(owner_id=self._owner_id):
+            if class_id and group.get("class_id") not in (None, class_id):
+                continue
+            self.group_combo.addItem(f"{group['name']} · {group.get('level', 'CM2')}", userData=group["id"])
+        index = self.group_combo.findData(previous)
+        if index >= 0: self.group_combo.setCurrentIndex(index)
+        self.group_combo.blockSignals(False)
 
     def prenom(self): return self.prenom_input.text().strip()
     def nom(self): return self.nom_input.text().strip()
@@ -820,7 +833,7 @@ class AddTemplateDialog(QDialog):
         self._err = QLabel(""); self._err.setObjectName("error"); self._err.hide(); l.addWidget(self._err)
         btns = QHBoxLayout()
         cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
-        ok = QPushButton("Créer"); ok.clicked.connect(self._ok)
+        ok = QPushButton("Enregistrer" if template else "Créer"); ok.clicked.connect(self._ok)
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
         _wire_enter(self, ok)
 
