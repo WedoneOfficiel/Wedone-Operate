@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtTest import QTest
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QDialog
 
 from ui.screen_admin import AddClassDialog, SimpleNameDialog
 from ui.screen_settings import SettingsScreen
@@ -19,7 +19,7 @@ class DialogKeyboardTests(unittest.TestCase):
         dialog._input.setText("Groupe A")
         dialog.show()
         QTest.keyClick(dialog._input, Qt.Key.Key_Return)
-        self.assertEqual(dialog.result(), dialog.DialogCode.Accepted)
+        self.assertEqual(dialog.result(), QDialog.DialogCode.Accepted)
         dialog.close()
 
     def test_enter_submits_class_dialog(self):
@@ -31,7 +31,8 @@ class DialogKeyboardTests(unittest.TestCase):
         dialog.close()
 
     def test_loading_settings_does_not_save_stale_widget_values(self):
-        screen = SettingsScreen()
+        with patch("ui.screen_settings.cfg.load", return_value={}):
+            screen = SettingsScreen()
         screen._settings = {
             "theme": "dark", "auto_update": False, "difficulty": "CE2",
             "addition_enabled": True, "subtraction_enabled": False,
