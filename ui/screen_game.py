@@ -241,11 +241,11 @@ class GameScreen(QWidget):
         self._chrono_bar.setValue(int(self._time_left * 10))
 
         if ratio > 0.5:
-            color, cls = "#269B70", "timer-green"
+            cls = "timer-green"
         elif ratio > 0.25:
-            color, cls = "#F0A030", "timer-orange"
+            cls = "timer-orange"
         else:
-            color, cls = "#E24B5F", "timer-red"
+            cls = "timer-red"
 
         self._chrono_lbl.setObjectName(cls)
         self._chrono_lbl.setStyleSheet("font-size:16px;font-weight:600;")
