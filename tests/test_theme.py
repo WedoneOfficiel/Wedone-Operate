@@ -9,13 +9,13 @@ class ThemeTests(unittest.TestCase):
         self.assertEqual(set(LIGHT), set(DARK))
 
     def test_wedone_blue_is_the_primary_accent(self):
-        self.assertEqual(LIGHT["primary"], "#0879C9")
-        self.assertEqual(DARK["primary"], "#2998E5")
+        self.assertEqual(LIGHT["primary"], "#167CC2")
+        self.assertEqual(DARK["primary"], "#3296D8")
 
     def test_palette_uses_wedone_portal_neutrals(self):
-        self.assertEqual(LIGHT["bg"], "#F7F5FC")
-        self.assertEqual(LIGHT["text"], "#29243B")
-        self.assertEqual(LIGHT["text_secondary"], "#79748C")
+        self.assertEqual(LIGHT["bg"], "#F5F8FC")
+        self.assertEqual(LIGHT["text"], "#202B3A")
+        self.assertEqual(LIGHT["text_secondary"], "#66768A")
         self.assertNotIn("pink", LIGHT)
         self.assertNotIn("pink", DARK)
 
