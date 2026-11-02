@@ -342,8 +342,8 @@ class AdminScreen(QWidget):
 
     def _build_templates(self):
         w, l = self._section("Modèles de session", "＋ Créer un modèle", self._add_template)
-        info = QLabel("Les modèles définissent une config par défaut pour un groupe.\n"
-                      "L'élève peut la modifier avant de lancer sa session.")
+        info = QLabel("Un modèle peut s'appliquer à toute une classe ou seulement à un groupe.\n"
+                      "Un modèle de groupe est prioritaire sur celui de la classe.")
         info.setObjectName("subtitle"); info.setWordWrap(True)
         l.addWidget(info)
         self.templates_list = QListWidget(); l.addWidget(self.templates_list)
