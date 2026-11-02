@@ -1,0 +1,121 @@
+name: Build packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci-cd-foundation]
+    paths:
+      - "**.py"
+      - "requirements.txt"
+      - ".github/workflows/build-packages.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows 10/11 package
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+      - name: Build executable
+        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.png --add-data "icon.png;." main.py
+      - name: Package
+        run: Compress-Archive -Path "dist/Wedone Operate" -DestinationPath "Wedone-Operate-Windows-x64.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wedone-Operate-Windows-x64
+          path: Wedone-Operate-Windows-x64.zip
+          if-no-files-found: error
+
+  macos:
+    name: macOS Apple Silicon package
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+      - name: Build application
+        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.png --add-data "icon.png:." main.py
+      - name: Package
+        run: ditto -c -k --sequesterRsrc --keepParent "dist/Wedone Operate.app" "Wedone-Operate-macOS-arm64.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wedone-Operate-macOS-arm64
+          path: Wedone-Operate-macOS-arm64.zip
+          if-no-files-found: error
+
+  fedora-rpm:
+    name: Fedora RPM x86_64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install RPM build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+      - name: Build application bundle
+        run: pyinstaller --noconfirm --clean --windowed --name wedone-operate --icon icon.png --add-data "icon.png:." main.py
+      - name: Build RPM
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(python -c 'from constants import APP_VERSION; print(APP_VERSION)')"
+          TOP="$RUNNER_TEMP/rpmbuild"
+          mkdir -p "$TOP"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+          mkdir -p "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/opt/wedone-operate"
+          cp -a dist/wedone-operate/. "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/opt/wedone-operate/"
+          mkdir -p "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/usr/share/applications"
+          cat > "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64/usr/share/applications/wedone-operate.desktop" <<'DESKTOP'
+          [Desktop Entry]
+          Name=Wedone Operate
+          Comment=Logiciel de calcul mental pour l'école
+          Exec=/opt/wedone-operate/wedone-operate
+          Icon=applications-education
+          Terminal=false
+          Type=Application
+          Categories=Education;
+          DESKTOP
+          cat > "$TOP/SPECS/wedone-operate.spec" <<SPEC
+          Name:           wedone-operate
+          Version:        $VERSION
+          Release:        1
+          Summary:        Logiciel de calcul mental pour l'école
+          License:        Apache-2.0
+          BuildArch:      x86_64
+          Requires:       libX11
+          %description
+          Wedone Operate - application éducative de calcul mental.
+          %files
+          /opt/wedone-operate
+          /usr/share/applications/wedone-operate.desktop
+          SPEC
+          rpmbuild --define "_topdir $TOP" --buildroot "$TOP/BUILDROOT/wedone-operate-$VERSION-1.x86_64" -bb "$TOP/SPECS/wedone-operate.spec"
+          cp "$TOP/RPMS/x86_64/"*.rpm Wedone-Operate-Fedora-x86_64.rpm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wedone-Operate-Fedora-x86_64
+          path: Wedone-Operate-Fedora-x86_64.rpm
+          if-no-files-found: error
