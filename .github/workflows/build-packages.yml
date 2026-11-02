@@ -3,7 +3,7 @@ name: Build packages
 on:
   workflow_dispatch:
   push:
-    branches: [ci-cd-foundation]
+    branches: [product-redesign]
     paths:
       - "**.py"
       - "requirements.txt"
