@@ -273,7 +273,8 @@ class GameScreen(QWidget):
                     self._feedback_lbl.setText("✔  Bonne réponse !")
                 else:
                     self._set_bg_feedback("error")
-                    self._feedback_lbl.setStyleSheet("font-size:16px;font-weight:500;color:#E05555;")
+                    self._feedback_lbl.setObjectName("feedback")
+                    self._feedback_lbl.setStyleSheet("color:#E24B5F;")
                     self._feedback_lbl.setText(f"✘  Incorrect.  La réponse était  {q['result']}")
             except ValueError:
                 # Saisie invalide : on relance
