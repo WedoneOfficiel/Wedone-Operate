@@ -421,12 +421,27 @@ ApplicationWindow {
                         valueRole: "id"
                         model: JSON.parse(appBridge.classesJson)
                     }
-                    TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, "") }
+                    TextField { id: newGroupName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom du groupe (facultatif)" }
+                    PrimaryButton {
+                        text: "Créer le groupe"
+                        Layout.fillWidth: true
+                        enabled: !!teacherClassSelect.currentValue
+                        onClicked: appBridge.createGroup(teacherClassSelect.currentValue, newGroupName.text)
+                    }
+                    ComboBox {
+                        id: teacherGroupSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        textRole: "name"
+                        valueRole: "id"
+                        model: [{ name: "Aucun groupe", id: "" }].concat(appBridge.groupsForClass(teacherClassSelect.currentValue || ""))
+                    }
+                    TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, teacherGroupSelect.currentValue || "") }
                     PrimaryButton {
                         text: "Ajouter l'élève"
                         Layout.fillWidth: true
                         enabled: !!teacherClassSelect.currentValue
-                        onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, "")
+                        onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, teacherGroupSelect.currentValue || "")
                     }
                     Label { text: "Modifier mon profil"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
                     TextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché"; onAccepted: appBridge.updateTeacherProfile(text) }
