@@ -16,6 +16,9 @@ Dernière mise à jour : 2 novembre 2026
 - Générateurs déterministes pour additions, soustractions, multiplications, divisions exactes et premiers calculs sur les nombres relatifs.
 - Détection des doublons dans une séance, y compris les opérations commutatives.
 - Cycle de séance persisté : démarrage, réponses, validation, résultat final et abandon avec conservation des réponses déjà données.
+- L'usage individuel arrive directement sur la configuration de séance, sans écran de connexion ni profil fictif.
+- Tableau de bord initial avec nombre de séances, réponses traitées et précision calculée sur les réponses réellement données.
+- Progression individuelle et progression par élève, avec agrégation pondérée par question et ventilation par compétence.
 - Parcours classe initial : création de profils professeurs protégés par mot de passe PBKDF2, création de classes et ajout d'élèves ; sélection de classe/groupe/élève côté élève ; entraînement rapide sans profil.
 - Workflow de packaging PyInstaller séparé pour Windows, macOS et Linux.
 - Premiers réglages d'accessibilité persistants : échelle globale de l'interface, contraste renforcé et réduction des animations.
@@ -27,7 +30,8 @@ Dernière mise à jour : 2 novembre 2026
 
 ## À vérifier avant de considérer cette étape comme terminée
 
-- Résultat réel des tests sur macOS, Windows et Linux via GitHub Actions : le pipeline est configuré, mais son résultat n'a pas encore été confirmé ici.
+- CI confirmée verte sur macOS, Windows et Linux pour le commit `307feeb` : smoke test QML, compilation Python et suite de tests unitaires réussis.
+- Packaging PyInstaller en cours de validation sur Windows, macOS et Linux ; les artefacts ne sont pas considérés comme livrables avant la fin des trois builds.
 - Vérification visuelle manuelle du prototype QML sur les trois systèmes.
 - Exécution confirmée des workflows CI et de packaging : les workflows sont configurés, mais aucun résultat d'exécution n'est encore disponible ici.
 - Compléter l'édition/archivage des classes, groupes et élèves dans l'espace professeur, les écrans de progression et l'édition complète des profils.
