@@ -135,7 +135,7 @@ class Database:
                     if script is None:
                         raise DatabaseError(f"Migration manquante : {target}")
                     connection.executescript(
-                        "BEGIN IMMEDIATE;\\n" + script + f"\\nPRAGMA user_version = {target};\\nCOMMIT;"
+                        "BEGIN IMMEDIATE;\n" + script + f"\nPRAGMA user_version = {target};\nCOMMIT;"
                     )
         except (sqlite3.Error, OSError) as exc:
             if isinstance(exc, DatabaseError):
