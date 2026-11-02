@@ -232,7 +232,7 @@ class LoginScreen(QWidget):
         self.profile_cards_l.setAlignment(Qt.AlignmentFlag.AlignLeft)
         scroll.setWidget(self.profile_cards_w)
         l.addWidget(scroll)
-        self.no_profile_lbl = QLabel("Aucun élève dans ce groupe.")
+        self.no_profile_lbl = QLabel("Aucun élève dans cette sélection.")
         self.no_profile_lbl.setObjectName("subtitle")
         self.no_profile_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.no_profile_lbl.hide()
@@ -275,8 +275,10 @@ class LoginScreen(QWidget):
     def _refresh_class_cards(self):
         self._clear_layout(self.class_cards_l)
         classes = db.get_classes()
-        if not classes:
-            self.no_class_lbl.show(); return
+        unassigned = db.get_unassigned_students()
+        if not classes and not unassigned:
+            self.no_class_lbl.show()
+            return
         self.no_class_lbl.hide()
         for cls in classes:
             nb = len(db.get_groups(class_id=cls["id"]))
@@ -289,6 +291,22 @@ class LoginScreen(QWidget):
                 on_click=lambda _, c=cls: self._on_class_selected(c)
             )
             self.class_cards_l.addWidget(card)
+        if unassigned:
+            card = self._make_icon_card(
+                initiales="…",
+                label="Sans classe",
+                sublabel=f"{len(unassigned)} élève{'s' if len(unassigned) > 1 else ''}",
+                color="#79748C",
+                size=(110, 100),
+                on_click=lambda _: self._on_unassigned_selected()
+            )
+            self.class_cards_l.addWidget(card)
+
+    def _on_unassigned_selected(self):
+        self._selected_class = {"id": None, "name": "Sans classe"}
+        self._selected_group = None
+        self._refresh_profile_cards(students=db.get_unassigned_students())
+        self._go_step(2, "Sans classe  —  Qui êtes-vous ?")
 
     def _refresh_group_cards(self, class_id: str):
         self._clear_layout(self.group_cards_l)
@@ -321,9 +339,10 @@ class LoginScreen(QWidget):
             )
             self.group_cards_l.addWidget(card)
 
-    def _refresh_profile_cards(self, group_id=None, class_id=None):
+    def _refresh_profile_cards(self, group_id=None, class_id=None, students=None):
         self._clear_layout(self.profile_cards_l)
-        students = db.get_students(group_id=group_id) if group_id else db.get_students(class_id=class_id)
+        if students is None:
+            students = db.get_students(group_id=group_id) if group_id else db.get_students(class_id=class_id)
         if not students:
             self.no_profile_lbl.show(); return
         self.no_profile_lbl.hide()
