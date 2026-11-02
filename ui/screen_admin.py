@@ -139,19 +139,25 @@ class AdminScreen(QWidget):
     def _refresh_classes(self):
         self.classes_list.clear()
         owner_id = None if session.current.is_admin() else session.current.user_id
-        for c in db.get_classes(owner_id=owner_id):
-            nb = len(db.get_groups(class_id=c["id"]))
-            item = QListWidgetItem(f"  {c['name']}  —  {nb} groupe{'s' if nb>1 else ''}")
-            item.setData(Qt.ItemDataRole.UserRole, c)
+        for cls in db.get_classes(owner_id=owner_id):
+            nb_groups = len(db.get_groups(class_id=cls["id"]))
+            nb_students = len(db.get_students(class_id=cls["id"]))
+            item = QListWidgetItem(
+                f"  {cls['name']}  ·  {cls.get('level', 'CM2')}  ·  "
+                f"{nb_students} élève{'s' if nb_students != 1 else ''}  ·  "
+                f"{nb_groups} groupe{'s' if nb_groups != 1 else ''}"
+            )
+            item.setData(Qt.ItemDataRole.UserRole, cls)
             self.classes_list.addItem(item)
 
     def _add_class(self):
-        dlg = SimpleNameDialog("Nouvelle classe", "Nom de la classe", "ex. 5ème B", self)
+        dlg = AddClassDialog(self)
         if dlg.exec() == QDialog.DialogCode.Accepted:
-            owner_id = session.current.user_id if session.current.is_teacher() else "admin"
-            if not db.add_class(dlg.value(), owner_id):
-                QMessageBox.warning(self, "Erreur", "Cette classe existe déjà.")
-            else: self._refresh_classes()
+            owner_id = session.current.user_id if session.current.is_teacher() else "guest"
+            if not db.add_class(dlg.value(), owner_id, dlg.level()):
+                QMessageBox.warning(self, "Erreur", "Cette classe existe déjà ou le niveau est invalide.")
+            else:
+                self._refresh_classes()
 
     def _del_class(self):
         item = self.classes_list.currentItem()
@@ -330,6 +336,50 @@ class AdminScreen(QWidget):
 # ══════════════════════════════════════════════════════════════════════
 # Dialogues
 # ══════════════════════════════════════════════════════════════════════
+
+class AddClassDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Nouvelle classe")
+        self.setWindowIcon(QIcon("icon.png"))
+        self.setMinimumWidth(340)
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+        layout.setContentsMargins(22, 20, 22, 20)
+
+        layout.addWidget(QLabel("Nom de la classe"))
+        self._name = QLineEdit()
+        self._name.setPlaceholderText("ex. 5ème B")
+        layout.addWidget(self._name)
+
+        layout.addWidget(QLabel("Niveau scolaire"))
+        self._level = QComboBox()
+        self._level.addItems(SCHOOL_LEVELS)
+        self._level.setCurrentText("CM2")
+        layout.addWidget(self._level)
+
+        buttons = QHBoxLayout()
+        cancel = QPushButton("Annuler")
+        cancel.setProperty("class", "secondary")
+        cancel.clicked.connect(self.reject)
+        create = QPushButton("Créer la classe")
+        create.clicked.connect(self._ok)
+        buttons.addWidget(cancel)
+        buttons.addWidget(create)
+        layout.addLayout(buttons)
+
+    def value(self):
+        return self._name.text().strip()
+
+    def level(self):
+        return self._level.currentText()
+
+    def _ok(self):
+        if not self.value():
+            QMessageBox.warning(self, "Classe", "Le nom de la classe est obligatoire.")
+            return
+        self.accept()
+
 
 class SimpleNameDialog(QDialog):
     def __init__(self, title, label, placeholder, parent=None):
