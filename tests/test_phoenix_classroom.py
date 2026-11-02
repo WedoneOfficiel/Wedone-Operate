@@ -54,6 +54,25 @@ class ClassroomRepositoryTests(unittest.TestCase):
             ).fetchone()
         self.assertIsNotNone(row["archived_at"])
 
+    def test_archiving_group_and_class_hides_them_without_erasing_records(self):
+        class_id = self.repository.create_class("CM1")
+        group_id = self.repository.create_group(class_id, "Groupe rouge")
+        self.repository.archive_group(group_id)
+        self.assertEqual(self.repository.list_groups(class_id), [])
+        with self.database.connect() as connection:
+            archived_group = connection.execute(
+                "SELECT archived_at FROM groups WHERE id=?", (group_id,)
+            ).fetchone()
+        self.assertIsNotNone(archived_group["archived_at"])
+
+        self.repository.archive_class(class_id)
+        self.assertEqual(self.repository.list_classes(), [])
+        with self.database.connect() as connection:
+            archived_class = connection.execute(
+                "SELECT archived_at FROM classes WHERE id=?", (class_id,)
+            ).fetchone()
+        self.assertIsNotNone(archived_class["archived_at"])
+
     def test_teacher_profile_can_be_edited(self):
         teacher_id = self.repository.create_teacher("Professeur A", "MotDePasse123!")
         self.assertTrue(self.repository.authenticate_teacher(teacher_id, "MotDePasse123!"))
