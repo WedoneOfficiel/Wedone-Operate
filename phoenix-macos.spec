@@ -1,58 +1,34 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""macOS bundle recipe for Phoenix.
+"""Minimal macOS bundle recipe for Phoenix.
 
-Phoenix uses Qt Quick, QML, Controls, Layouts and Dialogs. It does not use
-QtWebEngine or Qt's standalone desktop development tools. Keep the Qt runtime
-collection, but exclude those unrelated modules and nested applications before
-PyInstaller assembles and signs the macOS bundle.
+Do not use collect_all("PySide6") here: it pulls every optional Qt module,
+including QtWebEngine, and adds several minutes to COLLECT/signing. Phoenix
+imports only QtCore, QtGui, QtQml and QtQuick. PyInstaller's normal PySide6
+hooks collect the matching Qt frameworks/plugins; this recipe adds the QML
+runtime tree as data while explicitly omitting QtWebEngine.
 """
 
 from pathlib import Path
 
-from PyInstaller.utils.hooks import collect_all
+from PyInstaller.utils.hooks import collect_data_files
 
 ROOT = Path(SPECPATH).resolve()
 APP_NAME = "Wedone Operate Phoenix"
 ICON = str(ROOT / "phoenix.icns")
 
+# Qt Quick Controls/Layouts/Dialogs are QML modules, not Python modules.
+# Keep the installed QML runtime tree (including its module plugins and
+# qmldir metadata), but do not ship the unused WebEngine QML modules.
+qml_datas = collect_data_files(
+    "PySide6",
+    includes=["Qt/qml/**"],
+    excludes=[
+        "Qt/qml/QtWebEngine/**",
+        "Qt/qml/QtWebEngine",
+    ],
+)
 
-def normalized_entry_paths(entry):
-    return [str(value).replace("\\", "/").lower() for value in entry[:2]]
-
-
-def is_unneeded_qt_component(entry):
-    """Exclude QtWebEngine and standalone Qt desktop tools."""
-    for value in normalized_entry_paths(entry):
-        parts = value.split("/")
-        if any(part.startswith("qtwebengine") for part in parts):
-            return True
-        if any(
-            part in {
-                "assistant.app", "designer.app", "linguist.app",
-                "assistant__dot__app", "designer__dot__app", "linguist__dot__app",
-            }
-            for part in parts
-        ):
-            return True
-    return False
-
-
-datas, binaries, hiddenimports = collect_all("PySide6")
-
-# QtWebEngine is not imported by Python or by Main.qml. In particular, do not
-# ship its helper application (QtWebEngineProcess.app) just because collect_all
-# discovered every optional PySide6 module.
-datas = [entry for entry in datas if not is_unneeded_qt_component(entry)]
-binaries = [entry for entry in binaries if not is_unneeded_qt_component(entry)]
-hiddenimports = [
-    module for module in hiddenimports
-    if not module.lower().startswith("pyside6.qtwebengine")
-]
-
-assert not any(is_unneeded_qt_component(entry) for entry in datas + binaries)
-assert not any(module.lower().startswith("pyside6.qtwebengine") for module in hiddenimports)
-
-datas += [
+datas = qml_datas + [
     (str(ROOT / "phoenix" / "ui" / "qml"), "phoenix/ui/qml"),
     (str(ROOT / "icon.png"), "."),
 ]
@@ -60,13 +36,18 @@ datas += [
 a = Analysis(
     [str(ROOT / "phoenix_entry.py")],
     pathex=[str(ROOT)],
-    binaries=binaries,
+    binaries=[],
     datas=datas,
-    hiddenimports=hiddenimports,
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=["PySide6.QtWebEngineCore", "PySide6.QtWebEngineQuick", "PySide6.QtWebEngineWidgets"],
+    excludes=[
+        "PySide6.QtWebEngineCore",
+        "PySide6.QtWebEngineQuick",
+        "PySide6.QtWebEngineWidgets",
+        "PySide6.scripts",
+    ],
     noarchive=False,
 )
 
