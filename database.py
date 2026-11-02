@@ -144,7 +144,7 @@ def add_teacher(prenom, nom, password):
     # the first local teacher workspace instead of disappearing from view.
     if len(d["teachers"]) == 1:
         for student in d["students"]:
-            if student.get("created_by") == "admin":
+            if student.get("created_by") in ("admin", "guest"):
                 student["created_by"] = t["id"]
         _save_users(d)
         for filename in (CLASSES_FILE, GROUPS_FILE, TEMPLATES_FILE):
