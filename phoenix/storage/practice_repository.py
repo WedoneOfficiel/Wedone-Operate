@@ -25,8 +25,6 @@ class PracticeRepository:
             raise ValueError("Mode de séance invalide.")
         if mode == "individual" and student_id is not None:
             raise ValueError("Une séance individuelle ne peut pas être liée à un élève.")
-        if mode == "classroom" and not student_id:
-            raise ValueError("Une séance en classe doit être liée à un élève.")
         if not 1 <= question_count <= 500:
             raise ValueError("Le nombre de questions doit être compris entre 1 et 500.")
         session_id = str(uuid4())
