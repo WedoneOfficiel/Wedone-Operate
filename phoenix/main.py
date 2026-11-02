@@ -400,6 +400,7 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 result = self._practice.finish_session(self._session_id)
                 self._finished = True
+                self._question_started_ns = None
                 self._score_text = (
                     f"{result['correct']} bonne(s) réponse(s) sur {result['answered']}."
                 )
