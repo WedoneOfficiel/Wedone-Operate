@@ -18,8 +18,7 @@ LEVEL_RANGES = {
         # CP : additions/soustractions jusqu'à 10, pas de × ni ÷
         "addition":       (1, 9,  1, 9),
         "soustraction":   (1, 10, 1, 9),
-        "multiplication": (1, 2,  1, 5),   # tables de 2 seulement
-        "division":       (1, 2,  1, 5),
+        # Multiplication et division ne sont pas proposées au CP.
     },
     "CE1": {
         # CE1 : nombres jusqu'à 20, tables × 2 et 5
