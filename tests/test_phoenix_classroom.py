@@ -56,6 +56,8 @@ class ClassroomRepositoryTests(unittest.TestCase):
 
     def test_teacher_profile_can_be_edited(self):
         teacher_id = self.repository.create_teacher("Professeur A", "MotDePasse123!")
+        self.assertTrue(self.repository.authenticate_teacher(teacher_id, "MotDePasse123!"))
+        self.assertFalse(self.repository.authenticate_teacher(teacher_id, "incorrect"))
         self.repository.update_teacher(teacher_id, "Professeur B")
         with self.database.connect() as connection:
             row = connection.execute(
