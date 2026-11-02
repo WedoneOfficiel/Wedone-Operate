@@ -27,7 +27,7 @@ from datetime import datetime
 
 def main(argv: list[str] | None = None) -> int:
     try:
-        from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot, QCoreApplication, QTimer, qInstallMessageHandler
+        from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot, QCoreApplication, QTimer, QtMsgType, qInstallMessageHandler
         from PySide6.QtGui import QGuiApplication, QIcon, QImageReader, QPalette, QColor
         from PySide6.QtQuick import QQuickImageProvider
         from PySide6.QtQml import QQmlApplicationEngine
@@ -752,12 +752,11 @@ def main(argv: list[str] | None = None) -> int:
     qt_qml_errors: list[str] = []
 
     def qt_message_handler(mode, context, message):
-        lowered = str(message).lower()
-        if any(marker in lowered for marker in (
-            "typeerror:", "referenceerror:", "failed to load",
-            "is not installed", "no such file or directory",
-        )):
-            qt_qml_errors.append(str(message))
+        if mode in (QtMsgType.Warning, QtMsgType.Critical, QtMsgType.Fatal):
+            location = ""
+            if context is not None and context.file:
+                location = f" ({context.file}:{context.line})"
+            qt_qml_errors.append(f"{message}{location}")
 
     if smoke_test:
         qInstallMessageHandler(qt_message_handler)
