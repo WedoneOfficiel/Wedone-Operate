@@ -33,7 +33,7 @@ class StatsScreen(QWidget):
 
         self.tabs = QTabWidget()
         self.tabs.addTab(self._build_personal_tab(), "📈 Mes sessions")
-        self.tabs.addTab(self._build_group_tab(),    "👥 Groupe")
+        self.tabs.addTab(self._build_group_tab(),    "🏫 Classe")
         root.addWidget(self.tabs)
 
     def _build_personal_tab(self):
@@ -54,7 +54,7 @@ class StatsScreen(QWidget):
         l.setContentsMargins(0, 12, 0, 0); l.setSpacing(10)
 
         sel_row = QHBoxLayout()
-        sel_row.addWidget(QLabel("Groupe :"))
+        sel_row.addWidget(QLabel("Classe :"))
         self.group_selector = QComboBox(); self.group_selector.setFixedWidth(220)
         self.group_selector.currentIndexChanged.connect(self._refresh_group_stats)
         sel_row.addWidget(self.group_selector); sel_row.addStretch()
@@ -104,17 +104,24 @@ class StatsScreen(QWidget):
     def _refresh_group_selector(self):
         self.group_selector.blockSignals(True); self.group_selector.clear()
         owner_id = None if session.current.is_admin() else session.current.user_id
-        for g in db.get_groups(owner_id=owner_id):
-            self.group_selector.addItem(g["name"], userData=g["id"])
+        self.group_selector.addItem("Tous les élèves", userData="__all__")
+        for cls in db.get_classes(owner_id=owner_id):
+            self.group_selector.addItem(cls["name"], userData=cls["id"])
         self.group_selector.blockSignals(False)
         self._refresh_group_stats()
 
     def _refresh_group_stats(self):
-        group_id = self.group_selector.currentData()
-        if not group_id:
-            self.group_summary.setText("Aucun groupe disponible."); self.group_table.setRowCount(0); return
-        students = db.get_students(group_id=group_id)
-        all_scores = db.get_group_scores(group_id)
+        class_id = self.group_selector.currentData()
+        if not class_id:
+            self.group_summary.setText("Aucune classe disponible.")
+            self.group_table.setRowCount(0)
+            return
+        owner_id = None if session.current.is_admin() else session.current.user_id
+        students = (
+            db.get_students(teacher_id=owner_id) if class_id == "__all__"
+            else db.get_students(teacher_id=owner_id, class_id=class_id)
+        )
+        all_scores = db.get_students_scores([student["id"] for student in students])
         if not students:
             self.group_summary.setText("Aucun élève dans ce groupe."); self.group_table.setRowCount(0); return
 
@@ -132,22 +139,26 @@ class StatsScreen(QWidget):
             self.group_table.setItem(row, 3, QTableWidgetItem(f"{best:.1f} %" if nb else "—"))
             self.group_table.setItem(row, 4, QTableWidgetItem(f"{last:.1f} %" if last is not None else "—"))
 
-        group = db.get_group(group_id)
+        label = "Tous les élèves" if class_id == "__all__" else (db.get_class(class_id) or {}).get("name", "")
         self.group_summary.setText(
-            f"Groupe « {group['name'] if group else ''} »  •  "
-            f"{len(students)} élève{'s' if len(students)>1 else ''}  •  "
+            f"{label}  •  {len(students)} élève{'s' if len(students)>1 else ''}  •  "
             f"Moyenne : {(sum(avgs)/len(avgs)):.1f} %"
         )
 
     def _export_csv(self):
-        group_id = self.group_selector.currentData()
-        if not group_id: return
-        group = db.get_group(group_id)
-        name = f"stats_{group['name'].replace(' ','_')}.csv" if group else "stats.csv"
+        class_id = self.group_selector.currentData()
+        if not class_id: return
+        owner_id = None if session.current.is_admin() else session.current.user_id
+        students = (
+            db.get_students(teacher_id=owner_id) if class_id == "__all__"
+            else db.get_students(teacher_id=owner_id, class_id=class_id)
+        )
+        cls = db.get_class(class_id) if class_id != "__all__" else None
+        name = f"stats_{cls['name'].replace(' ','_')}.csv" if cls else "stats_tous_les_eleves.csv"
         path, _ = QFileDialog.getSaveFileName(self, "Exporter", name, "CSV (*.csv)")
         if path:
             with open(path, "w", encoding="utf-8-sig") as f:
-                f.write(db.export_group_csv(group_id))
+                f.write(db.export_students_csv(students))
 
     def _make_card(self, s: dict) -> QWidget:
         card = QFrame()
