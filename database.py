@@ -174,6 +174,30 @@ def add_teacher(prenom, nom, password):
     _migrate_legacy_workspace()
     return t
 
+def update_teacher(tid, prenom, nom, password=None):
+    """Update a local teacher profile without changing its workspace identity."""
+    prenom, nom = prenom.strip(), nom.strip()
+    if not prenom or not nom:
+        return False
+    users = _load_users()
+    target = next((item for item in users["teachers"] if item["id"] == tid), None)
+    if not target:
+        return False
+    normalized = (prenom.casefold(), nom.casefold())
+    if any(item["id"] != tid and
+           (item["prenom"].casefold(), item["nom"].casefold()) == normalized
+           for item in users["teachers"]):
+        return False
+    target["prenom"], target["nom"] = prenom, nom
+    if password is not None:
+        if len(password) < 6:
+            return False
+        target["password_hash"] = _hash(password)
+        target["first_login"] = False
+    _save_users(users)
+    return True
+
+
 def remove_teacher(tid):
     """Remove a profile and transfer its local workspace without deleting data."""
     users = _load_users()
@@ -245,6 +269,31 @@ def add_class(name, owner_id, level="CM2"):
     c = {"id": _uid("c"), "name": name, "owner_id": owner_id, "level": level}
     classes.append(c); _save(CLASSES_FILE, classes); return c
 
+def update_class(class_id, name, level):
+    """Edit a class and keep the effective level of its ungrouped students in sync."""
+    name = name.strip()
+    if not name or level not in SCHOOL_LEVELS:
+        return False
+    classes = _load(CLASSES_FILE, [])
+    target = next((item for item in classes if item["id"] == class_id), None)
+    if not target:
+        return False
+    if any(item["id"] != class_id and item.get("owner_id") == target.get("owner_id")
+           and item.get("name", "").casefold() == name.casefold() for item in classes):
+        return False
+    target["name"], target["level"] = name, level
+    _save(CLASSES_FILE, classes)
+    users = _load_users()
+    changed = False
+    for student in users["students"]:
+        if student.get("class_id") == class_id and not student.get("group_id"):
+            student["level"] = level
+            changed = True
+    if changed:
+        _save_users(users)
+    return True
+
+
 def remove_class(class_id):
     """Remove a class while preserving students and their score history."""
     classes = _load(CLASSES_FILE, [])
@@ -295,12 +344,39 @@ def add_group(name, owner_id, level="CM2", class_id=None):
     gs.append(g); _save(GROUPS_FILE, gs); return g
 
 def update_group(gid, **kwargs):
+    """Edit a group; validate its class and synchronize member placement/level."""
+    allowed = {"name", "level", "class_id"}
+    if set(kwargs) - allowed:
+        return False
     gs = _load(GROUPS_FILE, [])
-    for g in gs:
-        if g["id"] == gid:
-            for k, v in kwargs.items(): g[k] = v
-            _save(GROUPS_FILE, gs); return True
-    return False
+    target = next((group for group in gs if group["id"] == gid), None)
+    if not target:
+        return False
+    name = kwargs.get("name", target.get("name", "")).strip()
+    level = kwargs.get("level", target.get("level", "CM2"))
+    class_id = kwargs.get("class_id", target.get("class_id"))
+    if not name or level not in SCHOOL_LEVELS:
+        return False
+    if class_id:
+        cls = get_class(class_id)
+        if not cls or cls.get("owner_id") != target.get("owner_id"):
+            return False
+    if any(group["id"] != gid and group.get("owner_id") == target.get("owner_id")
+           and group.get("class_id") == class_id
+           and group.get("name", "").casefold() == name.casefold() for group in gs):
+        return False
+    target.update({"name": name, "level": level, "class_id": class_id})
+    _save(GROUPS_FILE, gs)
+    users = _load_users()
+    changed = False
+    for student in users["students"]:
+        if student.get("group_id") == gid:
+            student["level"] = level
+            student["class_id"] = class_id
+            changed = True
+    if changed:
+        _save_users(users)
+    return True
 
 def remove_group(gid):
     groups = _load(GROUPS_FILE, [])
@@ -431,6 +507,42 @@ def assign_student_class(student_id, class_id):
             return True
     return False
 
+def update_student(sid, prenom, nom, class_id=None, group_id=None):
+    """Edit student identity and optional placement while preserving score history."""
+    prenom, nom = prenom.strip(), nom.strip()
+    if not prenom or not nom:
+        return False
+    users = _load_users()
+    target = next((student for student in users["students"] if student["id"] == sid), None)
+    if not target:
+        return False
+    owner_id = target.get("created_by")
+    cls = get_class(class_id) if class_id else None
+    group = get_group(group_id) if group_id else None
+    if class_id and (not cls or cls.get("owner_id") != owner_id):
+        return False
+    if group_id and (not group or group.get("owner_id") != owner_id):
+        return False
+    if group and group.get("class_id") and class_id not in (None, group["class_id"]):
+        return False
+    if group and not class_id:
+        class_id = group.get("class_id")
+    if any(student["id"] != sid and student.get("created_by") == owner_id
+           and student.get("class_id") == class_id
+           and student.get("group_id") == group_id
+           and student.get("prenom", "").casefold() == prenom.casefold()
+           and student.get("nom", "").casefold() == nom.casefold()
+           for student in users["students"]):
+        return False
+    target.update({"prenom": prenom, "nom": nom, "class_id": class_id, "group_id": group_id})
+    if group:
+        target["level"] = group.get("level", "CM2")
+    elif cls:
+        target["level"] = cls.get("level", "CM2")
+    _save_users(users)
+    return True
+
+
 def remove_student(sid):
     d = _load_users()
     d["students"] = [s for s in d["students"] if s["id"] != sid]; _save_users(d)
@@ -505,6 +617,30 @@ def save_template(name, owner_id, config, group_id=None):
             "created_at": now, "updated_at": now
         })
     _save(TEMPLATES_FILE, ts)
+
+def update_template(tid, name, config, group_id=None):
+    """Edit an existing template by stable ID (renaming does not create duplicates)."""
+    name = name.strip()
+    if not name:
+        return False
+    templates = _load(TEMPLATES_FILE, [])
+    target = next((item for item in templates if item["id"] == tid), None)
+    if not target:
+        return False
+    if any(item["id"] != tid and item.get("owner_id") == target.get("owner_id")
+           and item.get("name", "").casefold() == name.casefold() for item in templates):
+        return False
+    if group_id:
+        group = get_group(group_id)
+        if not group or group.get("owner_id") != target.get("owner_id"):
+            return False
+    target["name"] = name
+    target["config"] = config
+    target["group_id"] = group_id
+    target["updated_at"] = datetime.now().isoformat(timespec="seconds")
+    _save(TEMPLATES_FILE, templates)
+    return True
+
 
 def remove_template(tid):
     ts = _load(TEMPLATES_FILE, [])
