@@ -176,8 +176,8 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = str(exc)
             self.classroomChanged.emit()
 
-        @Slot(str, str)
-        def updateTeacherProfile(self, display_name: str, _unused: str = "") -> None:
+        @Slot(str)
+        def updateTeacherProfile(self, display_name: str) -> None:
             if not self._teacher_id:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
             else:
