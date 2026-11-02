@@ -6,6 +6,7 @@ from PyQt6.QtGui import QIcon
 import settings as cfg
 import session
 from ui.theme           import apply as apply_theme
+from ui.resources       import resource_path
 from ui.screen_login    import LoginScreen
 from ui.screen_dashboard import DashboardScreen
 from ui.screen_main     import MainScreen
@@ -33,7 +34,7 @@ class WedoneOperateApp(QMainWindow):
         self._last_cfg = {}
 
         self.setWindowTitle("Wedone Operate")
-        self.setWindowIcon(QIcon("icon.png"))
+        self.setWindowIcon(QIcon(resource_path("icon.png")))
         self.setMinimumSize(820, 560); self.resize(960, 660)
         apply_theme(QApplication.instance(), self._theme)
 
