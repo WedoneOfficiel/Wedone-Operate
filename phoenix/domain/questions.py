@@ -66,10 +66,11 @@ def _integer_question(skill: Skill, difficulty: int, rng: random.Random) -> Ques
     elif operation == "division":
         divisor_max = {1: 5, 2: 10, 3: 12, 4: 20, 5: 25}[difficulty]
         quotient_max = {1: 5, 2: 10, 3: 20, 4: 50, 5: 100}[difficulty]
-        a = rng.randint(2, divisor_max)
-        b = rng.randint(1, quotient_max)
-        answer = b
-        b, a = b * a, a
+        divisor = rng.randint(2, divisor_max)
+        quotient = rng.randint(1, quotient_max)
+        a = divisor * quotient
+        b = divisor
+        answer = quotient
         symbol = "÷"
     elif operation == "signed_addition":
         bound = {1: 5, 2: 10, 3: 20, 4: 50, 5: 100}[difficulty]
