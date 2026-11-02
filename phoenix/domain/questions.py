@@ -33,14 +33,23 @@ def _integer_question(skill: Skill, difficulty: int, rng: random.Random) -> Ques
     operation = skill.operation
     if operation == "addition":
         limits = {1: 10, 2: 20, 3: 100, 4: 500, 5: 1000}
-        maximum = limits[difficulty]
+        level_ceiling = {
+            "cp.addition_20": 20,
+            "ce1.addition_100": 100,
+            "ce2.addition_1000": 1000,
+        }.get(skill.id, 1000)
+        maximum = min(limits[difficulty], level_ceiling)
         a = rng.randint(0, maximum)
         b = rng.randint(0, maximum - a)
         answer = a + b
         symbol = "+"
     elif operation == "subtraction":
         limits = {1: 10, 2: 20, 3: 100, 4: 500, 5: 1000}
-        maximum = limits[difficulty]
+        level_ceiling = {
+            "cp.subtraction_20": 20,
+            "ce1.subtraction_100": 100,
+        }.get(skill.id, 1000)
+        maximum = min(limits[difficulty], level_ceiling)
         a = rng.randint(0, maximum)
         b = rng.randint(0, a)
         answer = a - b
