@@ -151,7 +151,7 @@ class StatsScreen(QWidget):
 
     def _make_card(self, s: dict) -> QWidget:
         card = QFrame()
-        card.setStyleSheet("QFrame{border:1px solid rgba(128,128,128,0.18);border-radius:8px;padding:2px;}")
+        card.setProperty("class", "card-compact")
         l = QHBoxLayout(card); l.setSpacing(18)
         pct = s.get("percent", 0)
         color = "#2EBD6E" if pct >= 80 else ("#F0A030" if pct >= 50 else "#E05555")
