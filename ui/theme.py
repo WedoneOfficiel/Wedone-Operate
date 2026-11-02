@@ -41,9 +41,31 @@ QLabel#section {{
 QLabel#subtitle, QLabel#hint {{
     color: {c['text_secondary']}; font-size: 12px;
 }}
-QLabel#success {{ color: {c['success']}; font-weight: 700; }}
-QLabel#error {{ color: {c['error']}; font-weight: 700; }}
-QLabel#warning {{ color: {c['warning']}; }}
+QLabel#success, QLabel[class="success"] {{ color: {c['success']}; font-weight: 700; }}
+QLabel#error, QLabel[class="error"] {{ color: {c['error']}; font-weight: 700; }}
+QLabel#warning, QLabel[class="warning"] {{ color: {c['warning']}; font-weight: 650; }}
+QLabel#timer-green {{ color: {c['success']}; font-weight: 700; }}
+QLabel#timer-orange {{ color: {c['warning']}; font-weight: 700; }}
+QLabel#timer-red {{ color: {c['error']}; font-weight: 700; }}
+QLabel[class="avatar-primary"] {{ background: {c['primary']}; color: white; border-radius: 18px; }}
+QLabel[class="avatar-muted"] {{ background: {c['surface_hover']}; color: {c['text_secondary']}; border-radius: 18px; }}
+QLabel[class="avatar-success"] {{ background: {c['success']}; color: white; border-radius: 18px; }}
+QLabel[class="avatar-danger"] {{ background: {c['error']}; color: white; border-radius: 18px; }}
+QWidget[class="app-header"], QFrame[class="app-header"] {{
+    background: {c['surface_glass']}; border-bottom: 1px solid {c['border']};
+}}
+QWidget[class="app-footer"], QFrame[class="app-footer"] {{
+    background: {c['surface_glass']}; border-top: 1px solid {c['border']};
+}}
+QWidget[class="side-nav"] {{
+    background: {c['surface_glass']}; border-right: 1px solid {c['border']};
+}}
+QWidget[class="feedback-success"] {{ background: rgba(38, 155, 112, 0.10); }}
+QWidget[class="feedback-error"] {{ background: rgba(226, 75, 95, 0.10); }}
+QProgressBar#session-progress {{
+    border: 0; border-radius: 0; background: {c['surface_hover']}; height: 5px;
+}}
+QProgressBar#session-progress::chunk {{ background: {c['primary']}; border-radius: 0; }}
 QLabel#metric {{
     color: {c['primary']}; font-family: "Manrope", "Segoe UI", sans-serif;
     font-size: 28px; font-weight: 800;
@@ -282,5 +304,6 @@ QWidget:focus {{ outline: none; }}
 
 
 def apply(app, theme: str) -> None:
+    app.setProperty("wedone_theme", theme)
     app.setFont(QFont("DM Sans", 10))
     app.setStyleSheet(get_stylesheet(theme))
