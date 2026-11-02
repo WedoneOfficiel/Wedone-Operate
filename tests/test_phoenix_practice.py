@@ -33,6 +33,8 @@ class PracticeRepositoryTests(unittest.TestCase):
         saved = self.repository.get_session(session_id)
         self.assertEqual(saved["status"], "completed")
         self.assertEqual(len(saved["answers"]), 2)
+        self.assertEqual(saved["answers"][0]["elapsed_ms"], 900)
+        self.assertEqual(saved["answers"][1]["elapsed_ms"], 1200)
 
     def test_abandoning_keeps_partial_answers(self):
         session_id = self.repository.start_session(
@@ -47,6 +49,7 @@ class PracticeRepositoryTests(unittest.TestCase):
         saved = self.repository.get_session(session_id)
         self.assertEqual(len(saved["answers"]), 1)
         self.assertEqual(saved["answers"][0]["given_answer"], "30")
+        self.assertEqual(saved["answers"][0]["elapsed_ms"], 700)
 
     def test_session_cannot_finish_before_all_questions_are_answered(self):
         session_id = self.repository.start_session(
