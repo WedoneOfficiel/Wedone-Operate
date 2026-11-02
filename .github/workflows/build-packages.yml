@@ -107,7 +107,9 @@ jobs:
           Summary:        Logiciel de calcul mental pour l'école
           License:        Apache-2.0
           BuildArch:      x86_64
+          AutoReqProv:    no
           Requires:       libX11
+          %global __os_install_post %{nil}
           %description
           Wedone Operate - application éducative de calcul mental.
           %files
