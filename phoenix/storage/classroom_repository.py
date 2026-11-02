@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import json
 import sqlite3
 from uuid import uuid4
 
 from .database import Database
 from ..security import hash_password, verify_password
+from ..domain.curriculum import get_skill
 
 
 class ClassroomRepository:
@@ -147,6 +149,115 @@ class ClassroomRepository:
                 (student_id, class_id, group_id, name),
             )
         return student_id
+
+    def update_group(
+        self, group_id: str, name: str, teacher_id: str | None = None
+    ) -> None:
+        label = name.strip()
+        if not label:
+            raise ValueError("Le nom du groupe est obligatoire.")
+        with self.database.transaction() as connection:
+            cursor = connection.execute(
+                "UPDATE groups SET name=? WHERE id=? AND archived_at IS NULL "
+                "AND class_id IN (SELECT id FROM classes WHERE archived_at IS NULL "
+                "AND (? IS NULL OR owner_teacher_id=?))",
+                (label, group_id, teacher_id, teacher_id),
+            )
+            if cursor.rowcount != 1:
+                raise ValueError("Groupe introuvable dans votre espace professeur.")
+
+    def update_student(
+        self, student_id: str, display_name: str, teacher_id: str | None = None
+    ) -> None:
+        label = display_name.strip()
+        if not label:
+            raise ValueError("Le nom de l'élève est obligatoire.")
+        with self.database.transaction() as connection:
+            cursor = connection.execute(
+                "UPDATE students SET display_name=? WHERE id=? AND archived_at IS NULL "
+                "AND class_id IN (SELECT id FROM classes WHERE archived_at IS NULL "
+                "AND (? IS NULL OR owner_teacher_id=?))",
+                (label, student_id, teacher_id, teacher_id),
+            )
+            if cursor.rowcount != 1:
+                raise ValueError("Élève introuvable dans votre espace professeur.")
+
+    def create_exercise_plan(
+        self, class_id: str, teacher_id: str, name: str, skill_id: str,
+        question_count: int, difficulty: int,
+    ) -> str:
+        label = name.strip()
+        if not label:
+            raise ValueError("Donnez un nom à l'exercice.")
+        skill = get_skill(skill_id)
+        if not skill.enabled:
+            raise ValueError("Cette compétence n'est pas encore disponible.")
+        if not 5 <= int(question_count) <= 30:
+            raise ValueError("Un exercice doit contenir entre 5 et 30 questions.")
+        if not 1 <= int(difficulty) <= 5:
+            raise ValueError("La difficulté doit être comprise entre 1 et 5.")
+        configuration = json.dumps(
+            {
+                "skill_id": skill_id,
+                "question_count": int(question_count),
+                "difficulty": int(difficulty),
+            },
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        plan_id = str(uuid4())
+        with self.database.transaction() as connection:
+            class_row = connection.execute(
+                "SELECT 1 FROM classes WHERE id=? AND owner_teacher_id=? AND archived_at IS NULL",
+                (class_id, teacher_id),
+            ).fetchone()
+            if class_row is None:
+                raise ValueError("Classe introuvable dans votre espace professeur.")
+            connection.execute(
+                "INSERT INTO exercise_plans(id, owner_teacher_id, class_id, name, configuration_json) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (plan_id, teacher_id, class_id, label, configuration),
+            )
+        return plan_id
+
+    def list_exercise_plans(
+        self, class_id: str, teacher_id: str | None = None
+    ) -> list[dict]:
+        query = (
+            "SELECT p.id, p.class_id, p.name, p.configuration_json, p.created_at "
+            "FROM exercise_plans p JOIN classes c ON c.id=p.class_id "
+            "WHERE p.class_id=? AND p.archived_at IS NULL AND c.archived_at IS NULL "
+            "AND (? IS NULL OR p.owner_teacher_id=?) "
+            "ORDER BY p.created_at DESC"
+        )
+        with self.database.connect() as connection:
+            rows = connection.execute(
+                query, (class_id, teacher_id, teacher_id)
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def get_exercise_plan_for_student(
+        self, plan_id: str, student_id: str
+    ) -> dict | None:
+        with self.database.connect() as connection:
+            row = connection.execute(
+                "SELECT p.id, p.class_id, p.name, p.configuration_json "
+                "FROM exercise_plans p JOIN students s ON s.class_id=p.class_id "
+                "WHERE p.id=? AND s.id=? AND p.archived_at IS NULL AND s.archived_at IS NULL",
+                (plan_id, student_id),
+            ).fetchone()
+        return dict(row) if row is not None else None
+
+    def archive_exercise_plan(self, plan_id: str, teacher_id: str) -> None:
+        archived_at = datetime.now(timezone.utc).isoformat()
+        with self.database.transaction() as connection:
+            cursor = connection.execute(
+                "UPDATE exercise_plans SET archived_at=? WHERE id=? AND owner_teacher_id=? "
+                "AND archived_at IS NULL",
+                (archived_at, plan_id, teacher_id),
+            )
+            if cursor.rowcount != 1:
+                raise ValueError("Exercice introuvable dans votre espace professeur.")
 
     def list_teachers(self) -> list[dict]:
         with self.database.connect() as connection:

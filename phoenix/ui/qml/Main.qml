@@ -488,6 +488,33 @@ ApplicationWindow {
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
+                    Label {
+                        text: "Exercices proposés par le professeur"
+                        color: root.colors.text
+                        font.pixelSize: 14
+                        font.weight: Font.DemiBold
+                        visible: !!studentClassSelect.currentValue
+                    }
+                    ComboBox {
+                        id: studentPlanSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 46
+                        textRole: "name"
+                        valueRole: "id"
+                        visible: !!studentClassSelect.currentValue
+                        model: { appBridge.classroomRevision; return appBridge.plansForClass(studentClassSelect.currentValue || "") }
+                    }
+                    PrimaryButton {
+                        text: "Démarrer l'exercice assigné"
+                        Layout.fillWidth: true
+                        visible: !!studentPlanSelect.currentValue
+                        enabled: !!studentProfileSelect.currentValue
+                        onClicked: {
+                            appBridge.selectStudent(studentProfileSelect.currentValue)
+                            appBridge.startAssignedPractice(studentPlanSelect.currentValue)
+                            root.page = "practice"
+                        }
+                    }
                     PrimaryButton {
                         text: "Continuer"
                         Layout.fillWidth: true
@@ -603,6 +630,65 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         enabled: !!teacherClassSelect.currentValue
                         onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, teacherGroupSelect.currentValue || "")
+                    }
+                    Label { text: "Assigner un exercice"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 18 }
+                    TextField {
+                        id: newExerciseName
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        placeholderText: "Nom de l'exercice (ex. Révisions des additions)"
+                    }
+                    ComboBox {
+                        id: exerciseSkillSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        textRole: "label"
+                        valueRole: "id"
+                        model: JSON.parse(appBridge.skillsJson)
+                    }
+                    Label { text: "Nombre de questions"; color: root.colors.textSecondary; font.pixelSize: 13 }
+                    SpinBox { id: exerciseCountSelect; from: 5; to: 30; value: 10; editable: true; Layout.fillWidth: true }
+                    Label { text: "Difficulté"; color: root.colors.textSecondary; font.pixelSize: 13 }
+                    ComboBox {
+                        id: exerciseDifficultySelect
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        textRole: "label"
+                        valueRole: "value"
+                        model: [
+                            { label: "1 · Très accessible", value: 1 },
+                            { label: "2 · Accessible", value: 2 },
+                            { label: "3 · Intermédiaire", value: 3 },
+                            { label: "4 · Soutenue", value: 4 },
+                            { label: "5 · Avancée", value: 5 }
+                        ]
+                    }
+                    PrimaryButton {
+                        text: "Assigner à cette classe"
+                        Layout.fillWidth: true
+                        enabled: !!teacherClassSelect.currentValue && !!exerciseSkillSelect.currentValue && newExerciseName.text.trim().length > 0
+                        onClicked: appBridge.createExercisePlan(
+                            teacherClassSelect.currentValue, newExerciseName.text,
+                            exerciseSkillSelect.currentValue, exerciseCountSelect.value,
+                            exerciseDifficultySelect.currentValue
+                        )
+                    }
+                    ComboBox {
+                        id: teacherPlanSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        textRole: "name"
+                        valueRole: "id"
+                        model: { appBridge.classroomRevision; return appBridge.teacherPlansForClass(teacherClassSelect.currentValue || "") }
+                    }
+                    PrimaryButton {
+                        text: "Archiver l'exercice sélectionné"
+                        Layout.fillWidth: true
+                        enabled: !!teacherPlanSelect.currentValue
+                        fillColor: root.colors.dangerSurface
+                        hoverColor: root.colors.dangerHover
+                        textColor: root.colors.danger
+                        onClicked: appBridge.archiveExercisePlan(teacherPlanSelect.currentValue)
                     }
                     Label { text: "Archiver des éléments"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 16 }
                     RowLayout {
@@ -764,19 +850,8 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         implicitHeight: 48
                         textRole: "label"
-                        valueRole: "value"
-                        model: [
-                            { label: "CP · Additions jusqu'à 20", value: "cp.addition_20" },
-                            { label: "CP · Soustractions jusqu'à 20", value: "cp.subtraction_20" },
-                            { label: "CE1 · Additions jusqu'à 100", value: "ce1.addition_100" },
-                            { label: "CE1 · Soustractions jusqu'à 100", value: "ce1.subtraction_100" },
-                            { label: "CE2 · Additions jusqu'à 1 000", value: "ce2.addition_1000" },
-                            { label: "CE2 · Tables de multiplication", value: "ce2.multiplication_tables" },
-                            { label: "CM1 · Multiplications", value: "cm1.multiplication" },
-                            { label: "CM2 · Divisions exactes", value: "cm2.division_exact" },
-                            { label: "5e · Addition de nombres relatifs", value: "college.signed_addition" },
-                            { label: "4e · Multiplication de nombres relatifs", value: "college.signed_multiplication" }
-                        ]
+                        valueRole: "id"
+                        model: JSON.parse(appBridge.skillsJson)
                     }
                     Label { text: "Nombre de questions"; color: root.colors.textSecondary; font.pixelSize: 15; font.weight: Font.DemiBold }
                     SpinBox {

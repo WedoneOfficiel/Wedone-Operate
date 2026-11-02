@@ -8,6 +8,7 @@ from time import perf_counter_ns
 from pathlib import Path
 
 from .domain.questions import Question, generate_session
+from .domain.curriculum import SKILLS
 from .storage import (
     ClassroomRepository,
     Database,
@@ -125,6 +126,16 @@ def main(argv: list[str] | None = None) -> int:
         @Property(str, notify=classroomChanged)
         def allClassesJson(self) -> str:
             return json.dumps(self._classroom.list_classes(), ensure_ascii=False)
+
+        @Property(str, notify=classroomChanged)
+        def skillsJson(self) -> str:
+            return json.dumps(
+                [
+                    {"id": skill.id, "label": f"{skill.level_id} · {skill.label}"}
+                    for skill in SKILLS if skill.enabled
+                ],
+                ensure_ascii=False,
+            )
 
         @Property(str, notify=classroomChanged)
         def classroomMessage(self) -> str:
@@ -317,8 +328,10 @@ def main(argv: list[str] | None = None) -> int:
         @Slot()
         def logoutTeacher(self) -> None:
             self._teacher_id = None
+            self._active_student_id = None
             self._classroom_message = "Vous êtes déconnecté."
             self._emit_classroom_changed()
+            self.progressChanged.emit()
 
         @Slot(str, str)
         def createClass(self, name: str, school_year: str) -> None:
@@ -355,6 +368,107 @@ def main(argv: list[str] | None = None) -> int:
                 except Exception as exc:
                     self._classroom_message = str(exc)
             self._emit_classroom_changed()
+
+        @Slot(str, str, str)
+        def updateClass(self, class_id: str, name: str, school_year: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.update_class(
+                        class_id, name, school_year or None, self._teacher_id
+                    )
+                    self._classroom_message = "Classe mise à jour."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self._emit_classroom_changed()
+
+        @Slot(str, str)
+        def updateGroup(self, group_id: str, name: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.update_group(group_id, name, self._teacher_id)
+                    self._classroom_message = "Groupe mis à jour."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self._emit_classroom_changed()
+
+        @Slot(str, str)
+        def updateStudent(self, student_id: str, display_name: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.update_student(
+                        student_id, display_name, self._teacher_id
+                    )
+                    self._classroom_message = "Profil élève mis à jour."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self._emit_classroom_changed()
+
+        @Slot(str, result="QVariantList")
+        def plansForClass(self, class_id: str):
+            return self._classroom.list_exercise_plans(class_id) if class_id else []
+
+        @Slot(str, result="QVariantList")
+        def teacherPlansForClass(self, class_id: str):
+            return (
+                self._classroom.list_exercise_plans(class_id, self._teacher_id)
+                if class_id and self._teacher_id else []
+            )
+
+        @Slot(str, str, str, int, int)
+        def createExercisePlan(
+            self, class_id: str, name: str, skill_id: str,
+            question_count: int, difficulty: int,
+        ) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.create_exercise_plan(
+                        class_id, self._teacher_id, name, skill_id,
+                        question_count, difficulty,
+                    )
+                    self._classroom_message = "Exercice assigné à la classe."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self._emit_classroom_changed()
+
+        @Slot(str)
+        def archiveExercisePlan(self, plan_id: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.archive_exercise_plan(plan_id, self._teacher_id)
+                    self._classroom_message = "Exercice archivé."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self._emit_classroom_changed()
+
+        @Slot(str)
+        def startAssignedPractice(self, plan_id: str) -> None:
+            if not self._active_student_id:
+                self._classroom_message = "Sélectionnez d'abord un profil élève."
+                self._emit_classroom_changed()
+                return
+            plan = self._classroom.get_exercise_plan_for_student(
+                plan_id, self._active_student_id
+            )
+            if plan is None:
+                self._classroom_message = "Cet exercice n'est pas disponible pour cet élève."
+                self._emit_classroom_changed()
+                return
+            configuration = json.loads(plan["configuration_json"])
+            self.startPractice(
+                configuration["skill_id"],
+                int(configuration["question_count"]),
+                int(configuration["difficulty"]),
+            )
 
         @Slot(str)
         def archiveStudent(self, student_id: str) -> None:

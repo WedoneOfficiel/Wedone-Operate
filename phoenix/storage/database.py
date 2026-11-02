@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Iterator
 from contextlib import contextmanager
 
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 3
 
 
 class DatabaseError(RuntimeError):
@@ -104,6 +104,11 @@ _MIGRATIONS = {
     ALTER TABLE classes
         ADD COLUMN owner_teacher_id TEXT REFERENCES teachers(id) ON DELETE RESTRICT;
     CREATE INDEX idx_classes_owner_teacher ON classes(owner_teacher_id);
+    """,
+    3: """
+    ALTER TABLE exercise_plans
+        ADD COLUMN class_id TEXT REFERENCES classes(id) ON DELETE RESTRICT;
+    CREATE INDEX idx_exercise_plans_class ON exercise_plans(class_id, archived_at);
     """,
 }
 

@@ -73,6 +73,58 @@ class ClassroomRepositoryTests(unittest.TestCase):
             ).fetchone()
         self.assertIsNotNone(archived_class["archived_at"])
 
+    def test_teacher_can_assign_exercises_only_to_owned_classes(self):
+        teacher = self.repository.create_teacher("Professeur A", "MotDePasse123!")
+        other_teacher = self.repository.create_teacher("Professeur B", "MotDePasse456!")
+        class_id = self.repository.create_class("CM1 A", owner_teacher_id=teacher)
+        other_class = self.repository.create_class("CM2 B", owner_teacher_id=other_teacher)
+        student_id = self.repository.create_student(class_id, "Camille")
+
+        plan_id = self.repository.create_exercise_plan(
+            class_id, teacher, "Révisions", "cp.addition_20", 10, 2
+        )
+        plans = self.repository.list_exercise_plans(class_id, teacher)
+        self.assertEqual([plan["id"] for plan in plans], [plan_id])
+        self.assertEqual(
+            self.repository.get_exercise_plan_for_student(plan_id, student_id)["name"],
+            "Révisions",
+        )
+        self.assertIsNone(
+            self.repository.get_exercise_plan_for_student(
+                plan_id, self.repository.create_student(other_class, "Alex")
+            )
+        )
+        with self.assertRaises(ValueError):
+            self.repository.create_exercise_plan(
+                other_class, teacher, "Interdit", "cp.addition_20", 10, 2
+            )
+        with self.assertRaises(ValueError):
+            self.repository.create_exercise_plan(
+                class_id, teacher, "Compétence indisponible",
+                "college.proportionality", 10, 2
+            )
+        self.repository.archive_exercise_plan(plan_id, teacher)
+        self.assertEqual(self.repository.list_exercise_plans(class_id, teacher), [])
+
+    def test_group_and_student_edits_are_scoped_to_teacher(self):
+        teacher = self.repository.create_teacher("Professeur A", "MotDePasse123!")
+        other_teacher = self.repository.create_teacher("Professeur B", "MotDePasse456!")
+        class_id = self.repository.create_class("CM1 A", owner_teacher_id=teacher)
+        other_class = self.repository.create_class("CM2 B", owner_teacher_id=other_teacher)
+        group_id = self.repository.create_group(class_id, "Groupe bleu", teacher)
+        student_id = self.repository.create_student(class_id, "Camille", group_id, teacher)
+        self.repository.update_group(group_id, "Groupe vert", teacher)
+        self.repository.update_student(student_id, "Camille B", teacher)
+        with self.assertRaises(ValueError):
+            self.repository.update_group(group_id, "Interdit", other_teacher)
+        with self.assertRaises(ValueError):
+            self.repository.update_student(student_id, "Interdit", other_teacher)
+        self.assertEqual(self.repository.list_groups(class_id, teacher)[0]["name"], "Groupe vert")
+        self.assertEqual(
+            self.repository.list_students(class_id, teacher_id=teacher)[0]["display_name"],
+            "Camille B",
+        )
+
     def test_teacher_classes_are_scoped_and_protected(self):
         first_teacher = self.repository.create_teacher("Professeur A", "MotDePasse123!")
         second_teacher = self.repository.create_teacher("Professeur B", "MotDePasse456!")
