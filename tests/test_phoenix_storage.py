@@ -7,6 +7,7 @@ from pathlib import Path
 
 from phoenix.storage.backup import create_backup, restore_backup
 from phoenix.storage.database import Database, DatabaseError, CURRENT_SCHEMA_VERSION
+from phoenix.storage.paths import APP_DATA_DIR_NAME, DATABASE_FILENAME
 
 
 class PhoenixDatabaseTests(unittest.TestCase):
@@ -18,6 +19,10 @@ class PhoenixDatabaseTests(unittest.TestCase):
 
     def tearDown(self):
         self.temp.cleanup()
+
+    def test_data_location_is_separate_from_legacy_app(self):
+        self.assertEqual(APP_DATA_DIR_NAME, "Wedone Operate Phoenix")
+        self.assertEqual(DATABASE_FILENAME, "phoenix.sqlite3")
 
     def test_initializes_current_schema(self):
         with self.database.connect() as connection:
