@@ -396,6 +396,132 @@ class AdminScreen(QWidget):
 # Dialogues
 # ══════════════════════════════════════════════════════════════════════
 
+class EditTeacherDialog(QDialog):
+    def __init__(self, teacher, parent=None):
+        super().__init__(parent)
+        self._teacher = teacher
+        self.setWindowTitle("Modifier le professeur")
+        self.setMinimumWidth(340)
+        layout = QVBoxLayout(self); layout.setSpacing(10); layout.setContentsMargins(22, 20, 22, 20)
+        layout.addWidget(QLabel("Prénom"))
+        self.prenom = QLineEdit(teacher.get("prenom", "")); layout.addWidget(self.prenom)
+        layout.addWidget(QLabel("Nom"))
+        self.nom = QLineEdit(teacher.get("nom", "")); layout.addWidget(self.nom)
+        layout.addWidget(QLabel("Nouveau mot de passe (facultatif)"))
+        self.password = QLineEdit(); self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setPlaceholderText("Laisser vide pour conserver l'actuel"); layout.addWidget(self.password)
+        self.error = QLabel(""); self.error.setObjectName("error"); self.error.hide(); layout.addWidget(self.error)
+        buttons = QHBoxLayout()
+        cancel = QPushButton("Annuler"); cancel.setProperty("class", "secondary"); cancel.clicked.connect(self.reject)
+        save = QPushButton("Enregistrer"); save.clicked.connect(self._save)
+        buttons.addWidget(cancel); buttons.addWidget(save); layout.addLayout(buttons)
+        _wire_enter(self, save)
+
+    def _save(self):
+        password = self.password.text() or None
+        if password is not None and len(password) < 6:
+            self.error.setText("Le mot de passe doit contenir au moins 6 caractères."); self.error.show(); return
+        if not db.update_teacher(self._teacher["id"], self.prenom.text(), self.nom.text(), password):
+            self.error.setText("Informations invalides ou nom déjà utilisé."); self.error.show(); return
+        self.accept()
+
+
+class EditClassDialog(QDialog):
+    def __init__(self, cls, parent=None):
+        super().__init__(parent)
+        self._class = cls
+        self.setWindowTitle("Modifier la classe")
+        self.setMinimumWidth(340)
+        layout = QVBoxLayout(self); layout.setSpacing(10); layout.setContentsMargins(22, 20, 22, 20)
+        layout.addWidget(QLabel("Nom de la classe"))
+        self.name = QLineEdit(cls.get("name", "")); layout.addWidget(self.name)
+        layout.addWidget(QLabel("Niveau scolaire"))
+        self.level_combo = QComboBox(); self.level_combo.addItems(SCHOOL_LEVELS)
+        self.level_combo.setCurrentText(cls.get("level", "CM2")); layout.addWidget(self.level_combo)
+        buttons = QHBoxLayout()
+        cancel = QPushButton("Annuler"); cancel.setProperty("class", "secondary"); cancel.clicked.connect(self.reject)
+        save = QPushButton("Enregistrer"); save.clicked.connect(self.accept)
+        buttons.addWidget(cancel); buttons.addWidget(save); layout.addLayout(buttons)
+        _wire_enter(self, save)
+
+    def value(self): return self.name.text().strip()
+    def level(self): return self.level_combo.currentText()
+
+
+class EditGroupDialog(QDialog):
+    def __init__(self, group, parent=None):
+        super().__init__(parent)
+        self._group = group
+        self.setWindowTitle("Modifier le groupe")
+        self.setMinimumWidth(360)
+        layout = QVBoxLayout(self); layout.setSpacing(10); layout.setContentsMargins(22, 20, 22, 20)
+        layout.addWidget(QLabel("Nom du groupe"))
+        self.name_input = QLineEdit(group.get("name", "")); layout.addWidget(self.name_input)
+        layout.addWidget(QLabel("Niveau scolaire"))
+        self.level_combo = QComboBox(); self.level_combo.addItems(SCHOOL_LEVELS)
+        self.level_combo.setCurrentText(group.get("level", "CM2")); layout.addWidget(self.level_combo)
+        layout.addWidget(QLabel("Classe (facultatif)"))
+        self.class_combo = QComboBox(); self.class_combo.addItem("— Aucune classe —", userData=None)
+        owner_id = session.current.user_id if session.current.is_teacher() else group.get("owner_id")
+        for cls in db.get_classes(owner_id=owner_id):
+            self.class_combo.addItem(cls["name"], userData=cls["id"])
+        index = self.class_combo.findData(group.get("class_id"))
+        if index >= 0: self.class_combo.setCurrentIndex(index)
+        layout.addWidget(self.class_combo)
+        buttons = QHBoxLayout()
+        cancel = QPushButton("Annuler"); cancel.setProperty("class", "secondary"); cancel.clicked.connect(self.reject)
+        save = QPushButton("Enregistrer"); save.clicked.connect(self.accept)
+        buttons.addWidget(cancel); buttons.addWidget(save); layout.addLayout(buttons)
+        _wire_enter(self, save)
+
+    def name(self): return self.name_input.text().strip()
+    def level(self): return self.level_combo.currentText()
+    def class_id(self): return self.class_combo.currentData()
+
+
+class EditStudentDialog(QDialog):
+    def __init__(self, student, parent=None):
+        super().__init__(parent)
+        self._student = student
+        self.setWindowTitle("Modifier l'élève")
+        self.setMinimumWidth(360)
+        layout = QVBoxLayout(self); layout.setSpacing(10); layout.setContentsMargins(22, 20, 22, 20)
+        layout.addWidget(QLabel("Prénom"))
+        self.prenom_input = QLineEdit(student.get("prenom", "")); layout.addWidget(self.prenom_input)
+        layout.addWidget(QLabel("Nom"))
+        self.nom_input = QLineEdit(student.get("nom", "")); layout.addWidget(self.nom_input)
+        owner_id = session.current.user_id if session.current.is_teacher() else student.get("created_by")
+        layout.addWidget(QLabel("Classe"))
+        self.class_combo = QComboBox(); self.class_combo.addItem("— Sans classe —", userData=None)
+        for cls in db.get_classes(owner_id=owner_id):
+            self.class_combo.addItem(f"{cls['name']} · {cls.get('level', 'CM2')}", userData=cls["id"])
+        idx = self.class_combo.findData(student.get("class_id"))
+        if idx >= 0: self.class_combo.setCurrentIndex(idx)
+        layout.addWidget(self.class_combo)
+        layout.addWidget(QLabel("Groupe (facultatif)"))
+        self.group_combo = QComboBox(); self.group_combo.addItem("— Sans groupe —", userData=None)
+        for group in db.get_groups(owner_id=owner_id):
+            self.group_combo.addItem(f"{group['name']} · {group.get('level', 'CM2')}", userData=group["id"])
+        idx = self.group_combo.findData(student.get("group_id"))
+        if idx >= 0: self.group_combo.setCurrentIndex(idx)
+        layout.addWidget(self.group_combo)
+        self.error = QLabel(""); self.error.setObjectName("error"); self.error.hide(); layout.addWidget(self.error)
+        buttons = QHBoxLayout()
+        cancel = QPushButton("Annuler"); cancel.setProperty("class", "secondary"); cancel.clicked.connect(self.reject)
+        save = QPushButton("Enregistrer"); save.clicked.connect(self._save)
+        buttons.addWidget(cancel); buttons.addWidget(save); layout.addLayout(buttons)
+        _wire_enter(self, save)
+
+    def prenom(self): return self.prenom_input.text().strip()
+    def nom(self): return self.nom_input.text().strip()
+    def class_id(self): return self.class_combo.currentData()
+    def group_id(self): return self.group_combo.currentData()
+    def _save(self):
+        if not self.prenom() or not self.nom():
+            self.error.setText("Prénom et nom obligatoires."); self.error.show(); return
+        self.accept()
+
+
 class AddClassDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
