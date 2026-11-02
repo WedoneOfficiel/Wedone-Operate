@@ -11,9 +11,12 @@ ApplicationWindow {
     minimumHeight: 560
     visible: true
     title: "Wedone Operate"
-    color: appBridge.highContrast ? root.colors.surface : root.colors.bg
+    color: root.colors.bg
 
     property real uiScale: appBridge.uiScale
+    property bool darkTheme: !appBridge.highContrast
+                             && (appBridge.themeMode === "dark"
+                                 || (appBridge.themeMode === "system" && appBridge.systemDark))
     property var progressSummary: JSON.parse(appBridge.progressJson)
     property string settingsReturnPage: "home"
     property string currentMode: appBridge.mode
@@ -26,18 +29,25 @@ ApplicationWindow {
         accentHoverSoft: "#D8E6FA", glow: "#E7F0FF", glowSecondary: "#E9F5FF",
         success: "#16804A", warning: "#B45309",
         dangerSurface: "#FCEEEE", dangerHover: "#F8DADA", danger: "#A12C2C"
-    }) : ({
+    }) : root.darkTheme ? ({
         bg: "#101827", surface: "#1B2739", panel: "#E61B2739", border: "#2A3A50",
         text: "#F1F5FB", muted: "#A6B4C9", textSecondary: "#C7D2E3",
         accent: "#5796FF", accentHover: "#357DE0", accentSoft: "#203B61",
         accentHoverSoft: "#2A466B", glow: "#1A3153", glowSecondary: "#162F47",
         success: "#4EC89A", warning: "#F0B35E",
         dangerSurface: "#442B3B", dangerHover: "#583144", danger: "#F49AAA"
+    }) : ({
+        bg: "#F7F3F4", surface: "#FFFFFF", panel: "#E6FFFFFF", border: "#E5DCE0",
+        text: "#2B2025", muted: "#766A70", textSecondary: "#50434A",
+        accent: "#1769D2", accentHover: "#0F56B5", accentSoft: "#EAF2FF",
+        accentHoverSoft: "#D8E6FA", glow: "#F2E6EA", glowSecondary: "#E8F1FA",
+        success: "#269B70", warning: "#B45309",
+        dangerSurface: "#FCEEEE", dangerHover: "#F8DADA", danger: "#A12C2C"
     })
 
     Rectangle {
         anchors.fill: parent
-        color: appBridge.highContrast ? root.colors.surface : root.colors.bg
+        color: root.colors.bg
 
         Rectangle {
             width: 500
@@ -1136,6 +1146,22 @@ ApplicationWindow {
                     font.pixelSize: 32
                     font.weight: Font.Bold
                     Layout.alignment: Qt.AlignHCenter
+                }
+                Label { text: "Apparence"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
+                ComboBox {
+                    id: themeModeSelect
+                    Layout.fillWidth: true
+                    implicitHeight: 46
+                    textRole: "label"
+                    valueRole: "value"
+                    model: [
+                        { label: "Selon le système", value: "system" },
+                        { label: "Clair", value: "light" },
+                        { label: "Sombre", value: "dark" }
+                    ]
+                    currentIndex: appBridge.themeMode === "light" ? 1
+                                  : appBridge.themeMode === "dark" ? 2 : 0
+                    onActivated: appBridge.setThemeMode(currentValue)
                 }
                 Label { text: "Accessibilité"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
                 Label { text: "Taille de l'interface · " + Math.round(appBridge.uiScale * 100) + "%"; color: root.colors.textSecondary; font.pixelSize: 15 }
