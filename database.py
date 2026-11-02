@@ -139,7 +139,26 @@ def add_teacher(prenom, nom, password):
     if any((t["prenom"].lower(), t["nom"].lower()) == norm for t in d["teachers"]): return None
     t = {"id": _uid("t"), "prenom": prenom.strip(), "nom": nom.strip(),
          "password_hash": _hash(password), "first_login": True}
-    d["teachers"].append(t); _save_users(d); return t
+    d["teachers"].append(t)
+    # One-time compatibility migration: the former admin workspace becomes
+    # the first local teacher workspace instead of disappearing from view.
+    if len(d["teachers"]) == 1:
+        for student in d["students"]:
+            if student.get("created_by") == "admin":
+                student["created_by"] = t["id"]
+        _save_users(d)
+        for filename in (CLASSES_FILE, GROUPS_FILE, TEMPLATES_FILE):
+            records = _load(filename, [])
+            changed = False
+            for record in records:
+                if record.get("owner_id") == "admin":
+                    record["owner_id"] = t["id"]
+                    changed = True
+            if changed:
+                _save(filename, records)
+    else:
+        _save_users(d)
+    return t
 
 def remove_teacher(tid):
     """Remove a teacher profile but keep student identities and score history.
