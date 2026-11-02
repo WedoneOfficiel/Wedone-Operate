@@ -502,6 +502,58 @@ ApplicationWindow {
                         enabled: !!teacherClassSelect.currentValue
                         onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, teacherGroupSelect.currentValue || "")
                     }
+                    Label { text: "Archiver des éléments"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 16 }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+                        PrimaryButton {
+                            text: "Archiver la classe"
+                            Layout.fillWidth: true
+                            enabled: !!teacherClassSelect.currentValue
+                            fillColor: "#FCEEEE"
+                            hoverColor: "#F8DADA"
+                            textColor: "#A12C2C"
+                            onClicked: {
+                                archiveConfirmation.archiveKind = "class"
+                                archiveConfirmation.archiveId = teacherClassSelect.currentValue
+                                archiveConfirmation.open()
+                            }
+                        }
+                        PrimaryButton {
+                            text: "Archiver le groupe"
+                            Layout.fillWidth: true
+                            enabled: !!teacherGroupSelect.currentValue
+                            fillColor: "#FCEEEE"
+                            hoverColor: "#F8DADA"
+                            textColor: "#A12C2C"
+                            onClicked: {
+                                archiveConfirmation.archiveKind = "group"
+                                archiveConfirmation.archiveId = teacherGroupSelect.currentValue
+                                archiveConfirmation.open()
+                            }
+                        }
+                    }
+                    ComboBox {
+                        id: teacherStudentSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        textRole: "display_name"
+                        valueRole: "id"
+                        model: appBridge.studentsForClass(teacherClassSelect.currentValue || "", teacherGroupSelect.currentValue || "")
+                    }
+                    PrimaryButton {
+                        text: "Archiver l'élève sélectionné"
+                        Layout.fillWidth: true
+                        enabled: !!teacherStudentSelect.currentValue
+                        fillColor: "#FCEEEE"
+                        hoverColor: "#F8DADA"
+                        textColor: "#A12C2C"
+                        onClicked: {
+                            archiveConfirmation.archiveKind = "student"
+                            archiveConfirmation.archiveId = teacherStudentSelect.currentValue
+                            archiveConfirmation.open()
+                        }
+                    }
                     Label { text: "Modifier mon profil"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
                     TextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché"; onAccepted: appBridge.updateTeacherProfile(text) }
                     PrimaryButton {
@@ -850,6 +902,25 @@ ApplicationWindow {
         fileMode: FileDialog.OpenFile
         nameFilters: ["Sauvegarde SQLite (*.sqlite3 *.db)"]
         onAccepted: appBridge.restoreBackup(selectedFile.toLocalFile())
+    }
+
+    Dialog {
+        id: archiveConfirmation
+        property string archiveKind: ""
+        property string archiveId: ""
+        title: "Archiver cet élément ?"
+        modal: true
+        standardButtons: Dialog.Yes | Dialog.No
+        anchors.centerIn: parent
+        Label {
+            text: "L'élément ne sera plus proposé dans les listes actives. Les résultats et l'historique associés seront conservés."
+            wrapMode: Text.WordWrap
+        }
+        onAccepted: {
+            if (archiveKind === "student") appBridge.archiveStudent(archiveId)
+            else if (archiveKind === "group") appBridge.archiveGroup(archiveId)
+            else if (archiveKind === "class") appBridge.archiveClass(archiveId)
+        }
     }
 
     Dialog {
