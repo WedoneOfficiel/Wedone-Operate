@@ -115,5 +115,3 @@ GROUPS_FILE    = "groups.json"
 SCORES_FILE    = "scores.json"
 TEMPLATES_FILE = "templates.json"
 
-# ── Sécurité ──────────────────────────────────────────────────────────
-DEFAULT_ADMIN_PASSWORD_PLAIN = "admin1234"
