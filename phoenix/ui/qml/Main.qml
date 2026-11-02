@@ -169,7 +169,7 @@ ApplicationWindow {
     StackLayout {
         anchors.fill: parent
         anchors.margins: 42
-        currentIndex: root.page === "welcome" ? 0 : (root.page === "home" || root.page === "area") ? 1 : 2
+        currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : 1
 
         Item {
             ColumnLayout {
@@ -232,6 +232,15 @@ ApplicationWindow {
                     color: "#66768E"
                     font.pixelSize: 16
                     Layout.alignment: Qt.AlignHCenter
+                }
+
+                PrimaryButton {
+                    visible: root.currentMode === "individual"
+                    text: "Commencer une séance"
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.topMargin: 12
+                    width: 280
+                    onClicked: root.page = "practice"
                 }
 
                 RowLayout {
@@ -317,7 +326,180 @@ ApplicationWindow {
         }
 
         Item {
-            Label { anchors.centerIn: parent; text: "Espace"; color: "#172A45"; font.pixelSize: 28 }
+            ColumnLayout {
+                anchors.centerIn: parent
+                width: Math.min(parent.width, 680)
+                spacing: 18
+
+                Label {
+                    visible: appBridge.questionTotal === 0
+                    text: "Nouvel entraînement"
+                    color: "#172A45"
+                    font.pixelSize: 32
+                    font.weight: Font.Bold
+                    Layout.alignment: Qt.AlignHCenter
+                }
+
+                ColumnLayout {
+                    visible: appBridge.questionTotal === 0
+                    Layout.fillWidth: true
+                    spacing: 12
+                    Label { text: "Compétence"; color: "#33445D"; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    ComboBox {
+                        id: skillSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 48
+                        textRole: "label"
+                        valueRole: "value"
+                        model: [
+                            { label: "CP · Additions jusqu'à 20", value: "cp.addition_20" },
+                            { label: "CP · Soustractions jusqu'à 20", value: "cp.subtraction_20" },
+                            { label: "CE1 · Additions jusqu'à 100", value: "ce1.addition_100" },
+                            { label: "CE1 · Soustractions jusqu'à 100", value: "ce1.subtraction_100" },
+                            { label: "CE2 · Additions jusqu'à 1 000", value: "ce2.addition_1000" },
+                            { label: "CE2 · Tables de multiplication", value: "ce2.multiplication_tables" },
+                            { label: "CM1 · Multiplications", value: "cm1.multiplication" },
+                            { label: "CM2 · Divisions exactes", value: "cm2.division_exact" },
+                            { label: "5e · Addition de nombres relatifs", value: "college.signed_addition" },
+                            { label: "4e · Multiplication de nombres relatifs", value: "college.signed_multiplication" }
+                        ]
+                    }
+                    Label { text: "Nombre de questions"; color: "#33445D"; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    SpinBox {
+                        id: countSelect
+                        from: 5
+                        to: 30
+                        value: 10
+                        editable: true
+                        implicitHeight: 48
+                    }
+                    Label { text: "Difficulté"; color: "#33445D"; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    ComboBox {
+                        id: difficultySelect
+                        Layout.fillWidth: true
+                        implicitHeight: 48
+                        model: [
+                            { label: "1 · Très accessible", value: 1 },
+                            { label: "2 · Accessible", value: 2 },
+                            { label: "3 · Intermédiaire", value: 3 },
+                            { label: "4 · Soutenue", value: 4 },
+                            { label: "5 · Avancée", value: 5 }
+                        ]
+                        textRole: "label"
+                        valueRole: "value"
+                    }
+                    PrimaryButton {
+                        text: "Lancer l'entraînement"
+                        Layout.fillWidth: true
+                        Layout.topMargin: 8
+                        onClicked: appBridge.startPractice(skillSelect.currentValue, countSelect.value, difficultySelect.currentValue)
+                    }
+                }
+
+                ColumnLayout {
+                    visible: appBridge.questionTotal > 0 && !appBridge.practiceFinished
+                    Layout.fillWidth: true
+                    spacing: 18
+                    Label {
+                        text: "Question " + appBridge.questionNumber + " / " + appBridge.questionTotal
+                        color: "#66768E"
+                        font.pixelSize: 15
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 8
+                        radius: 4
+                        color: "#E3EAF4"
+                        Rectangle {
+                            width: parent.width * appBridge.questionNumber / Math.max(1, appBridge.questionTotal)
+                            height: parent.height
+                            radius: 4
+                            color: "#1769D2"
+                        }
+                    }
+                    Label {
+                        text: appBridge.questionPrompt
+                        color: "#172A45"
+                        font.pixelSize: 42
+                        font.weight: Font.Bold
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: 20
+                    }
+                    TextField {
+                        id: answerInput
+                        Layout.fillWidth: true
+                        implicitHeight: 58
+                        enabled: !appBridge.answerSubmitted
+                        placeholderText: "Votre réponse"
+                        horizontalAlignment: TextInput.AlignHCenter
+                        font.pixelSize: 23
+                        inputMethodHints: Qt.ImhDigitsOnly
+                        onAccepted: if (!appBridge.answerSubmitted) appBridge.submitAnswer(text)
+                    }
+                    Label {
+                        visible: appBridge.answerSubmitted
+                        text: appBridge.feedback
+                        color: appBridge.feedback === "Bonne réponse !" ? "#16804A" : "#B45309"
+                        font.pixelSize: 16
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    PrimaryButton {
+                        visible: !appBridge.answerSubmitted
+                        text: "Valider"
+                        Layout.fillWidth: true
+                        onClicked: appBridge.submitAnswer(answerInput.text)
+                    }
+                    PrimaryButton {
+                        visible: appBridge.answerSubmitted
+                        text: appBridge.questionNumber === appBridge.questionTotal ? "Voir le résultat" : "Question suivante"
+                        Layout.fillWidth: true
+                        onClicked: {
+                            answerInput.text = ""
+                            appBridge.nextQuestion()
+                        }
+                    }
+                }
+
+                ColumnLayout {
+                    visible: appBridge.practiceFinished
+                    Layout.fillWidth: true
+                    spacing: 16
+                    Label {
+                        text: "Séance terminée"
+                        color: "#172A45"
+                        font.pixelSize: 32
+                        font.weight: Font.Bold
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    Label {
+                        text: appBridge.scoreText
+                        color: "#1769D2"
+                        font.pixelSize: 23
+                        font.weight: Font.DemiBold
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    PrimaryButton {
+                        text: "Retour à l'espace individuel"
+                        Layout.fillWidth: true
+                        onClicked: {
+                            appBridge.abandonPractice()
+                            root.page = "home"
+                        }
+                    }
+                }
+
+                Button {
+                    visible: !appBridge.practiceFinished
+                    text: "Quitter la séance"
+                    flat: true
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: {
+                        appBridge.abandonPractice()
+                        root.page = "home"
+                    }
+                }
+            }
         }
     }
 }
