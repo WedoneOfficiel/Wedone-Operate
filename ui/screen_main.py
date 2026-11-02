@@ -190,9 +190,8 @@ class MainScreen(QWidget):
 
         self.combo_level.setCurrentText(student_level)
 
-        # Modèle assigné par le prof
-        group_id = student.get("group_id") if student else None
-        template = db.get_group_default_template(group_id) if group_id else None
+        # Group-specific assignment wins; otherwise use the class-wide assignment.
+        template = db.get_student_default_template(s.user_id) if student else None
         if template:
             self.template_lbl.setText(
                 f"📋 Votre prof a configuré : « {template['name']} » — "
