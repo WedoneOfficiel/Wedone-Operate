@@ -62,6 +62,7 @@ def main(argv: list[str] | None = None) -> int:
             self._teacher_id: str | None = None
             self._active_student_id: str | None = None
             self._classroom_message = ""
+            self._classroom_revision = 0
             self._ui_scale = float(database.get_setting("ui_scale", 1.0))
             self._high_contrast = bool(database.get_setting("high_contrast", False))
             self._reduce_motion = bool(database.get_setting("reduce_motion", False))
@@ -104,6 +105,10 @@ def main(argv: list[str] | None = None) -> int:
         @Property(bool, notify=classroomChanged)
         def teacherAuthenticated(self) -> bool:
             return self._teacher_id is not None
+
+        @Property(int, notify=classroomChanged)
+        def classroomRevision(self) -> int:
+            return self._classroom_revision
 
         @Property(str, notify=classroomChanged)
         def teachersJson(self) -> str:
@@ -227,10 +232,14 @@ def main(argv: list[str] | None = None) -> int:
             self._reduce_motion = bool(self._database.get_setting("reduce_motion", False))
             self._data_message = message
             self.modeChanged.emit(self._mode)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
             self.practiceChanged.emit()
             self.settingsChanged.emit()
             self.progressChanged.emit()
+
+        def _emit_classroom_changed(self) -> None:
+            self._classroom_revision += 1
+            self.classroomChanged.emit()
 
         @Slot(str)
         def chooseMode(self, mode: str) -> None:
