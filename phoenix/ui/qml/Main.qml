@@ -17,7 +17,7 @@ ApplicationWindow {
     property var progressSummary: JSON.parse(appBridge.progressJson)
     property string settingsReturnPage: "home"
     property string currentMode: appBridge.mode
-    property string page: currentMode === "" ? "welcome" : "home"
+    property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
 
     Rectangle {
@@ -93,7 +93,7 @@ ApplicationWindow {
         target: appBridge
         function onModeChanged(mode) {
             root.currentMode = mode
-            root.page = mode === "" ? "welcome" : "home"
+            root.page = mode === "" ? "welcome" : mode === "individual" ? "practice" : "home"
             root.classroomArea = ""
         }
     }
@@ -334,6 +334,7 @@ ApplicationWindow {
                                     Layout.fillWidth: true
                                     onClicked: {
                                         root.classroomArea = index === 0 ? "student" : "teacher"
+                                        if (index === 0) appBridge.selectStudent("")
                                         root.page = "area"
                                     }
                                 }
