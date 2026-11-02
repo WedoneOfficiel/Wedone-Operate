@@ -419,64 +419,99 @@ def export_group_csv(group_id):
 # ══════════════════════════════════════════════════════════════════════
 
 def recommend_config_for_student(student_id: str) -> dict:
-    """
-    Analyse les dernières sessions d'un élève et propose une config adaptée.
-    - < 50 % sur les 3 dernières sessions → baisser la difficulté
-    - > 85 % → suggérer d'augmenter
-    - Opérations ratées en priorité
-    """
-    scores = get_scores(student_id)[:5]   # 5 dernières
-    level  = get_student_level(student_id)
-    idx    = list(__import__("constants").SCHOOL_LEVELS).index(level) if level in __import__("constants").SCHOOL_LEVELS else 4
+    """Suggest a cautious next session from recent, question-level evidence."""
+    scores = get_scores(student_id)[:5]
+    level = get_student_level(student_id)
+    levels = SCHOOL_LEVELS
+    idx = levels.index(level) if level in levels else levels.index("CM2")
 
     if not scores:
-        return {"level": level, "nb_epreuves": 10, "operations": ["addition","soustraction"],
-                "timer_enabled": False, "reason": "Première session — configuration de départ."}
+        return {
+            "level": level, "nb_epreuves": 10,
+            "operations": ["addition", "soustraction"],
+            "timer_enabled": False,
+            "reason": "Première session : commencer sans chronomètre et observer les résultats."
+        }
 
-    avg_pct = sum(s["percent"] for s in scores) / len(scores)
+    # Weight sessions by the number of questions, rather than averaging session
+    # percentages equally (a 1-question session should not weigh like 30).
+    total_questions = sum(max(0, int(s.get("total", 0))) for s in scores)
+    total_correct = sum(max(0, int(s.get("correct", 0))) for s in scores)
+    avg_pct = (total_correct * 100 / total_questions) if total_questions else 0.0
 
-    # Déterminer le niveau à proposer
-    if avg_pct < 50 and idx > 0:
-        suggested_level = __import__("constants").SCHOOL_LEVELS[idx - 1]
-        reason = f"Moyenne récente {avg_pct:.0f} % — niveau abaissé pour consolider."
-    elif avg_pct > 85 and idx < len(__import__("constants").SCHOOL_LEVELS) - 1:
-        suggested_level = __import__("constants").SCHOOL_LEVELS[idx + 1]
-        reason = f"Excellente moyenne {avg_pct:.0f} % — niveau augmenté pour progresser."
+    suggested_level = level
+    reason = f"Résultats récents : {avg_pct:.0f} % — niveau maintenu."
+    if len(scores) >= 3 and avg_pct < 45 and idx > 0:
+        suggested_level = levels[idx - 1]
+        reason = f"Résultats récents : {avg_pct:.0f} % — proposer un niveau inférieur pour consolider."
+    elif len(scores) >= 3 and avg_pct >= 90 and idx < len(levels) - 1:
+        suggested_level = levels[idx + 1]
+        reason = f"Résultats récents : {avg_pct:.0f} % — proposer un niveau supérieur."
+
+    # New sessions persist per-question operations. Older history gracefully
+    # falls back to session-level operation labels without pretending to know
+    # which operation caused each error.
+    operation_totals = {}
+    for score in scores:
+        for detail in score.get("details", []):
+            op = detail.get("operation")
+            if op in ("addition", "soustraction", "multiplication", "division"):
+                bucket = operation_totals.setdefault(op, {"correct": 0, "total": 0})
+                bucket["total"] += 1
+                bucket["correct"] += int(bool(detail.get("correct")))
+    weak_ops = [
+        op for op, stats in operation_totals.items()
+        if stats["total"] >= 3 and stats["correct"] / stats["total"] < 0.6
+    ]
+    if weak_ops:
+        operations = weak_ops
+        operation_reason = "Priorité aux opérations les moins maîtrisées."
     else:
-        suggested_level = level
-        reason = f"Moyenne récente {avg_pct:.0f} % — niveau maintenu."
-
-    # Opérations les moins réussies
-    op_scores: dict = {}
-    for s in scores:
-        for op in s.get("operations", []):
-            op_scores.setdefault(op, []).append(s["percent"])
-    weak_ops = [op for op, vals in op_scores.items() if sum(vals)/len(vals) < 60]
-    ops = weak_ops if weak_ops else ["addition", "soustraction", "multiplication", "division"]
+        operations = list(dict.fromkeys(scores[0].get("operations", [])))
+        if not operations:
+            operations = ["addition", "soustraction"]
+        operation_reason = "Conserver les opérations travaillées récemment."
 
     return {
-        "level":         suggested_level,
-        "nb_epreuves":   10,
-        "operations":    ops,
-        "timer_enabled": avg_pct > 75,
-        "reason":        reason,
+        "level": suggested_level,
+        "nb_epreuves": 10,
+        "operations": operations,
+        # Do not enable a timer from accuracy alone: speed is a separate skill.
+        "timer_enabled": False,
+        "reason": reason + " " + operation_reason,
+        "recent_accuracy": round(avg_pct, 1),
+        "evidence_sessions": len(scores),
     }
 
-def get_group_alerts(group_id: str) -> list[dict]:
-    """
-    Retourne la liste des élèves en difficulté dans un groupe.
-    Critère : moyenne < 50 % sur les 3 dernières sessions.
-    """
+
+def get_student_alerts(student_ids=None) -> list[dict]:
+    """Return cautious support alerts for a supplied set of students."""
+    students = _load_users()["students"]
+    if student_ids is not None:
+        wanted = set(student_ids)
+        students = [student for student in students if student["id"] in wanted]
     alerts = []
-    for s in get_students(group_id=group_id):
-        scores = get_scores(s["id"])[:3]
-        if not scores: continue
-        avg = sum(sc["percent"] for sc in scores) / len(scores)
+    for student in students:
+        scores = get_scores(student["id"])[:3]
+        if len(scores) < 2:
+            continue
+        total = sum(max(0, int(score.get("total", 0))) for score in scores)
+        correct = sum(max(0, int(score.get("correct", 0))) for score in scores)
+        if not total:
+            continue
+        avg = correct * 100 / total
         if avg < 50:
+            group = get_group(student.get("group_id")) if student.get("group_id") else None
             alerts.append({
-                "student":     s,
+                "student": student,
+                "group": group,
                 "avg_percent": round(avg, 1),
-                "nb_sessions": len(get_scores(s["id"])),
-                "recommended": recommend_config_for_student(s["id"]),
+                "nb_sessions": len(get_scores(student["id"])),
+                "recommended": recommend_config_for_student(student["id"]),
             })
-    return sorted(alerts, key=lambda a: a["avg_percent"])
+    return sorted(alerts, key=lambda alert: alert["avg_percent"])
+
+
+def get_group_alerts(group_id: str) -> list[dict]:
+    """Compatibility wrapper for older UI screens."""
+    return get_student_alerts([student["id"] for student in get_students(group_id=group_id)])
