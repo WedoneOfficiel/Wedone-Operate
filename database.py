@@ -360,6 +360,10 @@ def add_student(prenom, nom, teacher_id, group_id=None, class_id=None):
     if not prenom or not nom:
         return None
     norm = (prenom.casefold(), nom.casefold())
+    if class_id:
+        cls = get_class(class_id)
+        if not cls or (teacher_id and cls.get("owner_id") != teacher_id):
+            return None
     if group_id:
         group = get_group(group_id)
         if not group or (teacher_id and group.get("owner_id") != teacher_id):
@@ -386,11 +390,14 @@ def add_student(prenom, nom, teacher_id, group_id=None, class_id=None):
 
 def assign_student_class(student_id, class_id):
     """Assign a student directly to a class, without requiring a group."""
-    if class_id and not get_class(class_id):
+    cls = get_class(class_id) if class_id else None
+    if class_id and not cls:
         return False
     users = _load_users()
     for student in users["students"]:
         if student["id"] == student_id:
+            if cls and student.get("created_by") not in (None, "guest", cls.get("owner_id")):
+                return False
             student["class_id"] = class_id
             # A direct class assignment is distinct from group membership.
             if student.get("group_id"):
