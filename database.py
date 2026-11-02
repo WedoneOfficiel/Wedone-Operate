@@ -10,10 +10,10 @@
 # scores.json  : { student_id: [ session… ] }
 # templates.json : [ { id, name, owner_id, group_id, config } ]
 
-import json, os, hashlib, uuid, csv, io, tempfile
+import json, os, hashlib, uuid, csv, io, tempfile, hmac, secrets
 from data_paths import data_file
 from datetime import datetime
-from constants import DEFAULT_ADMIN_PASSWORD_PLAIN, SCHOOL_LEVELS
+from constants import SCHOOL_LEVELS
 
 USERS_FILE     = "users.json"
 GROUPS_FILE    = "groups.json"
@@ -23,7 +23,29 @@ TEMPLATES_FILE = "templates.json"
 
 # ── Helpers ───────────────────────────────────────────────────────────
 
-def _hash(p): return hashlib.sha256(p.encode()).hexdigest()
+def _hash(password):
+    salt = secrets.token_bytes(16)
+    iterations = 310_000
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations)
+    return f"pbkdf2_sha256\u0024{iterations}\u0024{salt.hex()}\u0024{digest.hex()}"
+
+
+def _verify_password(stored, password):
+    if not stored or not isinstance(password, str):
+        return False
+    if stored.startswith("pbkdf2_sha256$"):
+        try:
+            _, iterations, salt_hex, digest_hex = stored.split("$", 3)
+            digest = hashlib.pbkdf2_hmac(
+                "sha256", password.encode("utf-8"), bytes.fromhex(salt_hex), int(iterations)
+            )
+            return hmac.compare_digest(digest.hex(), digest_hex)
+        except (ValueError, TypeError):
+            return False
+    # Backward compatibility: migrate legacy unsalted SHA-256 at next login.
+    legacy = hashlib.sha256(password.encode("utf-8")).hexdigest()
+    return hmac.compare_digest(stored, legacy)
+
 def _uid(prefix): return f"{prefix}_{uuid.uuid4().hex[:8]}"
 
 class DataIntegrityError(RuntimeError):
@@ -68,14 +90,10 @@ def _save(path, data):
 # ── Bootstrap users ───────────────────────────────────────────────────
 
 def _load_users():
-    default = {
-        "admin": {"password_hash": _hash(DEFAULT_ADMIN_PASSWORD_PLAIN), "first_login": True},
-        "teachers": [], "students": []
-    }
+    default = {"teachers": [], "students": []}
     data = _load(USERS_FILE, default)
-    data.setdefault("admin", default["admin"])
-    data["admin"].setdefault("first_login", True)
-    data.setdefault("teachers", []); data.setdefault("students", [])
+    data.setdefault("teachers", [])
+    data.setdefault("students", [])
     return data
 
 def _save_users(data): _save(USERS_FILE, data)
@@ -84,13 +102,26 @@ def _save_users(data): _save(USERS_FILE, data)
 # ADMIN
 # ══════════════════════════════════════════════════════════════════════
 
-def check_admin_password(pwd): return _load_users()["admin"]["password_hash"] == _hash(pwd)
+def check_admin_password(pwd):
+    admin = _load_users().get("admin")
+    if not admin or not _verify_password(admin.get("password_hash"), pwd):
+        return False
+    if not admin["password_hash"].startswith("pbkdf2_sha256$"):
+        data = _load_users()
+        data["admin"]["password_hash"] = _hash(pwd)
+        _save_users(data)
+    return True
 def set_admin_password(pwd):
-    d = _load_users(); d["admin"]["password_hash"] = _hash(pwd); d["admin"]["first_login"] = False
+    d = _load_users()
+    d.setdefault("admin", {})["password_hash"] = _hash(pwd)
+    d["admin"]["first_login"] = False
     _save_users(d)
-def is_admin_first_login(): return _load_users()["admin"].get("first_login", True)
+def is_admin_first_login(): return _load_users().get("admin", {}).get("first_login", False)
 def mark_admin_logged_in():
-    d = _load_users(); d["admin"]["first_login"] = False; _save_users(d)
+    d = _load_users()
+    if "admin" in d:
+        d["admin"]["first_login"] = False
+        _save_users(d)
 
 # ══════════════════════════════════════════════════════════════════════
 # PROFS
@@ -133,7 +164,17 @@ def remove_teacher(tid):
     _save(TEMPLATES_FILE, [template for template in templates if template.get("owner_id") != tid])
 
 def check_teacher_password(tid, pwd):
-    t = get_teacher(tid); return t and t["password_hash"] == _hash(pwd)
+    teacher = get_teacher(tid)
+    if not teacher or not _verify_password(teacher.get("password_hash"), pwd):
+        return False
+    if not teacher["password_hash"].startswith("pbkdf2_sha256$"):
+        users = _load_users()
+        for item in users["teachers"]:
+            if item["id"] == tid:
+                item["password_hash"] = _hash(pwd)
+                break
+        _save_users(users)
+    return True
 
 def set_teacher_password(tid, pwd):
     d = _load_users()
