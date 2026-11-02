@@ -111,12 +111,26 @@ def add_teacher(prenom, nom, password):
     d["teachers"].append(t); _save_users(d); return t
 
 def remove_teacher(tid):
-    d = _load_users()
-    d["teachers"] = [t for t in d["teachers"] if t["id"] != tid]
-    for s in d["students"]:
-        if s.get("created_by") == tid: s["group_id"] = None
-    _save_users(d)
-    gs = _load(GROUPS_FILE, []); gs = [g for g in gs if g["owner_id"] != tid]; _save(GROUPS_FILE, gs)
+    """Remove a teacher profile but keep student identities and score history.
+
+    Orphaned students are moved to the local guest workspace so they remain
+    accessible instead of being silently stranded behind a deleted account.
+    """
+    users = _load_users()
+    users["teachers"] = [teacher for teacher in users["teachers"] if teacher["id"] != tid]
+    for student in users["students"]:
+        if student.get("created_by") == tid:
+            student["created_by"] = "guest"
+            student["group_id"] = None
+            student["class_id"] = None
+    _save_users(users)
+
+    groups = _load(GROUPS_FILE, [])
+    _save(GROUPS_FILE, [group for group in groups if group.get("owner_id") != tid])
+    classes = _load(CLASSES_FILE, [])
+    _save(CLASSES_FILE, [cls for cls in classes if cls.get("owner_id") != tid])
+    templates = _load(TEMPLATES_FILE, [])
+    _save(TEMPLATES_FILE, [template for template in templates if template.get("owner_id") != tid])
 
 def check_teacher_password(tid, pwd):
     t = get_teacher(tid); return t and t["password_hash"] == _hash(pwd)
@@ -138,7 +152,8 @@ def teacher_full_name(t): return f"{t['prenom']} {t['nom']}"
 
 def get_classes(owner_id=None):
     classes = _load(CLASSES_FILE, [])
-    if owner_id: classes = [c for c in classes if c["owner_id"] == owner_id]
+    if owner_id is not None:
+        classes = [c for c in classes if c.get("owner_id") == owner_id]
     return sorted(classes, key=lambda c: c["name"].lower())
 
 def get_class(class_id):
@@ -174,10 +189,12 @@ def remove_class(class_id):
 # ══════════════════════════════════════════════════════════════════════
 
 def get_groups(owner_id=None, class_id=None):
-    gs = _load(GROUPS_FILE, [])
-    if owner_id: gs = [g for g in gs if g["owner_id"] == owner_id]
-    if class_id: gs = [g for g in gs if g.get("class_id") == class_id]
-    return sorted(gs, key=lambda g: g["name"].lower())
+    groups = _load(GROUPS_FILE, [])
+    if owner_id is not None:
+        groups = [g for g in groups if g.get("owner_id") == owner_id]
+    if class_id is not None:
+        groups = [g for g in groups if g.get("class_id") == class_id]
+    return sorted(groups, key=lambda g: g.get("name", "").casefold())
 
 def get_group(gid):
     for g in _load(GROUPS_FILE, []): 
@@ -217,9 +234,9 @@ def get_group_level(gid):
 
 def get_students(teacher_id=None, group_id=None, class_id=None):
     students = _load_users()["students"]
-    if teacher_id:
+    if teacher_id is not None:
         students = [s for s in students if s.get("created_by") == teacher_id]
-    if group_id:
+    if group_id is not None:
         students = [s for s in students if s.get("group_id") == group_id]
     if class_id:
         # Include both students assigned directly to a class and students
@@ -318,10 +335,12 @@ def get_student_level(sid):
 # ══════════════════════════════════════════════════════════════════════
 
 def get_templates(owner_id=None, group_id=None):
-    ts = _load(TEMPLATES_FILE, [])
-    if owner_id: ts = [t for t in ts if t["owner_id"] == owner_id]
-    if group_id: ts = [t for t in ts if t.get("group_id") == group_id]
-    return sorted(ts, key=lambda t: t["name"].lower())
+    templates = _load(TEMPLATES_FILE, [])
+    if owner_id is not None:
+        templates = [t for t in templates if t.get("owner_id") == owner_id]
+    if group_id is not None:
+        templates = [t for t in templates if t.get("group_id") == group_id]
+    return sorted(templates, key=lambda t: t.get("name", "").casefold())
 
 def get_template(tid):
     for t in _load(TEMPLATES_FILE, []):
