@@ -12,18 +12,22 @@ Dernière mise à jour : 2 novembre 2026
 - Sauvegarde cohérente avec l'API SQLite Backup.
 - Restauration après validation de l'intégrité, avec création préalable d'une sauvegarde de sécurité.
 - Premiers tests automatisés pour le schéma, le choix du mode, les transactions et les sauvegardes.
-- CI configurée pour exécuter ses contrôles sur `phoenix-rebuild`.
+- CI configurée pour exécuter ses contrôles sur `phoenix-rebuild`, sur Ubuntu, Windows et macOS.
+- Prototype PySide6 + Qt Quick/QML ajouté : écran de premier démarrage, choix individuel/classe, entrée élève et entrée professeur distinctes.
+- Choix du mode enregistré dans SQLite et conservé au redémarrage.
+- Commande de smoke test QML ajoutée au pipeline CI (`python -m phoenix.main --smoke-test`).
 
 ## À vérifier avant de considérer cette étape comme terminée
 
-- Résultat réel des tests sur macOS, Windows et Linux via GitHub Actions.
+- Résultat réel des tests sur macOS, Windows et Linux via GitHub Actions : le pipeline est configuré, mais son résultat n'a pas encore été confirmé ici.
+- Vérification visuelle manuelle du prototype QML sur les trois systèmes.
 - Tests de restauration en présence de fichiers WAL/SHM et de bases verrouillées.
 - Gestion des migrations successives et récupération après interruption.
 - Validation manuelle des sauvegardes produites et restaurées.
 
 ## Prochaine étape
 
-Construire un prototype vertical minimal avec PySide6 + Qt Quick/QML : démarrage, choix « Utilisation individuelle » / « Utilisation en classe », persistance du choix dans SQLite, puis navigation vers deux espaces distincts. Le prototype sera évalué et empaqueté avant toute migration de l'interface complète.
+Valider le prototype vertical QML sur les trois systèmes, puis l'empaqueter dans un build autonome. Une fois le socle validé, enrichir les écrans élève/professeur et le parcours de pratique avant de migrer l'interface complète.
 
 ## Règles de sécurité
 
