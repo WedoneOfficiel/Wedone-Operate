@@ -98,6 +98,31 @@ def _load_users():
 
 def _save_users(data): _save(USERS_FILE, data)
 
+
+def _migrate_legacy_workspace():
+    """Adopt admin/guest-owned local records into the first teacher workspace."""
+    users = _load_users()
+    if not users["teachers"]:
+        return
+    owner_id = users["teachers"][0]["id"]
+    changed_users = False
+    for student in users["students"]:
+        if student.get("created_by") in ("admin", "guest"):
+            student["created_by"] = owner_id
+            changed_users = True
+    if changed_users:
+        _save_users(users)
+
+    for filename in (CLASSES_FILE, GROUPS_FILE, TEMPLATES_FILE):
+        records = _load(filename, [])
+        changed = False
+        for record in records:
+            if record.get("owner_id") in ("admin", "guest"):
+                record["owner_id"] = owner_id
+                changed = True
+        if changed:
+            _save(filename, records)
+
 # ══════════════════════════════════════════════════════════════════════
 # ADMIN
 # ══════════════════════════════════════════════════════════════════════
@@ -127,7 +152,12 @@ def mark_admin_logged_in():
 # PROFS
 # ══════════════════════════════════════════════════════════════════════
 
-def get_teachers(): return sorted(_load_users()["teachers"], key=lambda t:(t["nom"].lower(), t["prenom"].lower()))
+def get_teachers():
+    _migrate_legacy_workspace()
+    return sorted(
+        _load_users()["teachers"],
+        key=lambda teacher: (teacher["nom"].lower(), teacher["prenom"].lower())
+    )
 def get_teacher(tid):
     for t in _load_users()["teachers"]:
         if t["id"] == tid: return t
@@ -140,23 +170,8 @@ def add_teacher(prenom, nom, password):
     t = {"id": _uid("t"), "prenom": prenom.strip(), "nom": nom.strip(),
          "password_hash": _hash(password), "first_login": True}
     d["teachers"].append(t)
-    # The former admin workspace (and any guest-owned records left by a
-    # removed profile) is adopted by the first available teacher profile.
-    workspace_owner = d["teachers"][0]["id"]
-    for student in d["students"]:
-        if student.get("created_by") in ("admin", "guest"):
-            student["created_by"] = workspace_owner
     _save_users(d)
-
-    for filename in (CLASSES_FILE, GROUPS_FILE, TEMPLATES_FILE):
-        records = _load(filename, [])
-        changed = False
-        for record in records:
-            if record.get("owner_id") in ("admin", "guest"):
-                record["owner_id"] = workspace_owner
-                changed = True
-        if changed:
-            _save(filename, records)
+    _migrate_legacy_workspace()
     return t
 
 def remove_teacher(tid):
