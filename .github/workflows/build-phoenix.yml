@@ -10,6 +10,7 @@ on:
       - "phoenix-macos.spec"
       - "requirements-phoenix.txt"
       - "scripts/validate_phoenix_distribution.py"
+      - "scripts/find_qml_runtime.py"
       - ".github/workflows/build-phoenix.yml"
 
 permissions:
@@ -136,7 +137,7 @@ jobs:
       - name: Build application
         shell: bash
         run: |
-          QML_DIR="$(python scripts/find_qml_runtime.py)
+          QML_DIR="$(python scripts/find_qml_runtime.py)"
           test -f "$QML_DIR/QtQuick/Controls/qmldir"
           pyinstaller --noconfirm --clean --windowed --name "wedone-operate-phoenix" --exclude-module PySide6.QtWebEngineCore --exclude-module PySide6.QtWebEngineQuick --exclude-module PySide6.QtWebEngineWidgets --add-data "$QML_DIR:PySide6/Qt/qml" --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
       - name: Validate packaged runtime
