@@ -768,6 +768,10 @@ def main(argv: list[str] | None = None) -> int:
     qml_file = Path(__file__).parent / "ui" / "qml" / "Main.qml"
     engine.load(QUrl.fromLocalFile(str(qml_file.resolve())))
     if not engine.rootObjects():
+        if smoke_test and qt_qml_errors:
+            print("Smoke test failed: the QML engine could not create the application window:")
+            for message in qt_qml_errors:
+                print(f"  {message}")
         return 2
     if smoke_test:
         QCoreApplication.processEvents()
