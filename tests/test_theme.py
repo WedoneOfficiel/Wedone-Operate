@@ -8,6 +8,10 @@ class ThemeTests(unittest.TestCase):
     def test_light_and_dark_palettes_have_same_tokens(self):
         self.assertEqual(set(LIGHT), set(DARK))
 
+    def test_wedone_blue_is_the_primary_accent(self):
+        self.assertEqual(LIGHT["primary"], "#0672BC")
+        self.assertEqual(DARK["primary"], "#2996D8")
+
     def test_stylesheets_are_generated_for_both_themes(self):
         for theme in ("light", "dark"):
             with self.subTest(theme=theme):
