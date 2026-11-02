@@ -67,9 +67,8 @@ class DashboardScreen(QWidget):
 
         owner_id = None if s.is_admin() else s.user_id
         groups   = db.get_groups(owner_id=owner_id)
-        all_students = []
-        for g in groups:
-            all_students.extend(db.get_students(group_id=g["id"]))
+        classes = db.get_classes(owner_id=owner_id)
+        all_students = db.get_students(teacher_id=owner_id) if not s.is_admin() else db.get_students()
 
         total_sessions = sum(len(db.get_scores(st["id"])) for st in all_students)
         all_sc = db.get_all_scores()
@@ -79,6 +78,7 @@ class DashboardScreen(QWidget):
 
         cards_row = QHBoxLayout(); cards_row.setSpacing(12)
         for value, label in [
+            (str(len(classes)),       "classe" + ("s" if len(classes) > 1 else "")),
             (str(len(groups)),        "groupe" + ("s" if len(groups) > 1 else "")),
             (str(len(all_students)),  "élève"  + ("s" if len(all_students) > 1 else "")),
             (str(total_sessions),     "session" + ("s" if total_sessions > 1 else "")),
@@ -100,15 +100,11 @@ class DashboardScreen(QWidget):
         alert_subtitle.setObjectName("subtitle")
         self.content_layout.addWidget(alert_subtitle)
 
-        all_alerts = []
-        for g in groups:
-            for alert in db.get_group_alerts(g["id"]):
-                alert["group"] = g
-                all_alerts.append(alert)
+        all_alerts = db.get_student_alerts([student["id"] for student in all_students])
 
         if not all_alerts:
-            ok_lbl = QLabel("✅  Aucun élève en difficulté — tout va bien !")
-            ok_lbl.setStyleSheet("color: #1C8A4E; font-size: 14px; padding: 12px 0;")
+            ok_lbl = QLabel("✓  Aucun signal de difficulté détecté pour le moment.")
+            ok_lbl.setStyleSheet("color:#269B70;font-size:14px;padding:12px 0;")
             self.content_layout.addWidget(ok_lbl)
         else:
             for alert in all_alerts:
@@ -118,7 +114,7 @@ class DashboardScreen(QWidget):
         self.content_layout.addWidget(sep2)
 
         # ── Vue rapide par groupe ──────────────────────────────────────
-        groups_title = QLabel("Aperçu des groupes")
+        groups_title = QLabel("Aperçu des groupes (facultatifs)")
         groups_title.setStyleSheet("font-size: 16px; font-weight: bold;")
         self.content_layout.addWidget(groups_title)
 
@@ -157,9 +153,10 @@ class DashboardScreen(QWidget):
         info = QVBoxLayout(); info.setSpacing(2)
         name = QLabel(f"{s['prenom']} {s['nom']}")
         name.setStyleSheet("font-weight: bold; font-size: 14px;")
+        group = alert.get("group")
+        placement = f"Groupe : {group['name']}" if group else "Sans groupe"
         detail = QLabel(
-            f"Groupe : {alert['group']['name']}  •  "
-            f"Moyenne : {alert['avg_percent']} %  •  "
+            f"{placement}  •  Moyenne : {alert['avg_percent']} %  •  "
             f"{alert['nb_sessions']} session{'s' if alert['nb_sessions'] > 1 else ''}"
         )
         detail.setObjectName("subtitle")
