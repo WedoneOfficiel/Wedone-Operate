@@ -16,7 +16,8 @@ class Session:
     group_id:   str | None  = None   # groupe de l'élève, ou None
 
     # ── Helpers ────────────────────────────────────────────────────────
-    def is_guest(self)   -> bool: return self.role == "guest"\n    def is_admin(self)   -> bool: return self.role == "admin"
+    def is_guest(self)   -> bool: return self.role == "guest"
+    def is_admin(self)   -> bool: return self.role == "admin"
     def is_teacher(self) -> bool: return self.role == "teacher"
     def is_student(self) -> bool: return self.role == "student"
 
@@ -47,7 +48,14 @@ class Session:
 current = Session()
 
 
-def login_guest() -> None:\n    current.role = "guest"\n    current.user_id = None\n    current.prenom = "Invité"\n    current.nom = ""\n\n\ndef login_admin() -> None:
+def login_guest() -> None:
+    current.role = "guest"
+    current.user_id = None
+    current.prenom = "Invité"
+    current.nom = ""
+
+
+def login_admin() -> None:
     current.role    = "admin"
     current.user_id = None
     current.prenom  = "Admin"
