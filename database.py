@@ -151,7 +151,7 @@ def add_teacher(prenom, nom, password):
             records = _load(filename, [])
             changed = False
             for record in records:
-                if record.get("owner_id") == "admin":
+                if record.get("owner_id") in ("admin", "guest"):
                     record["owner_id"] = t["id"]
                     changed = True
             if changed:
@@ -161,26 +161,27 @@ def add_teacher(prenom, nom, password):
     return t
 
 def remove_teacher(tid):
-    """Remove a teacher profile but keep student identities and score history.
-
-    Orphaned students are moved to the local guest workspace so they remain
-    accessible instead of being silently stranded behind a deleted account.
-    """
+    """Remove a profile and transfer its local workspace without deleting data."""
     users = _load_users()
     users["teachers"] = [teacher for teacher in users["teachers"] if teacher["id"] != tid]
+    new_owner = users["teachers"][0]["id"] if users["teachers"] else "guest"
     for student in users["students"]:
         if student.get("created_by") == tid:
-            student["created_by"] = "guest"
-            student["group_id"] = None
-            student["class_id"] = None
+            student["created_by"] = new_owner
     _save_users(users)
 
-    groups = _load(GROUPS_FILE, [])
-    _save(GROUPS_FILE, [group for group in groups if group.get("owner_id") != tid])
-    classes = _load(CLASSES_FILE, [])
-    _save(CLASSES_FILE, [cls for cls in classes if cls.get("owner_id") != tid])
-    templates = _load(TEMPLATES_FILE, [])
-    _save(TEMPLATES_FILE, [template for template in templates if template.get("owner_id") != tid])
+    # Keep classes, groups, templates and their relationships. Only ownership
+    # changes; score history and student IDs remain untouched.
+    for filename in (CLASSES_FILE, GROUPS_FILE, TEMPLATES_FILE):
+        records = _load(filename, [])
+        changed = False
+        for record in records:
+            if record.get("owner_id") == tid:
+                record["owner_id"] = new_owner
+                changed = True
+        if changed:
+            _save(filename, records)
+
 
 def check_teacher_password(tid, pwd):
     teacher = get_teacher(tid)
