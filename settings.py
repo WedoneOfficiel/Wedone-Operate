@@ -32,9 +32,20 @@ def _detect_system_theme() -> str:
             import subprocess
             result = subprocess.run(
                 ["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
-                capture_output=True, text=True
+                capture_output=True, text=True, timeout=2
             )
             return "dark" if "dark" in result.stdout.lower() else "light"
+        except Exception:
+            return "light"
+
+    elif system == "Darwin":
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["defaults", "read", "-g", "AppleInterfaceStyle"],
+                capture_output=True, text=True, timeout=2
+            )
+            return "dark" if result.stdout.strip().lower() == "dark" else "light"
         except Exception:
             return "light"
 
@@ -88,16 +99,32 @@ def load() -> dict:
             data.setdefault(key, val)
         return data
     except (json.JSONDecodeError, OSError):
-        save(defaults)
+        # Keep the original settings file for recovery; never overwrite it
+        # automatically when it is malformed or temporarily unreadable.
         return defaults
 
 
 def save(settings: dict) -> None:
-    """Sauvegarde settings.json."""
+    """Atomically save settings.json."""
+    import tempfile
+
     settings_path = data_file(SETTINGS_FILE)
     settings_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(settings_path, "w", encoding="utf-8") as f:
-        json.dump(settings, f, indent=2, ensure_ascii=False)
+    fd, temp_path = tempfile.mkstemp(
+        prefix=f".{settings_path.name}.", suffix=".tmp", dir=str(settings_path.parent)
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(settings, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, settings_path)
+    except Exception:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
 
 
 def resolve_theme(settings: dict) -> str:
