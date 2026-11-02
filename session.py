@@ -31,13 +31,13 @@ class Session:
     def display_name(self) -> str:
         if self.role == "admin":
             return "Administrateur"
-        return f"{self.prenom} {self.nom}"
+        if self.role == "guest":\n            return "Invité"\n        return f"{self.prenom} {self.nom}"
 
     def role_label(self) -> str:
         return {"guest": "Invité", "admin": "Admin", "teacher": "Professeur", "student": "Élève"}.get(self.role, "")
 
     def clear(self):
-        self.role     = "student"
+        self.role     = "guest"
         self.user_id  = None
         self.prenom   = ""
         self.nom      = ""
