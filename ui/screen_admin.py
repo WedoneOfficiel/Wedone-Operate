@@ -735,7 +735,7 @@ class AddStudentDialog(QDialog):
         self._group.clear()
         self._group.addItem("— Sans groupe —", userData=None)
         for group in db.get_groups(owner_id=owner_id):
-            if class_id and group.get("class_id") != class_id:
+            if class_id and group.get("class_id") not in (None, class_id):
                 continue
             self._group.addItem(
                 f"{group['name']} ({group.get('level', '')})",
