@@ -169,6 +169,7 @@ class ResultsScreen(QWidget):
                 timer_enabled = results["timer_enabled"],
                 operations    = results["operations"],
                 elapsed_seconds = elapsed,
+                details = details,
             )
 
         self.title_label.setText(f"Résultats — {student_name}")
