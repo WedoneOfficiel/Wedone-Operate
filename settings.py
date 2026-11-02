@@ -4,6 +4,7 @@
 import json
 import os
 import platform
+from data_paths import data_file
 from constants import SETTINGS_FILE
 
 
@@ -74,12 +75,13 @@ def _default_settings() -> dict:
 def load() -> dict:
     """Charge settings.json. Crée le fichier avec les valeurs par défaut si absent."""
     defaults = _default_settings()
-    if not os.path.exists(SETTINGS_FILE):
+    settings_path = data_file(SETTINGS_FILE)
+    if not settings_path.exists():
         save(defaults)
         return defaults
 
     try:
-        with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
+        with open(settings_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         # Fusion : on conserve les clés inconnues mais on garantit les clés requises
         for key, val in defaults.items():
@@ -92,7 +94,9 @@ def load() -> dict:
 
 def save(settings: dict) -> None:
     """Sauvegarde settings.json."""
-    with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+    settings_path = data_file(SETTINGS_FILE)
+    settings_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(settings_path, "w", encoding="utf-8") as f:
         json.dump(settings, f, indent=2, ensure_ascii=False)
 
 
