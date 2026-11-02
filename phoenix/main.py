@@ -322,6 +322,47 @@ def main(argv: list[str] | None = None) -> int:
             self.classroomChanged.emit()
 
         @Slot(str)
+        def archiveStudent(self, student_id: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.archive_student(student_id)
+                    if self._active_student_id == student_id:
+                        self._active_student_id = None
+                        self.progressChanged.emit()
+                    self._classroom_message = "Élève archivé. Son historique est conservé."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self.classroomChanged.emit()
+
+        @Slot(str)
+        def archiveGroup(self, group_id: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.archive_group(group_id)
+                    self._classroom_message = "Groupe archivé."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self.classroomChanged.emit()
+
+        @Slot(str)
+        def archiveClass(self, class_id: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.archive_class(class_id)
+                    self._active_student_id = None
+                    self._classroom_message = "Classe archivée. Les résultats restent conservés."
+                    self.progressChanged.emit()
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self.classroomChanged.emit()
+
+        @Slot(str)
         def updateTeacherProfile(self, display_name: str) -> None:
             if not self._teacher_id:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
