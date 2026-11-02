@@ -58,6 +58,45 @@ class ProgressRepository:
 
         answered = int(totals["answered"] or 0)
         correct = int(totals["correct"] or 0)
+    def class_report(self, class_id: str, teacher_id: str) -> list[dict]:
+        """Return a teacher-scoped, question-weighted report for every active student."""
+        with self.database.connect() as connection:
+            classroom = connection.execute(
+                "SELECT name, school_year FROM classes "
+                "WHERE id=? AND owner_teacher_id=? AND archived_at IS NULL",
+                (class_id, teacher_id),
+            ).fetchone()
+            if classroom is None:
+                raise ValueError("Classe introuvable dans votre espace professeur.")
+            rows = connection.execute(
+                """SELECT st.id, st.display_name,
+                          COALESCE(g.name, '') AS group_name,
+                          COUNT(DISTINCT ps.id) AS sessions,
+                          COUNT(pa.id) AS answered,
+                          COALESCE(SUM(pa.is_correct), 0) AS correct,
+                          COALESCE(SUM(pa.elapsed_ms), 0) AS elapsed_ms
+                   FROM students st
+                   LEFT JOIN groups g ON g.id=st.group_id
+                   LEFT JOIN practice_sessions ps
+                     ON ps.student_id=st.id AND ps.mode='classroom'
+                   LEFT JOIN practice_answers pa ON pa.session_id=ps.id
+                   WHERE st.class_id=? AND st.archived_at IS NULL
+                   GROUP BY st.id
+                   ORDER BY st.display_name COLLATE NOCASE""",
+                (class_id,),
+            ).fetchall()
+        report = []
+        for row in rows:
+            item = dict(row)
+            item["class_name"] = classroom["name"]
+            item["school_year"] = classroom["school_year"] or ""
+            item["accuracy"] = (
+                round(item["correct"] / item["answered"] * 100, 1)
+                if item["answered"] else None
+            )
+            report.append(item)
+        return report
+
         return {
             "sessions": int(totals["sessions"] or 0),
             "completed": int(totals["completed"] or 0),

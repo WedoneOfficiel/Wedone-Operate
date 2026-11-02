@@ -57,6 +57,32 @@ class ProgressRepositoryTests(unittest.TestCase):
         self.assertEqual(b_summary["answered"], 0)
         self.assertIsNone(b_summary["accuracy"])
 
+    def test_teacher_class_report_is_scoped_and_question_weighted(self):
+        teacher = self.classroom.create_teacher("Professeur A", "MotDePasse123!")
+        other_teacher = self.classroom.create_teacher("Professeur B", "MotDePasse456!")
+        class_id = self.classroom.create_class("CM1 A", owner_teacher_id=teacher)
+        other_class = self.classroom.create_class("CM2 B", owner_teacher_id=other_teacher)
+        student_a = self.classroom.create_student(class_id, "Camille")
+        self.classroom.create_student(class_id, "Alex")
+
+        session = self.practice.start_session("classroom", 2, {}, student_id=student_a)
+        self.practice.record_answer(session, "cp.addition_20", "1+1", 2, "2", 400)
+        self.practice.record_answer(session, "cp.addition_20", "2+2", 4, "5", 600)
+        self.practice.finish_session(session)
+
+        report = self.progress.class_report(class_id, teacher)
+        self.assertEqual(len(report), 2)
+        camille = next(row for row in report if row["display_name"] == "Camille")
+        self.assertEqual(camille["sessions"], 1)
+        self.assertEqual(camille["answered"], 2)
+        self.assertEqual(camille["correct"], 1)
+        self.assertEqual(camille["accuracy"], 50.0)
+        alex = next(row for row in report if row["display_name"] == "Alex")
+        self.assertEqual(alex["answered"], 0)
+        self.assertIsNone(alex["accuracy"])
+        with self.assertRaises(ValueError):
+            self.progress.class_report(other_class, teacher)
+
     def test_classroom_requires_a_student_for_personal_progress(self):
         with self.assertRaises(ValueError):
             self.progress.overview("classroom")

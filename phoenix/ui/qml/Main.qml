@@ -622,6 +622,15 @@ ApplicationWindow {
                             appBridge.selectStudent("")
                         }
                     }
+                    PrimaryButton {
+                        text: "Exporter le bilan de cette classe (CSV)"
+                        Layout.fillWidth: true
+                        enabled: !!teacherClassSelect.currentValue
+                        fillColor: root.colors.accentSoft
+                        hoverColor: root.colors.accentHoverSoft
+                        textColor: root.colors.accent
+                        onClicked: classReportDialog.open()
+                    }
                     TextField {
                         id: editClassName
                         Layout.fillWidth: true
@@ -1197,6 +1206,16 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    FileDialog {
+        id: classReportDialog
+        title: "Exporter le bilan de la classe"
+        fileMode: FileDialog.SaveFile
+        nameFilters: ["Rapport de classe (*.csv)"]
+        onAccepted: appBridge.exportClassReport(
+            teacherClassSelect.currentValue, selectedFile.toLocalFile()
+        )
     }
 
     FileDialog {

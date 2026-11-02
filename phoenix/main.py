@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import sys
 from time import perf_counter_ns
@@ -193,6 +194,28 @@ def main(argv: list[str] | None = None) -> int:
         def _safety_path(self, label: str) -> Path:
             stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
             return get_phoenix_data_dir() / "backups" / f"{label}-{stamp}.sqlite3"
+
+        @Slot(str, str)
+        def exportClassReport(self, class_id: str, destination: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    rows = self._progress.class_report(class_id, self._teacher_id)
+                    columns = (
+                        "class_name", "school_year", "display_name", "group_name",
+                        "sessions", "answered", "correct", "accuracy", "elapsed_ms",
+                    )
+                    target = Path(destination)
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with target.open("w", newline="", encoding="utf-8-sig") as handle:
+                        writer = csv.DictWriter(handle, fieldnames=columns)
+                        writer.writeheader()
+                        writer.writerows(rows)
+                    self._classroom_message = f"Rapport CSV exporté : {target}"
+                except Exception as exc:
+                    self._classroom_message = f"Export du rapport impossible : {exc}"
+            self._emit_classroom_changed()
 
         @Slot()
         def createBackup(self) -> None:
