@@ -40,7 +40,7 @@ jobs:
       - name: Build application
         shell: pwsh
         run: |
-          $qml = python -c "import PySide6, pathlib; print(pathlib.Path(PySide6.__file__).parent / 'Qt' / 'qml')"
+          $qml = python scripts/find_qml_runtime.py
           if (-not (Test-Path -LiteralPath $qml -PathType Container)) { throw "Qt QML runtime directory is missing: $qml" }
           Write-Host "QML runtime directory: $qml"
           Get-ChildItem -LiteralPath $qml | Select-Object -First 12 Name
@@ -136,7 +136,7 @@ jobs:
       - name: Build application
         shell: bash
         run: |
-          QML_DIR="$(python -c 'import PySide6, pathlib; print(pathlib.Path(PySide6.__file__).parent / "Qt" / "qml")')"
+          QML_DIR="$(python scripts/find_qml_runtime.py)
           test -f "$QML_DIR/QtQuick/Controls/qmldir"
           pyinstaller --noconfirm --clean --windowed --name "wedone-operate-phoenix" --exclude-module PySide6.QtWebEngineCore --exclude-module PySide6.QtWebEngineQuick --exclude-module PySide6.QtWebEngineWidgets --add-data "$QML_DIR:PySide6/Qt/qml" --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
       - name: Validate packaged runtime
