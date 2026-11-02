@@ -71,6 +71,15 @@ class PhoenixQuestionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             generate_question("college.proportionality", seed=1)
 
+    def test_difficulty_never_exceeds_the_school_number_domain(self):
+        for seed in range(50):
+            cp_add = generate_question("cp.addition_20", difficulty=5, seed=seed)
+            cp_sub = generate_question("cp.subtraction_20", difficulty=5, seed=seed)
+            ce1_add = generate_question("ce1.addition_100", difficulty=5, seed=seed)
+            self.assertLessEqual(cp_add.answer, 20)
+            self.assertLessEqual(cp_sub.operands[0], 20)
+            self.assertLessEqual(ce1_add.answer, 100)
+
     def test_answer_validation(self):
         question = generate_question("cp.addition_20", seed=2)
         self.assertTrue(check_answer(question, str(question.answer)))
