@@ -147,8 +147,13 @@ class GameScreen(QWidget):
         self._show_question()
 
     def _gen_questions(self, cfg) -> list[dict]:
-        ops = cfg["operations"]
-        level = cfg["difficulty"]
+        ops = cfg.get("operations") or []
+        if not ops or any(op not in ("addition", "soustraction", "multiplication", "division") for op in ops):
+            raise ValueError("Sélectionnez au moins une opération valide.")
+        count = int(cfg.get("nb_epreuves", 0))
+        if not 1 <= count <= 100:
+            raise ValueError("Le nombre d'épreuves doit être compris entre 1 et 100.")
+        level = cfg.get("difficulty", "CM2")
         # Supporte autant les niveaux scolaires que les anciens Facile/Moyen/Difficile
         if level in LEVEL_RANGES:
             ranges = LEVEL_RANGES[level]
@@ -157,7 +162,7 @@ class GameScreen(QWidget):
         else:
             ranges = LEVEL_RANGES["CM2"]
         result = []
-        for _ in range(cfg["nb_epreuves"]):
+        for _ in range(count):
             op = random.choice(ops)
             r  = ranges[op]
             a, b, res, sym = self._make_op(op, r)
@@ -224,8 +229,9 @@ class GameScreen(QWidget):
             self._register(timed_out=True)
 
     def _update_chrono_display(self):
-        secs  = TIMER_SECONDS.get(self._config["difficulty"], 20)
-        ratio = self._time_left / secs
+        level = self._config.get("difficulty", "CM2")
+        secs = TIMER_SECONDS_BY_LEVEL.get(level) or TIMER_SECONDS.get(level, 20)
+        ratio = self._time_left / max(1, secs)
         self._chrono_lbl.setText(f"{self._time_left:.1f} s")
         self._chrono_bar.setValue(int(self._time_left * 10))
 
@@ -245,6 +251,8 @@ class GameScreen(QWidget):
 
     # ── Validation ────────────────────────────────────────────────────
     def _validate(self):
+        if not self._answer_input.isEnabled():
+            return
         if self._config.get("timer_enabled"):
             self._timer.stop()
         self._register(timed_out=False)
