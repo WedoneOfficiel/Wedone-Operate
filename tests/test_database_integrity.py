@@ -81,6 +81,36 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertEqual("guest", db.get_templates(owner_id="guest")[0]["owner_id"])
         self.assertEqual(1, len(db.get_scores(student["id"])))
 
+    def test_class_template_applies_to_students_without_groups(self):
+        cls = db.add_class("CM1 A", "teacher-a")
+        student = db.add_student("Lina", "Martin", "teacher-a", class_id=cls["id"])
+        self.assertTrue(db.save_template(
+            "Entraînement CM1", "teacher-a",
+            {"operations": ["addition"], "level": "CM1"},
+            class_id=cls["id"]
+        ))
+        template = db.get_student_default_template(student["id"])
+        self.assertEqual("Entraînement CM1", template["name"])
+
+    def test_group_template_overrides_class_template(self):
+        cls = db.add_class("CM2 A", "teacher-a")
+        group = db.add_group("Groupe rapide", "teacher-a", class_id=cls["id"])
+        student = db.add_student("Noé", "Petit", "teacher-a", group_id=group["id"])
+        db.save_template("Classe", "teacher-a", {"operations": ["addition"]}, class_id=cls["id"])
+        db.save_template("Groupe", "teacher-a", {"operations": ["multiplication"]}, group_id=group["id"])
+        self.assertEqual("Groupe", db.get_student_default_template(student["id"])["name"])
+
+    def test_removing_group_promotes_its_template_to_class_scope(self):
+        cls = db.add_class("CE2 A", "teacher-a")
+        group = db.add_group("Groupe A", "teacher-a", class_id=cls["id"])
+        student = db.add_student("Milo", "Durand", "teacher-a", group_id=group["id"])
+        db.save_template("Travail du groupe", "teacher-a",
+                         {"operations": ["soustraction"]}, group_id=group["id"])
+        db.remove_group(group["id"])
+        template = db.get_student_default_template(student["id"])
+        self.assertEqual("Travail du groupe", template["name"])
+        self.assertEqual(cls["id"], template["class_id"])
+
     def test_editing_group_updates_members_level_and_class(self):
         cls_a = db.add_class("CM1 A", "teacher-a")
         cls_b = db.add_class("CM2 B", "teacher-a")
