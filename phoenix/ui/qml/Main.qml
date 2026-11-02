@@ -391,6 +391,7 @@ ApplicationWindow {
                         implicitHeight: 46
                         placeholderText: "Mot de passe (8 caractères minimum)"
                         echoMode: TextInput.Password
+                        onAccepted: appBridge.createTeacher(newTeacherName.text, text)
                     }
                     PrimaryButton {
                         text: "Créer mon profil"
@@ -405,7 +406,7 @@ ApplicationWindow {
                     spacing: 10
                     Label { text: "Mes classes"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold }
                     TextField { id: newClassName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom de la classe (ex. CM1 A)" }
-                    TextField { id: newClassYear; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Année scolaire (facultatif)" }
+                    TextField { id: newClassYear; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Année scolaire (facultatif)"; onAccepted: appBridge.createClass(newClassName.text, text) }
                     PrimaryButton {
                         text: "Créer la classe"
                         Layout.fillWidth: true
@@ -420,7 +421,7 @@ ApplicationWindow {
                         valueRole: "id"
                         model: JSON.parse(appBridge.classesJson)
                     }
-                    TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève" }
+                    TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, "") }
                     PrimaryButton {
                         text: "Ajouter l'élève"
                         Layout.fillWidth: true
@@ -428,7 +429,7 @@ ApplicationWindow {
                         onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, "")
                     }
                     Label { text: "Modifier mon profil"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
-                    TextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché" }
+                    TextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché"; onAccepted: appBridge.updateTeacherProfile(text) }
                     PrimaryButton {
                         text: "Enregistrer le profil"
                         Layout.fillWidth: true
@@ -577,7 +578,6 @@ ApplicationWindow {
                         placeholderText: "Votre réponse"
                         horizontalAlignment: TextInput.AlignHCenter
                         font.pixelSize: 23
-                        inputMethodHints: Qt.ImhDigitsOnly
                         onAccepted: if (!appBridge.answerSubmitted) appBridge.submitAnswer(text)
                     }
                     Label {
@@ -623,11 +623,11 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignHCenter
                     }
                     PrimaryButton {
-                        text: "Retour à l'espace individuel"
+                        text: root.currentMode === "classroom" ? "Retour à l'espace élève" : "Retour à l'espace individuel"
                         Layout.fillWidth: true
                         onClicked: {
                             appBridge.abandonPractice()
-                            root.page = "home"
+                            root.page = root.currentMode === "classroom" ? "area" : "home"
                         }
                     }
                 }
@@ -639,7 +639,7 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: {
                         appBridge.abandonPractice()
-                        root.page = "home"
+                        root.page = root.currentMode === "classroom" ? "area" : "home"
                     }
                 }
             }
