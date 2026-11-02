@@ -154,7 +154,7 @@ def main(argv: list[str] | None = None) -> int:
         def createBackup(self) -> None:
             try:
                 path = get_phoenix_data_dir() / "backups" / (
-                    "backup-" + datetime.now().strftime("%Y%m%d-%H%M%S") + ".sqlite3"
+                    "backup-" + datetime.now().strftime("%Y%m%d-%H%M%S-%f") + ".sqlite3"
                 )
                 create_backup(self._database, path)
                 self._data_message = f"Sauvegarde créée : {path}"
@@ -203,10 +203,14 @@ def main(argv: list[str] | None = None) -> int:
             self._mode = self._database.get_mode() or ""
             self._teacher_id = None
             self._active_student_id = None
+            self._ui_scale = float(self._database.get_setting("ui_scale", 1.0))
+            self._high_contrast = bool(self._database.get_setting("high_contrast", False))
+            self._reduce_motion = bool(self._database.get_setting("reduce_motion", False))
             self._data_message = message
             self.modeChanged.emit(self._mode)
             self.classroomChanged.emit()
             self.practiceChanged.emit()
+            self.settingsChanged.emit()
 
         @Slot(str)
         def chooseMode(self, mode: str) -> None:
