@@ -122,9 +122,6 @@ QComboBox::drop-down {{
     border-top-right-radius: 12px; border-bottom-right-radius: 12px;
     background: {c['surface_hover']};
 }}
-QComboBox::down-arrow {{
-    width: 8px; height: 8px; border: 0;
-}}
 QComboBox QAbstractItemView {{
     background-color: {c['surface']}; color: {c['text']};
     border: 1px solid {c['border']}; border-radius: 10px;
