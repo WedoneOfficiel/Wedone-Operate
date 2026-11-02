@@ -10,7 +10,7 @@
 # scores.json  : { student_id: [ session… ] }
 # templates.json : [ { id, name, owner_id, group_id, config } ]
 
-import json, os, hashlib, uuid
+import json, os, hashlib, uuid, csv, io, tempfile
 from data_paths import data_file
 from datetime import datetime
 from constants import DEFAULT_ADMIN_PASSWORD_PLAIN, SCHOOL_LEVELS
@@ -26,19 +26,44 @@ TEMPLATES_FILE = "templates.json"
 def _hash(p): return hashlib.sha256(p.encode()).hexdigest()
 def _uid(prefix): return f"{prefix}_{uuid.uuid4().hex[:8]}"
 
+class DataIntegrityError(RuntimeError):
+    """Raised when a local data file exists but cannot safely be read."""
+
+
 def _load(path, default):
     resolved = data_file(path)
-    if not resolved.exists(): return default
-    try:
-        with open(resolved, "r", encoding="utf-8") as f: return json.load(f)
-    except (OSError, json.JSONDecodeError):
+    if not resolved.exists():
         return default
+    try:
+        with open(resolved, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as exc:
+        # Never silently replace unreadable user data with defaults on the
+        # next write: that would turn a recoverable error into data loss.
+        raise DataIntegrityError(
+            f"Impossible de lire {resolved.name}. Le fichier original a été conservé."
+        ) from exc
+
 
 def _save(path, data):
+    """Atomically replace a JSON file to avoid truncated data on interruption."""
     resolved = data_file(path)
     resolved.parent.mkdir(parents=True, exist_ok=True)
-    with open(resolved, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    fd, temp_path = tempfile.mkstemp(
+        prefix=f".{resolved.name}.", suffix=".tmp", dir=str(resolved.parent)
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, resolved)
+    except Exception:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
 
 # ── Bootstrap users ───────────────────────────────────────────────────
 
@@ -128,13 +153,21 @@ def add_class(name, owner_id):
     classes.append(c); _save(CLASSES_FILE, classes); return c
 
 def remove_class(class_id):
+    """Remove a class while preserving students and their score history."""
     classes = _load(CLASSES_FILE, [])
-    classes = [c for c in classes if c["id"] != class_id]; _save(CLASSES_FILE, classes)
-    # Délier les groupes de cette classe
+    classes = [c for c in classes if c["id"] != class_id]
+    _save(CLASSES_FILE, classes)
+    # Groups and students remain usable as unassigned records.
     gs = _load(GROUPS_FILE, [])
     for g in gs:
-        if g.get("class_id") == class_id: g["class_id"] = None
+        if g.get("class_id") == class_id:
+            g["class_id"] = None
     _save(GROUPS_FILE, gs)
+    users = _load_users()
+    for student in users["students"]:
+        if student.get("class_id") == class_id:
+            student["class_id"] = None
+    _save_users(users)
 
 # ══════════════════════════════════════════════════════════════════════
 # GROUPES (avec niveau scolaire + classe)
@@ -183,27 +216,74 @@ def get_group_level(gid):
 # ══════════════════════════════════════════════════════════════════════
 
 def get_students(teacher_id=None, group_id=None, class_id=None):
-    d = _load_users(); students = d["students"]
-    if teacher_id: students = [s for s in students if s.get("created_by") == teacher_id]
-    if group_id:   students = [s for s in students if s.get("group_id") == group_id]
+    students = _load_users()["students"]
+    if teacher_id:
+        students = [s for s in students if s.get("created_by") == teacher_id]
+    if group_id:
+        students = [s for s in students if s.get("group_id") == group_id]
     if class_id:
-        # Élèves dont le groupe appartient à cette classe
-        gids = {g["id"] for g in get_groups(class_id=class_id)}
-        students = [s for s in students if s.get("group_id") in gids]
-    return sorted(students, key=lambda s: (s["nom"].lower(), s["prenom"].lower()))
+        # Include both students assigned directly to a class and students
+        # whose optional group belongs to that class.
+        group_ids = {g["id"] for g in get_groups(class_id=class_id)}
+        students = [
+            s for s in students
+            if s.get("class_id") == class_id or s.get("group_id") in group_ids
+        ]
+    return sorted(
+        students,
+        key=lambda s: (s.get("nom", "").casefold(), s.get("prenom", "").casefold())
+    )
 
 def get_student(sid):
     for s in _load_users()["students"]:
         if s["id"] == sid: return s
     return None
 
-def add_student(prenom, nom, teacher_id, group_id=None):
+def add_student(prenom, nom, teacher_id, group_id=None, class_id=None):
     d = _load_users()
-    norm = (prenom.strip().lower(), nom.strip().lower())
-    if any((s["prenom"].lower(), s["nom"].lower()) == norm for s in d["students"]): return None
-    s = {"id": _uid("s"), "prenom": prenom.strip(), "nom": nom.strip(),
-         "group_id": group_id, "created_by": teacher_id}
-    d["students"].append(s); _save_users(d); return s
+    prenom, nom = prenom.strip(), nom.strip()
+    if not prenom or not nom:
+        return None
+    norm = (prenom.casefold(), nom.casefold())
+    # Identical names are valid in different teacher workspaces.
+    if any(
+        (s.get("prenom", "").casefold(), s.get("nom", "").casefold()) == norm
+        and s.get("created_by") == teacher_id
+        for s in d["students"]
+    ):
+        return None
+    if group_id:
+        group = get_group(group_id)
+        if not group or (teacher_id and group.get("owner_id") != teacher_id):
+            return None
+        if class_id and group.get("class_id") not in (None, class_id):
+            return None
+        class_id = class_id or group.get("class_id")
+    student = {
+        "id": _uid("s"), "prenom": prenom, "nom": nom,
+        "group_id": group_id, "class_id": class_id, "created_by": teacher_id
+    }
+    d["students"].append(student)
+    _save_users(d)
+    return student
+
+
+def assign_student_class(student_id, class_id):
+    """Assign a student directly to a class, without requiring a group."""
+    if class_id and not get_class(class_id):
+        return False
+    users = _load_users()
+    for student in users["students"]:
+        if student["id"] == student_id:
+            student["class_id"] = class_id
+            # A direct class assignment is distinct from group membership.
+            if student.get("group_id"):
+                group = get_group(student["group_id"])
+                if group and class_id and group.get("class_id") not in (None, class_id):
+                    return False
+            _save_users(users)
+            return True
+    return False
 
 def remove_student(sid):
     d = _load_users()
@@ -211,9 +291,18 @@ def remove_student(sid):
     sc = _load(SCORES_FILE, {}); sc.pop(sid, None); _save(SCORES_FILE, sc)
 
 def assign_student_group(sid, gid):
-    d = _load_users()
-    for s in d["students"]:
-        if s["id"] == sid: s["group_id"] = gid; _save_users(d); return True
+    if gid and not get_group(gid):
+        return False
+    users = _load_users()
+    for student in users["students"]:
+        if student["id"] == sid:
+            student["group_id"] = gid
+            if gid:
+                group = get_group(gid)
+                if group:
+                    student["class_id"] = group.get("class_id")
+            _save_users(users)
+            return True
     return False
 
 def student_full_name(s): return f"{s['prenom']} {s['nom']}"
@@ -264,14 +353,23 @@ def get_group_default_template(group_id):
 # SCORES
 # ══════════════════════════════════════════════════════════════════════
 
-def save_score(student_id, difficulty, total, correct, timer_enabled, operations, elapsed_seconds=None):
+def save_score(student_id, difficulty, total, correct, timer_enabled, operations, elapsed_seconds=None, details=None):
+    if not student_id:
+        raise ValueError("student_id est obligatoire")
+    if not isinstance(total, int) or total <= 0:
+        raise ValueError("total doit être un entier strictement positif")
+    if not isinstance(correct, int) or not 0 <= correct <= total:
+        raise ValueError("correct doit être compris entre 0 et total")
     sc = _load(SCORES_FILE, {})
     if student_id not in sc: sc[student_id] = []
     entry = {"date": datetime.now().isoformat(timespec="seconds"),
              "difficulty": difficulty, "total": total, "correct": correct,
              "percent": round(correct * 100 / total, 1) if total > 0 else 0,
-             "timer_enabled": timer_enabled, "operations": operations}
-    if elapsed_seconds is not None: entry["elapsed_seconds"] = round(elapsed_seconds, 1)
+             "timer_enabled": bool(timer_enabled), "operations": list(operations or [])}
+    if elapsed_seconds is not None:
+        entry["elapsed_seconds"] = round(max(0, float(elapsed_seconds)), 1)
+    if details is not None:
+        entry["details"] = details
     sc[student_id].append(entry); _save(SCORES_FILE, sc)
 
 def get_scores(student_id):
