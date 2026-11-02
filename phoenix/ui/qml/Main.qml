@@ -52,18 +52,16 @@ ApplicationWindow {
             anchors.rightMargin: 28
             spacing: 12
 
-            Rectangle {
-                width: 34
-                height: 34
-                radius: 10
-                color: "#1769D2"
-                Text {
-                    anchors.centerIn: parent
-                    text: "W"
-                    color: "white"
-                    font.pixelSize: 19
-                    font.weight: Font.Bold
-                }
+            Image {
+                source: "image://branding/logo"
+                width: 36
+                height: 36
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
+                sourceSize.width: 144
+                sourceSize.height: 144
+                Layout.alignment: Qt.AlignVCenter
             }
             Label {
                 text: "wedone"
