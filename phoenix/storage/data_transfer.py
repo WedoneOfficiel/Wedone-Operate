@@ -27,7 +27,7 @@ DELETE_ORDER = tuple(reversed(TABLE_ORDER))
 
 
 def _safety_backup_path(database: Database) -> Path:
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     return database.path.parent / "backups" / f"before-change-{stamp}.sqlite3"
 
 
