@@ -1,10 +1,10 @@
 # ui/theme.py — Wedone Operate
-# Identité visuelle Wedone : surfaces douces, accent rose, thèmes clair et sombre.
+# Identité visuelle Wedone : bleu principal, surfaces neutres, thèmes clair et sombre.
 # Les polices Manrope / DM Sans sont utilisées si elles sont installées ; Qt conserve
 # un fallback natif sur les systèmes qui ne les possèdent pas.
 
 from PyQt6.QtGui import QFont
-from constants import LIGHT, DARK
+from ui.palette import LIGHT, DARK
 
 
 def get_stylesheet(theme: str) -> str:
