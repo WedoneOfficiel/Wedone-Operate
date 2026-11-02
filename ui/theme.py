@@ -98,7 +98,7 @@ QGroupBox::title {{
 QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QComboBox {{
     background-color: {c['input']}; color: {c['text']};
     border: 1px solid {c['border']}; border-radius: 13px;
-    padding: 10px 12px; selection-background-color: {c['primary']};
+    padding: 10px 12px; min-height: 22px; selection-background-color: {c['primary']};
     selection-color: white;
 }}
 QLineEdit:hover, QTextEdit:hover, QPlainTextEdit:hover, QSpinBox:hover,
@@ -113,8 +113,8 @@ QLineEdit#answer-input {{
     font-size: 24px; padding: 13px; border-radius: 15px;
 }}
 QComboBox {{
-    padding: 9px 34px 9px 12px; min-height: 20px;
-    border-radius: 12px; selection-background-color: {c['accent_soft']};
+    padding: 9px 38px 9px 13px; min-height: 22px;
+    border-radius: 13px; selection-background-color: {c['accent_soft']};
 }}
 QComboBox::drop-down {{
     subcontrol-origin: padding; subcontrol-position: top right;
@@ -132,7 +132,10 @@ QComboBox QAbstractItemView::item {{
     min-height: 30px; padding: 7px 10px; border-radius: 7px;
 }}
 QComboBox QAbstractItemView::item:hover {{
-    background: {c['surface_hover']};
+    background: {c['surface_hover']}; color: {c['text']};
+}}
+QComboBox QAbstractItemView::item:selected {{
+    background: {c['accent_soft']}; color: {c['accent_ink']};
 }}
 QSpinBox::up-button, QSpinBox::down-button {{
     width: 18px; border: 0; background: transparent;
@@ -140,13 +143,14 @@ QSpinBox::up-button, QSpinBox::down-button {{
 
 /* ── Boutons : primaire, secondaire, navigation et danger ──── */
 QPushButton {{
-    background-color: {c['primary']};
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {c['primary']}, stop:1 {c['primary_alt']});
     color: {c['primary_text']}; border: 1px solid {c['primary']};
-    border-radius: 12px; padding: 10px 18px; min-height: 20px;
+    border-radius: 14px; padding: 10px 18px; min-height: 22px;
     font-size: 13px; font-weight: 700;
 }}
 QPushButton:hover {{
-    background-color: {c['primary_hover']}; border-color: {c['primary_hover']};
+    background: {c['primary_hover']}; border-color: {c['primary_hover']};
 }}
 QPushButton:pressed {{
     background-color: {c['primary_pressed']}; border-color: {c['primary_pressed']};
@@ -157,8 +161,8 @@ QPushButton:disabled {{
     border-color: {c['disabled']};
 }}
 QPushButton[class="secondary"], QPushButton[class="nav"] {{
-    background-color: {c['surface']}; color: {c['text']};
-    border: 1px solid {c['border']}; border-radius: 12px;
+    background-color: {c['surface_glass']}; color: {c['text']};
+    border: 1px solid {c['border']}; border-radius: 14px;
 }}
 QPushButton[class="secondary"]:hover, QPushButton[class="nav"]:hover {{
     background-color: {c['surface_hover']};
@@ -228,7 +232,10 @@ QListWidget, QTableWidget, QTreeWidget {{
     outline: none; gridline-color: {c['border']};
 }}
 QListWidget::item {{
-    padding: 9px 11px; border-radius: 9px; margin: 2px 5px;
+    padding: 10px 12px; border-radius: 10px; margin: 3px 5px;
+}}
+QListWidget::item:hover {{
+    background: {c['surface_hover']}; color: {c['text']};
 }}
 QListWidget::item:selected, QTableWidget::item:selected,
 QTreeWidget::item:selected {{
