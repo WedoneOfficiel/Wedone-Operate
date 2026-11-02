@@ -164,6 +164,18 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = str(exc)
             self.classroomChanged.emit()
 
+        @Slot(str, str)
+        def createGroup(self, class_id: str, name: str) -> None:
+            if not self._teacher_id:
+                self._classroom_message = "Connectez-vous à votre espace professeur."
+            else:
+                try:
+                    self._classroom.create_group(class_id, name)
+                    self._classroom_message = "Groupe créé."
+                except Exception as exc:
+                    self._classroom_message = str(exc)
+            self.classroomChanged.emit()
+
         @Slot(str, str, str)
         def createStudent(self, class_id: str, display_name: str, group_id: str) -> None:
             if not self._teacher_id:
