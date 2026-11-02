@@ -31,8 +31,8 @@ class SettingsScreen(QWidget):
 
         # Sidebar
         nav = QWidget()
-        nav.setFixedWidth(180)
-        nav.setStyleSheet("border-right: 1px solid rgba(128,128,128,0.2);")
+        nav.setFixedWidth(220)
+        nav.setProperty("class", "side-nav")
         nav_l = QVBoxLayout(nav)
         nav_l.setContentsMargins(12, 20, 12, 20)
         nav_l.setSpacing(6)
