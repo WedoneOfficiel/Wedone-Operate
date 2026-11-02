@@ -307,7 +307,8 @@ ApplicationWindow {
         contentItem: Text {
             text: quiet.text
             color: quiet.enabled ? root.colors.textSecondary : root.colors.muted
-            font: quiet.font
+            font.family: "DM Sans"
+            font.pixelSize: 13
             font.weight: Font.DemiBold
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
