@@ -42,7 +42,8 @@ class UpdateDialog(QDialog):
 
         new_label = QLabel(f"Nouvelle version\n{info['version']}")
         new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        new_label.setStyleSheet("font-weight: bold; color: #2EBD6E;")
+        new_label.setObjectName("success")
+        new_label.setStyleSheet("font-weight: bold;")
 
         versions_layout.addWidget(cur_label)
         versions_layout.addWidget(arrow)
