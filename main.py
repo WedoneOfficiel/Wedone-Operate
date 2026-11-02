@@ -114,7 +114,7 @@ class WedoneOperateApp(QMainWindow):
         else: self._go_home()
 
     def _go_home(self):
-        if session.current.is_student():
+        if session.current.is_student() or session.current.is_guest():
             self.s_main.refresh(); self._goto(IDX_MAIN)
         else:
             self.s_dashboard.refresh(); self._goto(IDX_DASHBOARD)
