@@ -534,7 +534,6 @@ def main(argv: list[str] | None = None) -> int:
             palette.setColor(role, QColor(value))
         app.setPalette(palette)
 
-    apply_application_palette(bool(database.get_setting("high_contrast", False)))
     app.setApplicationName("Wedone Operate Phoenix")
     app.setOrganizationName("WedoneOfficiel")
 
@@ -564,6 +563,7 @@ def main(argv: list[str] | None = None) -> int:
 
     database = Database(get_database_path())
     database.initialize()
+    apply_application_palette(bool(database.get_setting("high_contrast", False)))
     bridge = AppBridge(database)
 
     engine = QQmlApplicationEngine()
