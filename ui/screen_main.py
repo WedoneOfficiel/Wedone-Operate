@@ -19,6 +19,7 @@ class MainScreen(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._settings_defaults = {}
         self._build_ui()
 
     def _build_ui(self):
@@ -168,7 +169,14 @@ class MainScreen(QWidget):
         self.welcome_lbl.setText(f"Bonjour, {s.display_name()} !")
 
         # Niveau du groupe
-        student_level = db.get_student_level(s.user_id) if s.is_student() and s.user_id else "CM2"
+        legacy_levels = {"Facile": "CE1", "Moyen": "CM2", "Difficile": "3e"}
+        guest_level = legacy_levels.get(
+            self._settings_defaults.get("difficulty"),
+            self._settings_defaults.get("difficulty", "CM2")
+        )
+        if guest_level not in SCHOOL_LEVELS:
+            guest_level = "CM2"
+        student_level = db.get_student_level(s.user_id) if s.is_student() and s.user_id else guest_level
         student = db.get_student(s.user_id) if s.is_student() and s.user_id else None
         group = db.get_group(student.get("group_id")) if student and student.get("group_id") else None
         cls = db.get_class(student.get("class_id")) if student and student.get("class_id") else None
@@ -213,13 +221,18 @@ class MainScreen(QWidget):
 
     def _apply_defaults(self, level: str):
         if level in SCHOOL_LEVELS: self.combo_level.setCurrentText(level)
+        defaults = self._settings_defaults
         self.spin.setValue(10)
-        for cb in (self.cb_add, self.cb_sub, self.cb_mul, self.cb_div): cb.setChecked(True)
-        self.cb_timer.setChecked(False)
+        self.cb_add.setChecked(defaults.get("addition_enabled", True))
+        self.cb_sub.setChecked(defaults.get("subtraction_enabled", True))
+        self.cb_mul.setChecked(defaults.get("multiplication_enabled", True))
+        self.cb_div.setChecked(defaults.get("division_enabled", True))
+        self.cb_timer.setChecked(defaults.get("timer_enabled", False))
         self._update_available_operations()
 
     def load_settings_defaults(self, settings: dict):
-        pass  # Les defaults viennent du groupe/modèle, pas des settings globaux
+        """Apply persisted defaults to guest practice and as student fallbacks."""
+        self._settings_defaults = dict(settings or {})
 
     def _on_level_changed(self, _value=None):
         self._update_available_operations()
