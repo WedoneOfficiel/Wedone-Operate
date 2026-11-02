@@ -112,16 +112,30 @@ QDoubleSpinBox:focus, QComboBox:focus {{
 QLineEdit#answer-input {{
     font-size: 24px; padding: 13px; border-radius: 15px;
 }}
-QComboBox {{ padding-right: 28px; }}
+QComboBox {{
+    padding: 9px 34px 9px 12px; min-height: 20px;
+    border-radius: 12px; selection-background-color: {c['accent_soft']};
+}}
 QComboBox::drop-down {{
     subcontrol-origin: padding; subcontrol-position: top right;
-    width: 26px; border: 0;
+    width: 32px; border: 0; border-left: 1px solid {c['border']};
+    border-top-right-radius: 12px; border-bottom-right-radius: 12px;
+    background: {c['surface_hover']};
+}}
+QComboBox::down-arrow {{
+    width: 8px; height: 8px; border: 0;
 }}
 QComboBox QAbstractItemView {{
     background-color: {c['surface']}; color: {c['text']};
-    border: 1px solid {c['border']}; border-radius: 12px;
+    border: 1px solid {c['border']}; border-radius: 10px;
     selection-background-color: {c['accent_soft']};
-    selection-color: {c['text']}; padding: 5px;
+    selection-color: {c['text']}; padding: 6px; outline: 0;
+}}
+QComboBox QAbstractItemView::item {{
+    min-height: 30px; padding: 7px 10px; border-radius: 7px;
+}}
+QComboBox QAbstractItemView::item:hover {{
+    background: {c['surface_hover']};
 }}
 QSpinBox::up-button, QSpinBox::down-button {{
     width: 18px; border: 0; background: transparent;
@@ -129,33 +143,34 @@ QSpinBox::up-button, QSpinBox::down-button {{
 
 /* ── Boutons : primaire, secondaire, navigation et danger ──── */
 QPushButton {{
-    background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
-        stop:0 {c['primary']}, stop:1 {c['primary_alt']});
-    color: {c['primary_text']}; border: 0; border-radius: 13px;
-    padding: 10px 18px; min-height: 19px;
+    background-color: {c['primary']};
+    color: {c['primary_text']}; border: 1px solid {c['primary']};
+    border-radius: 12px; padding: 10px 18px; min-height: 20px;
     font-size: 13px; font-weight: 700;
 }}
 QPushButton:hover {{
-    background: {c['primary_hover']};
+    background-color: {c['primary_hover']}; border-color: {c['primary_hover']};
 }}
 QPushButton:pressed {{
-    background: {c['primary_pressed']};
+    background-color: {c['primary_pressed']}; border-color: {c['primary_pressed']};
+    padding-top: 11px; padding-bottom: 9px;
 }}
 QPushButton:disabled {{
-    background: {c['disabled']}; color: {c['text_muted']};
+    background-color: {c['disabled']}; color: {c['text_muted']};
+    border-color: {c['disabled']};
 }}
 QPushButton[class="secondary"], QPushButton[class="nav"] {{
-    background-color: {c['surface']}; color: {c['text_secondary']};
-    border: 1px solid {c['border']}; border-radius: 13px;
+    background-color: {c['surface']}; color: {c['text']};
+    border: 1px solid {c['border']}; border-radius: 12px;
 }}
 QPushButton[class="secondary"]:hover, QPushButton[class="nav"]:hover {{
     background-color: {c['surface_hover']};
-    border-color: {c['border_hover']}; color: {c['text']};
+    border-color: {c['border_hover']};
 }}
 QPushButton[class="danger"] {{
-    background-color: {c['error']}; color: white;
+    background-color: {c['error']}; color: white; border-color: {c['error']};
 }}
-QPushButton[class="danger"]:hover {{ background-color: {c['error_hover']}; }}
+QPushButton[class="danger"]:hover {{ background-color: {c['error_hover']}; border-color: {c['error_hover']}; }}
 QPushButton[class="nav"] {{
     text-align: left; padding: 11px 15px; font-weight: 600;
 }}
