@@ -11,6 +11,7 @@ from .storage import (
     ClassroomRepository,
     Database,
     PracticeRepository,
+    ProgressRepository,
     get_database_path,
     get_phoenix_data_dir,
     export_json,
@@ -40,12 +41,14 @@ def main(argv: list[str] | None = None) -> int:
         practiceChanged = Signal()
         classroomChanged = Signal()
         settingsChanged = Signal()
+        progressChanged = Signal()
 
         def __init__(self, database: Database):
             super().__init__()
             self._database = database
             self._practice = PracticeRepository(database)
             self._classroom = ClassroomRepository(database)
+            self._progress = ProgressRepository(database)
             self._mode = database.get_mode() or ""
             self._questions: tuple[Question, ...] = ()
             self._session_id: str | None = None
@@ -127,6 +130,20 @@ def main(argv: list[str] | None = None) -> int:
         @Property(str, notify=settingsChanged)
         def dataMessage(self) -> str:
             return self._data_message
+
+        @Property(str, notify=progressChanged)
+        def progressJson(self) -> str:
+            if self._mode == "individual":
+                summary = self._progress.overview("individual")
+            elif self._mode == "classroom" and self._active_student_id:
+                summary = self._progress.overview("classroom", self._active_student_id)
+            else:
+                summary = {
+                    "sessions": 0, "completed": 0, "abandoned": 0,
+                    "answered": 0, "correct": 0, "accuracy": None,
+                    "elapsed_ms": 0, "recent": [], "skills": [],
+                }
+            return json.dumps(summary, ensure_ascii=False)
 
         @Slot(float)
         def setUiScale(self, value: float) -> None:
@@ -211,6 +228,7 @@ def main(argv: list[str] | None = None) -> int:
             self.classroomChanged.emit()
             self.practiceChanged.emit()
             self.settingsChanged.emit()
+            self.progressChanged.emit()
 
         @Slot(str)
         def chooseMode(self, mode: str) -> None:
@@ -219,6 +237,7 @@ def main(argv: list[str] | None = None) -> int:
             self._database.set_mode(mode)
             self._mode = mode
             self.modeChanged.emit(mode)
+            self.progressChanged.emit()
 
         @Slot()
         def returnToModeChoice(self) -> None:
@@ -228,6 +247,7 @@ def main(argv: list[str] | None = None) -> int:
             self._teacher_id = None
             self.modeChanged.emit("")
             self.classroomChanged.emit()
+            self.progressChanged.emit()
 
         @Slot(str, result="QVariantList")
         def groupsForClass(self, class_id: str):
@@ -315,6 +335,7 @@ def main(argv: list[str] | None = None) -> int:
         def selectStudent(self, student_id: str) -> None:
             self._active_student_id = student_id or None
             self.classroomChanged.emit()
+            self.progressChanged.emit()
 
         @Slot(str, int, int)
         def startPractice(self, skill_id: str, count: int, difficulty: int) -> None:
@@ -376,6 +397,7 @@ def main(argv: list[str] | None = None) -> int:
                     f"{result['correct']} bonne(s) réponse(s) sur {result['answered']}."
                 )
             self.practiceChanged.emit()
+            self.progressChanged.emit()
 
         @Slot()
         def abandonPractice(self) -> None:
@@ -389,6 +411,7 @@ def main(argv: list[str] | None = None) -> int:
             self._feedback = ""
             self._score_text = ""
             self.practiceChanged.emit()
+            self.progressChanged.emit()
 
     app = QGuiApplication(qt_args)
     app.setApplicationName("Wedone Operate Phoenix")
