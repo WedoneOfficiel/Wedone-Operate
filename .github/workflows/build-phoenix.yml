@@ -73,18 +73,20 @@ jobs:
               source.resize((size * 2, size * 2), Image.Resampling.LANCZOS).save(iconset / f"icon_{size}x{size}@2x.png")
           PY
           iconutil -c icns Phoenix.iconset -o phoenix.icns
-      - name: Build application
-        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --icon phoenix.icns --collect-all PySide6 --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
-      - name: Remove unused Qt helper application bundles
+      - name: Build macOS application bundle
+        run: pyinstaller --noconfirm --clean phoenix-macos.spec
+      - name: Validate bundle structure and signature
         run: |
-          framework_dir="dist/Wedone Operate Phoenix.app/Contents/Frameworks/PySide6"
-          if [ -d "$framework_dir" ]; then
-            find "$framework_dir" -type d -name '*__dot__app' -prune -print -exec rm -rf {} +
+          app="dist/Wedone Operate Phoenix.app"
+          test -d "$app" || { echo "::error::PyInstaller did not produce the expected .app bundle"; exit 1; }
+          test -f "$app/Contents/Info.plist" || { echo "::error::Info.plist is missing"; exit 1; }
+          test -x "$app/Contents/MacOS/Wedone Operate Phoenix" || { echo "::error::Application executable is missing"; exit 1; }
+          if find "$app/Contents/Frameworks/PySide6" -type d \\( -name '*.app' -o -name '*__dot__app' \\) -print -quit | grep -q .; then
+            echo "::error::A standalone Qt helper app was unexpectedly included in the runtime bundle"
+            find "$app/Contents/Frameworks/PySide6" -type d \\( -name '*.app' -o -name '*__dot__app' \\) -print
+            exit 1
           fi
-      - name: Sign and verify application bundle
-        run: |
-          codesign --force --deep --sign - --options runtime --timestamp=none "dist/Wedone Operate Phoenix.app"
-          codesign --verify --deep --strict --verbose=2 "dist/Wedone Operate Phoenix.app"
+          codesign --verify --deep --strict --verbose=2 "$app"
       - name: Package
         run: ditto -c -k --sequesterRsrc --keepParent "dist/Wedone Operate Phoenix.app" "Wedone-Operate-Phoenix-macOS-arm64.zip"
       - uses: actions/upload-artifact@v4
