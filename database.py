@@ -236,13 +236,13 @@ def get_class(class_id):
         if c["id"] == class_id: return c
     return None
 
-def add_class(name, owner_id):
+def add_class(name, owner_id, level="CM2"):
     name = name.strip()
-    if not name or owner_id is None:
+    if not name or owner_id is None or level not in SCHOOL_LEVELS:
         return None
     classes = _load(CLASSES_FILE, [])
     if any(c["name"].casefold() == name.casefold() and c.get("owner_id") == owner_id for c in classes): return None
-    c = {"id": _uid("c"), "name": name, "owner_id": owner_id}
+    c = {"id": _uid("c"), "name": name, "owner_id": owner_id, "level": level}
     classes.append(c); _save(CLASSES_FILE, classes); return c
 
 def remove_class(class_id):
@@ -393,9 +393,14 @@ def add_student(prenom, nom, teacher_id, group_id=None, class_id=None):
         for item in d["students"]
     ):
         return None
+    student_level = (
+        group.get("level", "CM2") if group_id
+        else (get_class(class_id) or {}).get("level", "CM2")
+    )
     student = {
         "id": _uid("s"), "prenom": prenom, "nom": nom,
-        "group_id": group_id, "class_id": class_id, "created_by": teacher_id
+        "group_id": group_id, "class_id": class_id,
+        "level": student_level, "created_by": teacher_id
     }
     d["students"].append(student)
     _save_users(d)
@@ -412,12 +417,13 @@ def assign_student_class(student_id, class_id):
         if student["id"] == student_id:
             if cls and student.get("created_by") not in (None, "guest", cls.get("owner_id")):
                 return False
-            student["class_id"] = class_id
-            # A direct class assignment is distinct from group membership.
             if student.get("group_id"):
                 group = get_group(student["group_id"])
                 if group and class_id and group.get("class_id") not in (None, class_id):
                     return False
+            student["class_id"] = class_id
+            if cls and not student.get("group_id"):
+                student["level"] = cls.get("level", "CM2")
             _save_users(users)
             return True
     return False
@@ -437,8 +443,10 @@ def assign_student_group(sid, gid):
             if group and student.get("created_by") not in (None, "guest", group.get("owner_id")):
                 return False
             student["group_id"] = gid
-            if group and group.get("class_id"):
-                student["class_id"] = group["class_id"]
+            if group:
+                student["level"] = group.get("level", "CM2")
+                if group.get("class_id"):
+                    student["class_id"] = group["class_id"]
             _save_users(users)
             return True
     return False
@@ -448,8 +456,17 @@ def student_full_name(s): return f"{s['prenom']} {s['nom']}"
 def get_student_level(sid):
     """Retourne le niveau scolaire de l'élève via son groupe."""
     s = get_student(sid)
-    if not s or not s.get("group_id"): return "CM2"
-    return get_group_level(s["group_id"])
+    if not s:
+        return "CM2"
+    if s.get("level") in SCHOOL_LEVELS:
+        return s["level"]
+    if s.get("group_id"):
+        return get_group_level(s["group_id"])
+    if s.get("class_id"):
+        cls = get_class(s["class_id"])
+        if cls and cls.get("level") in SCHOOL_LEVELS:
+            return cls["level"]
+    return "CM2"
 
 # ══════════════════════════════════════════════════════════════════════
 # MODÈLES DE SESSION
