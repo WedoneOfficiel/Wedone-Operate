@@ -68,9 +68,9 @@ def main(argv: list[str] | None = None) -> int:
             self._classroom_revision = 0
             self._ui_scale = float(database.get_setting("ui_scale", 1.0))
             self._high_contrast = bool(database.get_setting("high_contrast", False))
-            self._theme_mode = str(database.get_setting("theme_mode", "dark"))
+            self._theme_mode = str(database.get_setting("theme_mode", "system"))
             if self._theme_mode not in ("system", "light", "dark"):
-                self._theme_mode = "dark"
+                self._theme_mode = "system"
             self._reduce_motion = bool(database.get_setting("reduce_motion", False))
             self._data_message = ""
 
@@ -292,7 +292,7 @@ def main(argv: list[str] | None = None) -> int:
             self._active_student_id = None
             self._ui_scale = float(self._database.get_setting("ui_scale", 1.0))
             self._high_contrast = bool(self._database.get_setting("high_contrast", False))
-            self._theme_mode = str(self._database.get_setting("theme_mode", "dark"))
+            self._theme_mode = str(self._database.get_setting("theme_mode", "system"))
             if self._theme_mode not in ("system", "light", "dark"):
                 self._theme_mode = "dark"
             apply_application_palette(self._theme_mode, self._high_contrast)
