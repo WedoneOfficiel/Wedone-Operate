@@ -89,7 +89,7 @@ class LoginScreen(QWidget):
         tabs_row = QHBoxLayout()
         tabs_row.setSpacing(6)
         self._tab_btns = []
-        for index, label in enumerate(["Invité", "Professeur", "Élève"]):
+        for index, label in enumerate(["Invité", "Professeur"]):
             button = QPushButton(label)
             button.setCheckable(True)
             button.setProperty("class", "tab")
@@ -155,6 +155,10 @@ class LoginScreen(QWidget):
         create_btn.setProperty("class", "secondary")
         create_btn.clicked.connect(self._create_teacher)
         l.addWidget(create_btn)
+        student_btn = QPushButton("Accès élèves  →")
+        student_btn.setProperty("class", "secondary")
+        student_btn.clicked.connect(self._open_student_access)
+        l.addWidget(student_btn)
         l.addStretch()
         return w
 
@@ -183,6 +187,10 @@ class LoginScreen(QWidget):
         self.back_step_btn.clicked.connect(self._step_back)
         self.back_step_btn.hide()
         l.addWidget(self.back_step_btn)
+        self.student_exit_btn = QPushButton("← Retour aux modes")
+        self.student_exit_btn.setProperty("class", "secondary")
+        self.student_exit_btn.clicked.connect(lambda: self._switch_tab(1))
+        l.addWidget(self.student_exit_btn)
         return w
 
     def _build_class_step(self):
@@ -403,6 +411,10 @@ class LoginScreen(QWidget):
         elif idx == 2:
             self._go_step(0, "Sélectionnez votre classe")
             self._refresh_class_cards()
+
+    def _open_student_access(self):
+        """Student selection is an access path inside the teacher workspace, not a third mode."""
+        self._switch_tab(2)
 
     def refresh(self):
         self._switch_tab(self.stack.currentIndex())
