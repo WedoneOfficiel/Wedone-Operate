@@ -289,7 +289,7 @@ class LoginScreen(QWidget):
             card = self._make_icon_card(
                 initiales=cls["name"][:2].upper(),
                 label=cls["name"],
-                sublabel=f"{nb} groupe{'s' if nb > 1 else ''}",
+                sublabel=f"{cls.get('level', 'CM2')}  ·  {nb} groupe{'s' if nb != 1 else ''}",
                 color="#0879C9",
                 size=(110, 100),
                 on_click=lambda _, c=cls: self._on_class_selected(c)
