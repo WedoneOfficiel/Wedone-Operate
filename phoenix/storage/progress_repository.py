@@ -88,6 +88,7 @@ class ProgressRepository:
         report = []
         for row in rows:
             item = dict(row)
+            item["student_id"] = item.pop("id")
             item["class_name"] = classroom["name"]
             item["school_year"] = classroom["school_year"] or ""
             item["accuracy"] = (

@@ -203,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
                 try:
                     rows = self._progress.class_report(class_id, self._teacher_id)
                     columns = (
-                        "class_name", "school_year", "display_name", "group_name",
+                        "class_name", "school_year", "student_id", "display_name", "group_name",
                         "sessions", "answered", "correct", "accuracy", "elapsed_ms",
                     )
                     target = Path(destination)
