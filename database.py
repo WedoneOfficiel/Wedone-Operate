@@ -140,24 +140,23 @@ def add_teacher(prenom, nom, password):
     t = {"id": _uid("t"), "prenom": prenom.strip(), "nom": nom.strip(),
          "password_hash": _hash(password), "first_login": True}
     d["teachers"].append(t)
-    # One-time compatibility migration: the former admin workspace becomes
-    # the first local teacher workspace instead of disappearing from view.
-    if len(d["teachers"]) == 1:
-        for student in d["students"]:
-            if student.get("created_by") in ("admin", "guest"):
-                student["created_by"] = t["id"]
-        _save_users(d)
-        for filename in (CLASSES_FILE, GROUPS_FILE, TEMPLATES_FILE):
-            records = _load(filename, [])
-            changed = False
-            for record in records:
-                if record.get("owner_id") in ("admin", "guest"):
-                    record["owner_id"] = t["id"]
-                    changed = True
-            if changed:
-                _save(filename, records)
-    else:
-        _save_users(d)
+    # The former admin workspace (and any guest-owned records left by a
+    # removed profile) is adopted by the first available teacher profile.
+    workspace_owner = d["teachers"][0]["id"]
+    for student in d["students"]:
+        if student.get("created_by") in ("admin", "guest"):
+            student["created_by"] = workspace_owner
+    _save_users(d)
+
+    for filename in (CLASSES_FILE, GROUPS_FILE, TEMPLATES_FILE):
+        records = _load(filename, [])
+        changed = False
+        for record in records:
+            if record.get("owner_id") in ("admin", "guest"):
+                record["owner_id"] = workspace_owner
+                changed = True
+        if changed:
+            _save(filename, records)
     return t
 
 def remove_teacher(tid):
