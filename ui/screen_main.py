@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 import session, database as db
-from constants import SCHOOL_LEVELS, TIMER_SECONDS_BY_LEVEL
+from constants import SCHOOL_LEVELS, TIMER_SECONDS_BY_LEVEL, LEVEL_RANGES
 
 
 class MainScreen(QWidget):
@@ -70,7 +70,7 @@ class MainScreen(QWidget):
         row2 = QHBoxLayout(); row2.addWidget(QLabel("Niveau :"))
         self.combo_level = QComboBox(); self.combo_level.addItems(SCHOOL_LEVELS)
         self.combo_level.setCurrentText("CM2"); self.combo_level.setFixedWidth(120)
-        self.combo_level.currentTextChanged.connect(self._update_timer_info)
+        self.combo_level.currentTextChanged.connect(self._on_level_changed)
         row2.addWidget(self.combo_level); row2.addStretch(); root.addLayout(row2)
 
         # Opérations
@@ -126,6 +126,7 @@ class MainScreen(QWidget):
             self.template_banner.hide()
             self._apply_defaults(student_level)
 
+        self._update_available_operations()
         self._update_timer_info()
 
     def _apply_template(self, config: dict):
@@ -138,15 +139,35 @@ class MainScreen(QWidget):
         self.cb_mul.setChecked("multiplication" in ops)
         self.cb_div.setChecked("division"       in ops)
         self.cb_timer.setChecked(config.get("timer_enabled", False))
+        self._update_available_operations()
 
     def _apply_defaults(self, level: str):
         if level in SCHOOL_LEVELS: self.combo_level.setCurrentText(level)
         self.spin.setValue(10)
         for cb in (self.cb_add, self.cb_sub, self.cb_mul, self.cb_div): cb.setChecked(True)
         self.cb_timer.setChecked(False)
+        self._update_available_operations()
 
     def load_settings_defaults(self, settings: dict):
         pass  # Les defaults viennent du groupe/modèle, pas des settings globaux
+
+    def _on_level_changed(self, _value=None):
+        self._update_available_operations()
+        self._update_timer_info()
+
+    def _update_available_operations(self):
+        available = set(LEVEL_RANGES.get(self.combo_level.currentText(), {}))
+        controls = (
+            (self.cb_add, "addition"),
+            (self.cb_sub, "soustraction"),
+            (self.cb_mul, "multiplication"),
+            (self.cb_div, "division"),
+        )
+        for checkbox, operation in controls:
+            enabled = operation in available
+            checkbox.setEnabled(enabled)
+            if not enabled:
+                checkbox.setChecked(False)
 
     def _update_timer_info(self):
         if self.cb_timer.isChecked():
