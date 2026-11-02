@@ -203,9 +203,12 @@ def get_class(class_id):
     return None
 
 def add_class(name, owner_id):
+    name = name.strip()
+    if not name or owner_id is None:
+        return None
     classes = _load(CLASSES_FILE, [])
-    if any(c["name"].lower() == name.strip().lower() and c["owner_id"] == owner_id for c in classes): return None
-    c = {"id": _uid("c"), "name": name.strip(), "owner_id": owner_id}
+    if any(c["name"].casefold() == name.casefold() and c.get("owner_id") == owner_id for c in classes): return None
+    c = {"id": _uid("c"), "name": name, "owner_id": owner_id}
     classes.append(c); _save(CLASSES_FILE, classes); return c
 
 def remove_class(class_id):
@@ -243,9 +246,16 @@ def get_group(gid):
     return None
 
 def add_group(name, owner_id, level="CM2", class_id=None):
+    name = name.strip()
+    if not name or owner_id is None or level not in SCHOOL_LEVELS:
+        return None
+    if class_id:
+        cls = get_class(class_id)
+        if not cls or cls.get("owner_id") != owner_id:
+            return None
     gs = _load(GROUPS_FILE, [])
-    if any(g["name"].lower() == name.strip().lower() and g["owner_id"] == owner_id for g in gs): return None
-    g = {"id": _uid("g"), "name": name.strip(), "owner_id": owner_id,
+    if any(g["name"].casefold() == name.casefold() and g.get("owner_id") == owner_id for g in gs): return None
+    g = {"id": _uid("g"), "name": name, "owner_id": owner_id,
          "level": level, "class_id": class_id}
     gs.append(g); _save(GROUPS_FILE, gs); return g
 
@@ -258,12 +268,22 @@ def update_group(gid, **kwargs):
     return False
 
 def remove_group(gid):
-    gs = _load(GROUPS_FILE, [])
-    gs = [g for g in gs if g["id"] != gid]; _save(GROUPS_FILE, gs)
-    d = _load_users()
-    for s in d["students"]:
-        if s.get("group_id") == gid: s["group_id"] = None
-    _save_users(d)
+    groups = _load(GROUPS_FILE, [])
+    removed = next((group for group in groups if group["id"] == gid), None)
+    _save(GROUPS_FILE, [group for group in groups if group["id"] != gid])
+    users = _load_users()
+    for student in users["students"]:
+        if student.get("group_id") == gid:
+            student["group_id"] = None
+            if removed and removed.get("class_id"):
+                student["class_id"] = removed["class_id"]
+    _save_users(users)
+    # Detach reusable templates rather than leaving dangling group references.
+    templates = _load(TEMPLATES_FILE, [])
+    for template in templates:
+        if template.get("group_id") == gid:
+            template["group_id"] = None
+    _save(TEMPLATES_FILE, templates)
 
 def get_group_level(gid):
     g = get_group(gid)
@@ -349,16 +369,17 @@ def remove_student(sid):
     sc = _load(SCORES_FILE, {}); sc.pop(sid, None); _save(SCORES_FILE, sc)
 
 def assign_student_group(sid, gid):
-    if gid and not get_group(gid):
+    group = get_group(gid) if gid else None
+    if gid and not group:
         return False
     users = _load_users()
     for student in users["students"]:
         if student["id"] == sid:
+            if group and student.get("created_by") not in (None, "guest", group.get("owner_id")):
+                return False
             student["group_id"] = gid
-            if gid:
-                group = get_group(gid)
-                if group:
-                    student["class_id"] = group.get("class_id")
+            if group and group.get("class_id"):
+                student["class_id"] = group["class_id"]
             _save_users(users)
             return True
     return False
