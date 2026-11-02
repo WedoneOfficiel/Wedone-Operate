@@ -770,7 +770,10 @@ class AssignGroupDialog(QDialog):
         l.addWidget(QLabel("Groupe :"))
         self._combo = QComboBox(); self._combo.addItem("— Sans groupe —", userData=None)
         owner_id = None if session.current.is_admin() else session.current.user_id
+        student_class_id = student.get("class_id")
         for g in db.get_groups(owner_id=owner_id):
+            if student_class_id and g.get("class_id") not in (None, student_class_id):
+                continue
             self._combo.addItem(f"{g['name']} ({g.get('level','')})", userData=g["id"])
             if g["id"] == student.get("group_id"): self._combo.setCurrentIndex(self._combo.count()-1)
         l.addWidget(self._combo)
