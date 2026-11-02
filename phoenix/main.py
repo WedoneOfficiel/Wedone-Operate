@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import sys
 from time import perf_counter_ns
 from pathlib import Path
@@ -659,6 +660,9 @@ def main(argv: list[str] | None = None) -> int:
             self.practiceChanged.emit()
             self.progressChanged.emit()
 
+    # Use a fully customizable Qt Quick Controls style on every platform.
+    # Native Windows/macOS styles ignore custom indicators and backgrounds.
+    os.environ["QT_QUICK_CONTROLS_STYLE"] = "Basic"
     app = QGuiApplication(qt_args)
 
     def system_prefers_dark() -> bool:
@@ -752,10 +756,18 @@ def main(argv: list[str] | None = None) -> int:
     qt_qml_errors: list[str] = []
 
     def qt_message_handler(mode, context, message):
-        if mode in (QtMsgType.QtWarningMsg, QtMsgType.QtCriticalMsg, QtMsgType.QtFatalMsg):
-            location = ""
-            if context is not None and context.file:
-                location = f" ({context.file}:{context.line})"
+        if mode not in (QtMsgType.QtWarningMsg, QtMsgType.QtCriticalMsg, QtMsgType.QtFatalMsg):
+            return
+        source_file = context.file if context is not None else ""
+        lowered = str(message).lower()
+        is_qml_diagnostic = bool(source_file and source_file.endswith(".qml")) or any(
+            marker in lowered for marker in (
+                "failed to load component", "typeerror:", "referenceerror:",
+                "is not installed", "no such file or directory",
+            )
+        )
+        if is_qml_diagnostic:
+            location = f" ({source_file}:{context.line})" if source_file else ""
             qt_qml_errors.append(f"{message}{location}")
 
     if smoke_test:
