@@ -274,7 +274,7 @@ def add_group(name, owner_id, level="CM2", class_id=None):
         if not cls or cls.get("owner_id") != owner_id:
             return None
     gs = _load(GROUPS_FILE, [])
-    if any(g["name"].casefold() == name.casefold() and g.get("owner_id") == owner_id for g in gs): return None
+    if any(g["name"].casefold() == name.casefold() and g.get("owner_id") == owner_id and g.get("class_id") == class_id for g in gs): return None
     g = {"id": _uid("g"), "name": name, "owner_id": owner_id,
          "level": level, "class_id": class_id}
     gs.append(g); _save(GROUPS_FILE, gs); return g
@@ -374,6 +374,14 @@ def add_student(prenom, nom, teacher_id, group_id=None, class_id=None):
         if class_id and group.get("class_id") not in (None, class_id):
             return None
         class_id = class_id or group.get("class_id")
+    if any(
+        (item.get("prenom", "").casefold(), item.get("nom", "").casefold()) == norm
+        and item.get("created_by") == teacher_id
+        and item.get("class_id") == class_id
+        and item.get("group_id") == group_id
+        for item in d["students"]
+    ):
+        return None
     student = {
         "id": _uid("s"), "prenom": prenom, "nom": nom,
         "group_id": group_id, "class_id": class_id, "created_by": teacher_id
@@ -451,11 +459,17 @@ def save_template(name, owner_id, config, group_id=None):
     ts = _load(TEMPLATES_FILE, [])
     existing = next((t for t in ts if t["owner_id"] == owner_id
                      and t["name"].lower() == name.strip().lower()), None)
+    now = datetime.now().isoformat(timespec="seconds")
     if existing:
-        existing["config"] = config; existing["group_id"] = group_id
+        existing["config"] = config
+        existing["group_id"] = group_id
+        existing["updated_at"] = now
     else:
-        ts.append({"id": _uid("tm"), "name": name.strip(),
-                   "owner_id": owner_id, "group_id": group_id, "config": config})
+        ts.append({
+            "id": _uid("tm"), "name": name.strip(), "owner_id": owner_id,
+            "group_id": group_id, "config": config,
+            "created_at": now, "updated_at": now
+        })
     _save(TEMPLATES_FILE, ts)
 
 def remove_template(tid):
@@ -463,9 +477,15 @@ def remove_template(tid):
     ts = [t for t in ts if t["id"] != tid]; _save(TEMPLATES_FILE, ts)
 
 def get_group_default_template(group_id):
-    """Retourne le modèle assigné à ce groupe, ou None."""
-    ts = get_templates(group_id=group_id)
-    return ts[0] if ts else None
+    """Return the most recently updated template assigned to this group."""
+    if not group_id:
+        return None
+    templates = get_templates(group_id=group_id)
+    return max(
+        templates,
+        key=lambda template: template.get("updated_at", template.get("created_at", "")),
+        default=None
+    )
 
 # ══════════════════════════════════════════════════════════════════════
 # SCORES
