@@ -220,10 +220,17 @@ ApplicationWindow {
         }
 
         Item {
-            ColumnLayout {
-                anchors.centerIn: parent
-                width: Math.min(parent.width, 720)
-                spacing: 20
+            ScrollView {
+                anchors.fill: parent
+                clip: true
+                contentWidth: availableWidth
+
+                ColumnLayout {
+                    width: Math.min(parent.width, 720)
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 24
+                    spacing: 20
 
                 Label {
                     text: root.currentMode === "individual" ? "Votre espace de pratique" : "Espace classe"
@@ -453,7 +460,16 @@ ApplicationWindow {
                     PrimaryButton {
                         text: "Créer mon profil"
                         Layout.fillWidth: true
+                        enabled: newTeacherName.text.trim().length > 0 && newTeacherPassword.text.length >= 8
                         onClicked: appBridge.createTeacher(newTeacherName.text, newTeacherPassword.text)
+                    }
+                    Label {
+                        visible: appBridge.classroomMessage !== ""
+                        text: appBridge.classroomMessage
+                        color: appBridge.teacherAuthenticated ? "#16804A" : "#B45309"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
                     }
                 }
 
@@ -602,6 +618,7 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: 12
                     onClicked: appBridge.returnToModeChoice()
+                }
                 }
             }
         }
