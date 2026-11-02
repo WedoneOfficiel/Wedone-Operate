@@ -54,7 +54,7 @@ class LoginScreen(QWidget):
         # Onglets
         tabs_row = QHBoxLayout(); tabs_row.setSpacing(0)
         self._tab_btns = []
-        for i, label in enumerate(["Admin", "Professeur", "Élève"]):
+        for i, label in enumerate(["Invité", "Professeur", "Élève"]):
             btn = QPushButton(label)
             btn.setCheckable(True)
             btn.setProperty("class", "tab")
@@ -76,33 +76,28 @@ class LoginScreen(QWidget):
 
     # ── Panneaux ──────────────────────────────────────────────────────
 
-    def _build_admin_panel(self):
-        w = QWidget(); l = QVBoxLayout(w)
-        l.setContentsMargins(0, 18, 0, 0); l.setSpacing(10)
-
-        self.admin_hint = QFrame()
-        self.admin_hint.setStyleSheet(
-            "QFrame{background:rgba(184,117,22,0.10);border:1px solid rgba(184,117,22,0.38);border-radius:14px;}"
+    def _build_guest_panel(self):
+        w = QWidget()
+        layout = QVBoxLayout(w)
+        layout.setContentsMargins(0, 24, 0, 0)
+        layout.setSpacing(14)
+        title = QLabel("Démarrer sans compte")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setStyleSheet("font-size:18px;font-weight:700;")
+        description = QLabel(
+            "Lancez directement un entraînement. Aucun profil, classe ou groupe à créer."
         )
-        hl = QVBoxLayout(self.admin_hint)
-        hl.setContentsMargins(10, 8, 10, 8); hl.setSpacing(2)
-        h1 = QLabel(f"🔑  Mot de passe par défaut : <b>{DEFAULT_ADMIN_PASSWORD_PLAIN}</b>")
-        h1.setStyleSheet("font-size:13px;background:transparent;border:none;")
-        h2 = QLabel("Nous vous invitons à le modifier après la première connexion.")
-        h2.setStyleSheet("font-size:12px;background:transparent;border:none;")
-        hl.addWidget(h1); hl.addWidget(h2)
-        l.addWidget(self.admin_hint)
-
-        self.admin_pwd = QLineEdit()
-        self.admin_pwd.setEchoMode(QLineEdit.EchoMode.Password)
-        self.admin_pwd.setPlaceholderText("Mot de passe administrateur")
-        self.admin_pwd.returnPressed.connect(self._login_admin)
-        l.addWidget(self.admin_pwd)
-        self.admin_err = QLabel(""); self.admin_err.setObjectName("error"); self.admin_err.hide()
-        l.addWidget(self.admin_err)
-        btn = QPushButton("Se connecter"); btn.setFixedHeight(40)
-        btn.clicked.connect(self._login_admin)
-        l.addWidget(btn); l.addStretch()
+        description.setObjectName("subtitle")
+        description.setWordWrap(True)
+        description.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+        layout.addWidget(description)
+        layout.addStretch()
+        button = QPushButton("Commencer en mode invité")
+        button.setFixedHeight(46)
+        button.clicked.connect(self._login_guest)
+        layout.addWidget(button)
+        layout.addStretch()
         return w
 
     def _build_teacher_panel(self):
@@ -340,12 +335,9 @@ class LoginScreen(QWidget):
 
     # ── Authentification ──────────────────────────────────────────────
 
-    def _login_admin(self):
-        if not db.check_admin_password(self.admin_pwd.text()):
-            self.admin_err.setText("Mot de passe incorrect."); self.admin_err.show()
-            self.admin_pwd.clear(); return
-        self.admin_err.hide(); self.admin_pwd.clear()
-        db.mark_admin_logged_in(); session.login_admin(); self.logged_in.emit()
+    def _login_guest(self):
+        session.login_guest()
+        self.logged_in.emit()
 
     def _login_teacher(self):
         idx = self.teacher_combo.currentIndex()
