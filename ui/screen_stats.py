@@ -154,7 +154,7 @@ class StatsScreen(QWidget):
         card.setProperty("class", "card-compact")
         l = QHBoxLayout(card); l.setSpacing(18)
         pct = s.get("percent", 0)
-        color = "#2EBD6E" if pct >= 80 else ("#F0A030" if pct >= 50 else "#E05555")
+        color = "#269B70" if pct >= 80 else ("#B87516" if pct >= 50 else "#E24B5F")
         ops_map = {"addition":"+","soustraction":"−","multiplication":"×","division":"÷"}
         for text, w in [(s.get("date","")[:10], 90), (s.get("difficulty",""), 80),
                         (" ".join(ops_map.get(o,o) for o in s.get("operations",[])), 80)]:
