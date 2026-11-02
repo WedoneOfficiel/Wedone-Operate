@@ -57,6 +57,24 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertEqual("Éloïse, Anne", rows[1][0])
         self.assertEqual('O"Neil', rows[1][1])
 
+    def test_first_teacher_adopts_legacy_admin_workspace(self):
+        cls = db.add_class("CM2 A", "admin")
+        group = db.add_group("Groupe 1", "admin", class_id=cls["id"])
+        student = db.add_student("Noa", "Petit", "admin", group_id=group["id"])
+        db.save_template("Révisions", "admin", {"operations": ["addition"]}, group_id=group["id"])
+        teacher = db.add_teacher("Marie", "Curie", "motdepasse123")
+        self.assertEqual(teacher["id"], db.get_class(cls["id"])["owner_id"])
+        self.assertEqual(teacher["id"], db.get_group(group["id"])["owner_id"])
+        self.assertEqual(teacher["id"], db.get_student(student["id"])["created_by"])
+        self.assertEqual(teacher["id"], db.get_templates(owner_id=teacher["id"])[0]["owner_id"])
+
+    def test_teacher_password_uses_salted_pbkdf2(self):
+        teacher = db.add_teacher("Ada", "Lovelace", "un-mot-de-passe")
+        stored = db.get_teacher(teacher["id"])["password_hash"]
+        self.assertTrue(stored.startswith("pbkdf2_sha256$"))
+        self.assertTrue(db.check_teacher_password(teacher["id"], "un-mot-de-passe"))
+        self.assertFalse(db.check_teacher_password(teacher["id"], "incorrect"))
+
     def test_corrupt_json_is_not_silently_replaced(self):
         (self.root / db.USERS_FILE).write_text("{broken", encoding="utf-8")
         with self.assertRaises(db.DataIntegrityError):
