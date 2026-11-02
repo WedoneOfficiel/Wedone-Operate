@@ -34,6 +34,17 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertNotEqual(first["id"], second["id"])
         self.assertIsNone(db.add_student("Alex", "Martin", "teacher-a"))
 
+    def test_class_level_applies_to_students_without_groups(self):
+        cls = db.add_class("CE2 A", "teacher-a", level="CE2")
+        student = db.add_student("Inès", "Petit", "teacher-a", class_id=cls["id"])
+        self.assertEqual("CE2", db.get_student_level(student["id"]))
+
+    def test_group_level_overrides_class_level(self):
+        cls = db.add_class("CM2 B", "teacher-a", level="CM2")
+        group = db.add_group("Groupe CE1", "teacher-a", level="CE1", class_id=cls["id"])
+        student = db.add_student("Noé", "Martin", "teacher-a", group_id=group["id"])
+        self.assertEqual("CE1", db.get_student_level(student["id"]))
+
     def test_same_name_is_allowed_in_different_classes(self):
         first_class = db.add_class("CM1", "teacher-a")
         second_class = db.add_class("CM2", "teacher-a")
@@ -45,12 +56,13 @@ class DatabaseIntegrityTests(unittest.TestCase):
 
     def test_removing_group_keeps_students_in_their_class_and_detaches_templates(self):
         cls = db.add_class("6e A", "teacher-a")
-        group = db.add_group("Groupe A", "teacher-a", class_id=cls["id"])
+        group = db.add_group("Groupe A", "teacher-a", level="CE1", class_id=cls["id"])
         student = db.add_student("Mina", "Petit", "teacher-a", group_id=group["id"])
         db.save_template("Révisions", "teacher-a", {"operations": ["addition"]}, group_id=group["id"])
         db.remove_group(group["id"])
         retained = db.get_student(student["id"])
         self.assertIsNone(retained["group_id"])
+        self.assertEqual("CE1", retained["level"])
         self.assertEqual(cls["id"], retained["class_id"])
         self.assertEqual([student["id"]], [s["id"] for s in db.get_students(class_id=cls["id"])])
         self.assertIsNone(db.get_templates(owner_id="teacher-a")[0]["group_id"])
