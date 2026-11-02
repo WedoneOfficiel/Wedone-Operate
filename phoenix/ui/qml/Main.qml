@@ -5,10 +5,10 @@ import QtQuick.Dialogs
 
 ApplicationWindow {
     id: root
-    width: 1120
-    height: 760
-    minimumWidth: 760
-    minimumHeight: 560
+    width: 1240
+    height: 820
+    minimumWidth: 820
+    minimumHeight: 620
     visible: true
     title: "Wedone Operate"
     color: root.colors.bg
@@ -22,27 +22,26 @@ ApplicationWindow {
     property string currentMode: appBridge.mode
     property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
-    property var colors: appBridge.highContrast ? ({
-        bg: "#FFFFFF", surface: "#FFFFFF", panel: "#FFFFFF", border: "#E3EAF4",
-        text: "#172A45", muted: "#66768E", textSecondary: "#33445D",
-        accent: "#1769D2", accentHover: "#0F56B5", accentSoft: "#EAF2FF",
-        accentHoverSoft: "#D8E6FA", glow: "#E7F0FF", glowSecondary: "#E9F5FF",
-        success: "#16804A", warning: "#B45309",
-        dangerSurface: "#FCEEEE", dangerHover: "#F8DADA", danger: "#A12C2C"
-    }) : root.darkTheme ? ({
-        bg: "#101827", surface: "#1B2739", panel: "#E61B2739", border: "#2A3A50",
-        text: "#F1F5FB", muted: "#A6B4C9", textSecondary: "#C7D2E3",
-        accent: "#5796FF", accentHover: "#357DE0", accentSoft: "#203B61",
-        accentHoverSoft: "#2A466B", glow: "#1A3153", glowSecondary: "#162F47",
-        success: "#4EC89A", warning: "#F0B35E",
-        dangerSurface: "#442B3B", dangerHover: "#583144", danger: "#F49AAA"
+    property string themeMode: appBridge.themeMode
+    property bool darkTheme: themeMode === "dark" || (themeMode === "system" && appBridge.systemDark)
+    property var colors: darkTheme ? ({
+        bg: "#151B26", surface: "#202A39", panel: "#D91F2B3B", input: "#182333",
+        surfaceHover: "#2B394D", border: "#34445A", borderHover: "#526985",
+        text: "#F2F6FC", muted: "#A8B6C9", textSecondary: "#D0D9E6",
+        accent: "#3296D8", accentHover: "#247DBB", accentSoft: "#203D56",
+        accentHoverSoft: "#294B68", accentInk: "#B9E2FF",
+        glow: "#1D3B58", glowSecondary: "#1A344B",
+        success: "#48C69A", warning: "#F2BD69",
+        dangerSurface: "#492E3C", dangerHover: "#5C394B", danger: "#F29AAA"
     }) : ({
-        bg: "#F7F3F4", surface: "#FFFFFF", panel: "#E6FFFFFF", border: "#E5DCE0",
-        text: "#2B2025", muted: "#766A70", textSecondary: "#50434A",
-        accent: "#1769D2", accentHover: "#0F56B5", accentSoft: "#EAF2FF",
-        accentHoverSoft: "#D8E6FA", glow: "#F2E6EA", glowSecondary: "#E8F1FA",
-        success: "#269B70", warning: "#B45309",
-        dangerSurface: "#FCEEEE", dangerHover: "#F8DADA", danger: "#A12C2C"
+        bg: "#F5F8FC", surface: "#FFFFFF", panel: "#EFFFFFFF", input: "#FFFFFF",
+        surfaceHover: "#EDF3F9", border: "#DCE5EF", borderHover: "#B8CADC",
+        text: "#202B3A", muted: "#74849A", textSecondary: "#52647A",
+        accent: "#167CC2", accentHover: "#1168A5", accentSoft: "#E7F2FC",
+        accentHoverSoft: "#D7EAF9", accentInk: "#125F98",
+        glow: "#E5F1FC", glowSecondary: "#EAF3FA",
+        success: "#16845D", warning: "#A96B16",
+        dangerSurface: "#FCEDEF", dangerHover: "#F8DCE2", danger: "#B73550"
     })
 
     Rectangle {
@@ -70,7 +69,8 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        background: Rectangle { color: root.colors.surface; border.color: root.colors.border }
+        implicitHeight: 72
+        background: Rectangle { color: root.colors.panel; border.color: root.colors.border }
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 28
@@ -121,23 +121,228 @@ ApplicationWindow {
         }
     }
 
-    component PrimaryButton: Button {
-        id: control
-        property color fillColor: root.colors.accent
-        property color hoverColor: root.colors.accentHover
-        property color textColor: "white"
-        implicitHeight: 52
+    component AppTextField: TextField {
+        id: field
+        implicitHeight: 48
+        leftPadding: 14
+        rightPadding: 14
+        font.family: "DM Sans"
+        font.pixelSize: 14
+        color: root.colors.text
+        placeholderTextColor: root.colors.muted
+        selectionColor: root.colors.accent
+        selectedTextColor: "#FFFFFF"
+        background: Rectangle {
+            radius: 14
+            color: field.enabled ? root.colors.input : root.colors.surfaceHover
+            border.width: field.activeFocus ? 1.6 : 1
+            border.color: field.activeFocus ? root.colors.accent : root.colors.border
+        }
+    }
+
+    component AppComboBox: ComboBox {
+        id: combo
+        implicitHeight: 48
+        font.family: "DM Sans"
+        font.pixelSize: 14
         contentItem: Text {
-            text: control.text
-            color: control.textColor
-            font.pixelSize: 15
+            leftPadding: 14
+            rightPadding: 38
+            text: combo.displayText
+            font: combo.font
+            color: combo.enabled ? root.colors.text : root.colors.muted
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+        indicator: Text {
+            x: combo.width - width - 14
+            y: (combo.height - height) / 2
+            text: "⌄"
+            color: root.colors.muted
+            font.pixelSize: 18
+        }
+        background: Rectangle {
+            radius: 14
+            color: combo.enabled ? root.colors.input : root.colors.surfaceHover
+            border.width: combo.activeFocus ? 1.6 : 1
+            border.color: combo.activeFocus ? root.colors.accent : root.colors.border
+        }
+        delegate: ItemDelegate {
+            required property int index
+            width: combo.width
+            height: 42
+            highlighted: combo.highlightedIndex === index
+            contentItem: Text {
+                text: combo.textAt(index)
+                color: parent.highlighted ? root.colors.accentInk : root.colors.text
+                font.family: "DM Sans"
+                font.pixelSize: 13
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+            }
+            background: Rectangle {
+                radius: 9
+                color: parent.highlighted ? root.colors.accentSoft : (parent.hovered ? root.colors.surfaceHover : "transparent")
+            }
+        }
+        popup: Popup {
+            y: combo.height + 5
+            width: combo.width
+            implicitHeight: Math.min(contentItem.implicitHeight + 12, 260)
+            padding: 6
+            background: Rectangle {
+                radius: 14
+                color: root.colors.surface
+                border.color: root.colors.border
+                border.width: 1
+            }
+            contentItem: ListView {
+                clip: true
+                implicitHeight: contentHeight
+                model: combo.popup.visible ? combo.delegateModel : null
+                currentIndex: combo.highlightedIndex
+                ScrollIndicator.vertical: ScrollIndicator {}
+            }
+        }
+    }
+
+    component AppSpinBox: SpinBox {
+        id: numberField
+        implicitHeight: 48
+        font.family: "DM Sans"
+        font.pixelSize: 14
+        contentItem: TextInput {
+            z: 2
+            text: numberField.textFromValue(numberField.value, numberField.locale)
+            font: numberField.font
+            color: root.colors.text
+            selectionColor: root.colors.accent
+            selectedTextColor: "#FFFFFF"
+            horizontalAlignment: TextInput.AlignHCenter
+            verticalAlignment: TextInput.AlignVCenter
+            readOnly: !numberField.editable
+            validator: numberField.validator
+            inputMethodHints: Qt.ImhFormattedNumbersOnly
+            onTextEdited: numberField.value = numberField.valueFromText(text, numberField.locale)
+        }
+        background: Rectangle {
+            radius: 14
+            color: root.colors.input
+            border.color: numberField.activeFocus ? root.colors.accent : root.colors.border
+            border.width: numberField.activeFocus ? 1.6 : 1
+        }
+        up.indicator: Rectangle {
+            x: numberField.width - width
+            width: 34
+            height: numberField.height / 2
+            color: numberField.up.pressed ? root.colors.accentSoft : "transparent"
+            radius: 7
+            Text { anchors.centerIn: parent; text: "+"; color: root.colors.text; font.pixelSize: 15 }
+        }
+        down.indicator: Rectangle {
+            x: numberField.width - width
+            y: numberField.height / 2
+            width: 34
+            height: numberField.height / 2
+            color: numberField.down.pressed ? root.colors.accentSoft : "transparent"
+            radius: 7
+            Text { anchors.centerIn: parent; text: "−"; color: root.colors.text; font.pixelSize: 15 }
+        }
+    }
+
+    component AppCheckBox: CheckBox {
+        id: check
+        spacing: 10
+        implicitHeight: 40
+        contentItem: Text {
+            text: check.text
+            font.family: "DM Sans"
+            font.pixelSize: 13
+            color: root.colors.textSecondary
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: check.indicator.width + check.spacing
+        }
+        indicator: Rectangle {
+            implicitWidth: 20
+            implicitHeight: 20
+            x: 0
+            y: (check.height - height) / 2
+            radius: 6
+            color: check.checked ? root.colors.accent : root.colors.input
+            border.color: check.checked ? root.colors.accent : root.colors.border
+            Text { anchors.centerIn: parent; text: check.checked ? "✓" : ""; color: "#FFFFFF"; font.pixelSize: 13; font.weight: Font.Bold }
+        }
+    }
+
+    component AppSlider: Slider {
+        id: slider
+        background: Rectangle {
+            x: slider.leftPadding
+            y: slider.topPadding + slider.availableHeight / 2 - height / 2
+            width: slider.availableWidth
+            height: 6
+            radius: 3
+            color: root.colors.border
+            Rectangle {
+                width: slider.visualPosition * parent.width
+                height: parent.height
+                radius: 3
+                color: root.colors.accent
+            }
+        }
+        handle: Rectangle {
+            x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
+            y: slider.topPadding + slider.availableHeight / 2 - height / 2
+            width: 19
+            height: 19
+            radius: 10
+            color: root.colors.surface
+            border.color: root.colors.accent
+            border.width: 2
+        }
+    }
+
+    component QuietButton: Button {
+        id: quiet
+        implicitHeight: 44
+        font.family: "DM Sans"
+        font.pixelSize: 13
+        contentItem: Text {
+            text: quiet.text
+            color: quiet.enabled ? root.colors.textSecondary : root.colors.muted
+            font: quiet.font
             font.weight: Font.DemiBold
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
         background: Rectangle {
             radius: 13
-            color: control.down ? control.hoverColor : (control.hovered ? control.hoverColor : control.fillColor)
+            color: quiet.down ? root.colors.accentSoft : (quiet.hovered ? root.colors.surfaceHover : "transparent")
+            border.color: quiet.hovered ? root.colors.borderHover : "transparent"
+            border.width: 1
+        }
+    }
+
+    component PrimaryButton: Button {
+        id: control
+        property color fillColor: root.colors.accent
+        property color hoverColor: root.colors.accentHover
+        property color textColor: "white"
+        implicitHeight: 48
+        font.family: "DM Sans"
+        font.pixelSize: 14
+        contentItem: Text {
+            text: control.text
+            color: control.textColor
+            font.family: "DM Sans"
+            font.pixelSize: 14
+            font.weight: Font.DemiBold
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+        background: Rectangle {
+            radius: 14
+            color: !control.enabled ? root.colors.border : control.down ? control.hoverColor : (control.hovered ? control.hoverColor : control.fillColor)
         }
     }
 
@@ -460,7 +665,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     spacing: 12
                     Label { text: "Classe"; color: root.colors.textSecondary; font.pixelSize: 14; font.weight: Font.DemiBold }
-                    ComboBox {
+                    AppComboBox {
                         id: studentClassSelect
                         Layout.fillWidth: true
                         implicitHeight: 46
@@ -470,7 +675,7 @@ ApplicationWindow {
                         onActivated: appBridge.selectStudent("")
                     }
                     Label { text: "Groupe (facultatif)"; color: root.colors.textSecondary; font.pixelSize: 14; font.weight: Font.DemiBold }
-                    ComboBox {
+                    AppComboBox {
                         id: studentGroupSelect
                         Layout.fillWidth: true
                         implicitHeight: 46
@@ -480,7 +685,7 @@ ApplicationWindow {
                         onActivated: appBridge.selectStudent("")
                     }
                     Label { text: "Élève"; color: root.colors.textSecondary; font.pixelSize: 14; font.weight: Font.DemiBold }
-                    ComboBox {
+                    AppComboBox {
                         id: studentProfileSelect
                         Layout.fillWidth: true
                         implicitHeight: 46
@@ -505,7 +710,7 @@ ApplicationWindow {
                         font.weight: Font.DemiBold
                         visible: !!studentClassSelect.currentValue
                     }
-                    ComboBox {
+                    AppComboBox {
                         id: studentPlanSelect
                         Layout.fillWidth: true
                         implicitHeight: 46
@@ -534,7 +739,7 @@ ApplicationWindow {
                             root.page = "practice"
                         }
                     }
-                    Button {
+                    QuietButton {
                         text: "S'entraîner sans profil"
                         flat: true
                         Layout.alignment: Qt.AlignHCenter
@@ -550,7 +755,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     spacing: 10
                     Label { text: "Se connecter"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold }
-                    ComboBox {
+                    AppComboBox {
                         id: teacherSelect
                         Layout.fillWidth: true
                         implicitHeight: 46
@@ -558,7 +763,7 @@ ApplicationWindow {
                         valueRole: "id"
                         model: JSON.parse(appBridge.teachersJson)
                     }
-                    TextField {
+                    AppTextField {
                         id: teacherLoginPassword
                         Layout.fillWidth: true
                         implicitHeight: 46
@@ -572,15 +777,29 @@ ApplicationWindow {
                         enabled: !!teacherSelect.currentValue
                         onClicked: appBridge.loginTeacher(teacherSelect.currentValue, teacherLoginPassword.text)
                     }
-                    Label { text: "Créer un profil professeur"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
-                    TextField { id: newTeacherName; Layout.fillWidth: true; implicitHeight: 46; placeholderText: "Votre nom" }
-                    TextField {
+                    Label { text: "Créer un profil professeur"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 18 }
+                    Label {
+                        visible: teacherSelect.count === 0
+                        text: "Aucun compte professeur n'existe encore. Créez le premier profil ci-dessous."
+                        color: root.colors.muted
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                    AppTextField { id: newTeacherName; Layout.fillWidth: true; implicitHeight: 46; placeholderText: "Votre nom" }
+                    AppTextField {
                         id: newTeacherPassword
                         Layout.fillWidth: true
                         implicitHeight: 46
                         placeholderText: "Mot de passe (8 caractères minimum)"
                         echoMode: TextInput.Password
                         onAccepted: appBridge.createTeacher(newTeacherName.text, text)
+                    }
+                    Label {
+                        visible: newTeacherPassword.text.length > 0 && newTeacherPassword.text.length < 8
+                        text: "Le mot de passe doit contenir au moins 8 caractères."
+                        color: root.colors.warning
+                        font.pixelSize: 12
                     }
                     PrimaryButton {
                         text: "Créer mon profil"
@@ -611,15 +830,15 @@ ApplicationWindow {
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
-                    TextField { id: newClassName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom de la classe (ex. CM1 A)" }
-                    TextField { id: newClassYear; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Année scolaire (facultatif)"; onAccepted: appBridge.createClass(newClassName.text, text) }
+                    AppTextField { id: newClassName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom de la classe (ex. CM1 A)" }
+                    AppTextField { id: newClassYear; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Année scolaire (facultatif)"; onAccepted: appBridge.createClass(newClassName.text, text) }
                     PrimaryButton {
                         text: "Créer la classe"
                         Layout.fillWidth: true
                         onClicked: appBridge.createClass(newClassName.text, newClassYear.text)
                     }
                     Label { text: "Gérer la classe sélectionnée"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
-                    ComboBox {
+                    AppComboBox {
                         id: teacherClassSelect
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -641,13 +860,13 @@ ApplicationWindow {
                         textColor: root.colors.accent
                         onClicked: classReportDialog.open()
                     }
-                    TextField {
+                    AppTextField {
                         id: editClassName
                         Layout.fillWidth: true
                         implicitHeight: 44
                         placeholderText: "Renommer la classe"
                     }
-                    TextField {
+                    AppTextField {
                         id: editClassYear
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -661,14 +880,14 @@ ApplicationWindow {
                             teacherClassSelect.currentValue, editClassName.text, editClassYear.text
                         )
                     }
-                    TextField { id: newGroupName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom du groupe (facultatif)" }
+                    AppTextField { id: newGroupName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom du groupe (facultatif)" }
                     PrimaryButton {
                         text: "Créer le groupe"
                         Layout.fillWidth: true
                         enabled: !!teacherClassSelect.currentValue
                         onClicked: appBridge.createGroup(teacherClassSelect.currentValue, newGroupName.text)
                     }
-                    ComboBox {
+                    AppComboBox {
                         id: teacherGroupSelect
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -680,7 +899,7 @@ ApplicationWindow {
                             appBridge.selectStudent("")
                         }
                     }
-                    TextField {
+                    AppTextField {
                         id: editGroupName
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -692,7 +911,7 @@ ApplicationWindow {
                         enabled: !!teacherGroupSelect.currentValue && editGroupName.text.trim().length > 0
                         onClicked: appBridge.updateGroup(teacherGroupSelect.currentValue, editGroupName.text)
                     }
-                    TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, teacherGroupSelect.currentValue || "") }
+                    AppTextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, teacherGroupSelect.currentValue || "") }
                     PrimaryButton {
                         text: "Ajouter l'élève"
                         Layout.fillWidth: true
@@ -700,13 +919,13 @@ ApplicationWindow {
                         onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, teacherGroupSelect.currentValue || "")
                     }
                     Label { text: "Assigner un exercice"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 18 }
-                    TextField {
+                    AppTextField {
                         id: newExerciseName
                         Layout.fillWidth: true
                         implicitHeight: 44
                         placeholderText: "Nom de l'exercice (ex. Révisions des additions)"
                     }
-                    ComboBox {
+                    AppComboBox {
                         id: exerciseSkillSelect
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -715,9 +934,9 @@ ApplicationWindow {
                         model: JSON.parse(appBridge.skillsJson)
                     }
                     Label { text: "Nombre de questions"; color: root.colors.textSecondary; font.pixelSize: 13 }
-                    SpinBox { id: exerciseCountSelect; from: 5; to: 30; value: 10; editable: true; Layout.fillWidth: true }
+                    AppSpinBox { id: exerciseCountSelect; from: 5; to: 30; value: 10; editable: true; Layout.fillWidth: true }
                     Label { text: "Difficulté"; color: root.colors.textSecondary; font.pixelSize: 13 }
-                    ComboBox {
+                    AppComboBox {
                         id: exerciseDifficultySelect
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -741,7 +960,7 @@ ApplicationWindow {
                             exerciseDifficultySelect.currentValue
                         )
                     }
-                    ComboBox {
+                    AppComboBox {
                         id: teacherPlanSelect
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -789,7 +1008,7 @@ ApplicationWindow {
                             }
                         }
                     }
-                    ComboBox {
+                    AppComboBox {
                         id: teacherStudentSelect
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -801,7 +1020,7 @@ ApplicationWindow {
                             appBridge.selectStudent("")
                         }
                     }
-                    TextField {
+                    AppTextField {
                         id: editStudentName
                         Layout.fillWidth: true
                         implicitHeight: 44
@@ -884,13 +1103,13 @@ ApplicationWindow {
                         }
                     }
                     Label { text: "Modifier mon profil"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
-                    TextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché"; onAccepted: appBridge.updateTeacherProfile(text) }
+                    AppTextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché"; onAccepted: appBridge.updateTeacherProfile(text) }
                     PrimaryButton {
                         text: "Enregistrer le profil"
                         Layout.fillWidth: true
                         onClicked: appBridge.updateTeacherProfile(teacherDisplayName.text)
                     }
-                    Button { text: "Se déconnecter"; flat: true; Layout.alignment: Qt.AlignHCenter; onClicked: appBridge.logoutTeacher() }
+                    QuietButton { text: "Se déconnecter"; flat: true; Layout.alignment: Qt.AlignHCenter; onClicked: appBridge.logoutTeacher() }
                 }
 
                 Label {
@@ -957,7 +1176,7 @@ ApplicationWindow {
                     visible: appBridge.questionTotal === 0 && root.currentMode === "individual"
                     Layout.alignment: Qt.AlignHCenter
                     spacing: 10
-                    Button {
+                    QuietButton {
                         text: "Paramètres"
                         flat: true
                         onClicked: {
@@ -965,7 +1184,7 @@ ApplicationWindow {
                             root.page = "settings"
                         }
                     }
-                    Button {
+                    QuietButton {
                         text: "Changer de mode"
                         flat: true
                         onClicked: appBridge.returnToModeChoice()
@@ -986,7 +1205,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     spacing: 12
                     Label { text: "Compétence"; color: root.colors.textSecondary; font.pixelSize: 15; font.weight: Font.DemiBold }
-                    ComboBox {
+                    AppComboBox {
                         id: skillSelect
                         Layout.fillWidth: true
                         implicitHeight: 48
@@ -995,7 +1214,7 @@ ApplicationWindow {
                         model: JSON.parse(appBridge.skillsJson)
                     }
                     Label { text: "Nombre de questions"; color: root.colors.textSecondary; font.pixelSize: 15; font.weight: Font.DemiBold }
-                    SpinBox {
+                    AppSpinBox {
                         id: countSelect
                         from: 5
                         to: 30
@@ -1004,7 +1223,7 @@ ApplicationWindow {
                         implicitHeight: 48
                     }
                     Label { text: "Difficulté"; color: root.colors.textSecondary; font.pixelSize: 15; font.weight: Font.DemiBold }
-                    ComboBox {
+                    AppComboBox {
                         id: difficultySelect
                         Layout.fillWidth: true
                         implicitHeight: 48
@@ -1056,7 +1275,7 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignHCenter
                         Layout.topMargin: 20
                     }
-                    TextField {
+                    AppTextField {
                         id: answerInput
                         Layout.fillWidth: true
                         implicitHeight: 58
@@ -1118,7 +1337,7 @@ ApplicationWindow {
                     }
                 }
 
-                Button {
+                QuietButton {
                     visible: !appBridge.practiceFinished
                     text: "Quitter la séance"
                     flat: true
@@ -1148,7 +1367,7 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                 }
                 Label { text: "Apparence"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
-                ComboBox {
+                AppComboBox {
                     id: themeModeSelect
                     Layout.fillWidth: true
                     implicitHeight: 46
@@ -1163,9 +1382,24 @@ ApplicationWindow {
                                   : appBridge.themeMode === "dark" ? 2 : 0
                     onActivated: appBridge.setThemeMode(currentValue)
                 }
+                Label { text: "Apparence"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
+                Label { text: "Thème de l'application"; color: root.colors.textSecondary; font.pixelSize: 14 }
+                AppComboBox {
+                    id: themeSelect
+                    Layout.fillWidth: true
+                    textRole: "label"
+                    valueRole: "value"
+                    model: [
+                        { label: "Automatique · suivre le système", value: "system" },
+                        { label: "Clair", value: "light" },
+                        { label: "Sombre", value: "dark" }
+                    ]
+                    currentIndex: themeMode === "light" ? 1 : themeMode === "dark" ? 2 : 0
+                    onActivated: appBridge.setThemeMode(currentValue)
+                }
                 Label { text: "Accessibilité"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
                 Label { text: "Taille de l'interface · " + Math.round(appBridge.uiScale * 100) + "%"; color: root.colors.textSecondary; font.pixelSize: 15 }
-                Slider {
+                AppSlider {
                     id: scaleSlider
                     Layout.fillWidth: true
                     from: 0.85
@@ -1174,12 +1408,12 @@ ApplicationWindow {
                     value: appBridge.uiScale
                     onMoved: appBridge.setUiScale(value)
                 }
-                CheckBox {
+                AppCheckBox {
                     text: "Contraste renforcé"
                     checked: appBridge.highContrast
                     onToggled: appBridge.setHighContrast(checked)
                 }
-                CheckBox {
+                AppCheckBox {
                     text: "Réduire les animations"
                     checked: appBridge.reduceMotion
                     onToggled: appBridge.setReduceMotion(checked)
@@ -1210,7 +1444,7 @@ ApplicationWindow {
                         onClicked: restoreDialog.open()
                     }
                 }
-                Button {
+                QuietButton {
                     text: "Réinitialiser toutes les données"
                     flat: true
                     Layout.alignment: Qt.AlignHCenter
