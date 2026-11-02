@@ -89,6 +89,14 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertEqual(teacher["id"], db.get_student(student["id"])["created_by"])
         self.assertEqual(teacher["id"], db.get_templates(owner_id=teacher["id"])[0]["owner_id"])
 
+    def test_legacy_admin_data_migrates_when_teacher_profiles_already_exist(self):
+        first = db.add_teacher("Alice", "Martin", "motdepasse123")
+        cls = db.add_class("5e B", "admin")
+        student = db.add_student("Sam", "Durand", "admin", class_id=cls["id"])
+        db.add_teacher("Bob", "Durand", "motdepasse456")
+        self.assertEqual(first["id"], db.get_class(cls["id"])["owner_id"])
+        self.assertEqual(first["id"], db.get_student(student["id"])["created_by"])
+
     def test_teacher_password_uses_salted_pbkdf2(self):
         teacher = db.add_teacher("Ada", "Lovelace", "un-mot-de-passe")
         stored = db.get_teacher(teacher["id"])["password_hash"]
