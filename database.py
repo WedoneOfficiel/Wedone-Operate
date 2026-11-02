@@ -11,6 +11,7 @@
 # templates.json : [ { id, name, owner_id, group_id, config } ]
 
 import json, os, hashlib, uuid
+from data_paths import data_file
 from datetime import datetime
 from constants import DEFAULT_ADMIN_PASSWORD_PLAIN, SCHOOL_LEVELS
 
@@ -26,13 +27,17 @@ def _hash(p): return hashlib.sha256(p.encode()).hexdigest()
 def _uid(prefix): return f"{prefix}_{uuid.uuid4().hex[:8]}"
 
 def _load(path, default):
-    if not os.path.exists(path): return default
+    resolved = data_file(path)
+    if not resolved.exists(): return default
     try:
-        with open(path, "r", encoding="utf-8") as f: return json.load(f)
-    except: return default
+        with open(resolved, "r", encoding="utf-8") as f: return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return default
 
 def _save(path, data):
-    with open(path, "w", encoding="utf-8") as f:
+    resolved = data_file(path)
+    resolved.parent.mkdir(parents=True, exist_ok=True)
+    with open(resolved, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 # ── Bootstrap users ───────────────────────────────────────────────────
