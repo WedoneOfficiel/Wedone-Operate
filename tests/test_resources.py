@@ -12,8 +12,12 @@ class ResourcePathTests(unittest.TestCase):
         self.assertEqual(path.parent.name, "Wedone-Operate")
 
     def test_frozen_resource_uses_meipass(self):
-        with patch("ui.resources.sys._MEIPASS", "/tmp/wedone-bundle", create=True):
-            self.assertEqual(resource_path("icon.png"), "/tmp/wedone-bundle/icon.png")
+        bundle_dir = Path("/tmp/wedone-bundle")
+        with patch("ui.resources.sys._MEIPASS", str(bundle_dir), create=True):
+            self.assertEqual(
+                Path(resource_path("icon.png")),
+                bundle_dir / "icon.png",
+            )
 
 
 if __name__ == "__main__":
