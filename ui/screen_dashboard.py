@@ -132,13 +132,12 @@ class DashboardScreen(QWidget):
     def _stat_card(self, value: str, label: str) -> QWidget:
         card = QFrame()
         card.setStyleSheet(
-            "QFrame{background:var(--bg2,#F4F6F9);border:1px solid rgba(128,128,128,0.15);"
-            "border-radius:10px;padding:4px;}"
+            "QFrame{background:rgba(255,255,255,0.72);border:1px solid rgba(128,128,128,0.14);border-radius:18px;padding:4px;}"
         )
         card.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         l = QVBoxLayout(card); l.setContentsMargins(16, 14, 16, 14); l.setSpacing(4)
         v = QLabel(value); v.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        v.setStyleSheet("font-size: 28px; font-weight: bold; color: #0672BC;")
+        v.setObjectName("metric")
         lb = QLabel(label); lb.setAlignment(Qt.AlignmentFlag.AlignCenter)
         lb.setObjectName("subtitle")
         l.addWidget(v); l.addWidget(lb)
@@ -147,7 +146,7 @@ class DashboardScreen(QWidget):
     def _alert_card(self, alert: dict) -> QWidget:
         card = QFrame()
         card.setStyleSheet(
-            "QFrame{background:#FFF5F5;border:1px solid #F5C1C1;border-radius:8px;}"
+            "QFrame{background:rgba(226,75,95,0.07);border:1px solid rgba(226,75,95,0.32);border-radius:16px;}"
         )
         l = QHBoxLayout(card); l.setContentsMargins(14, 10, 14, 10); l.setSpacing(14)
 
@@ -182,7 +181,7 @@ class DashboardScreen(QWidget):
     def _group_row(self, g: dict) -> QWidget:
         row = QFrame()
         row.setStyleSheet(
-            "QFrame{border:1px solid rgba(128,128,128,0.12);border-radius:8px;}"
+            "QFrame{background:rgba(255,255,255,0.45);border:1px solid rgba(128,128,128,0.14);border-radius:14px;}"
         )
         l = QHBoxLayout(row); l.setContentsMargins(14, 10, 14, 10); l.setSpacing(16)
 
