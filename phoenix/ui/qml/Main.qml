@@ -363,6 +363,7 @@ ApplicationWindow {
                         textRole: "name"
                         valueRole: "id"
                         model: JSON.parse(appBridge.classesJson)
+                        onActivated: appBridge.selectStudent("")
                     }
                     Label { text: "Groupe (facultatif)"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
                     ComboBox {
@@ -372,6 +373,7 @@ ApplicationWindow {
                         textRole: "name"
                         valueRole: "id"
                         model: [{ name: "Tous les groupes", id: "" }].concat(appBridge.groupsForClass(studentClassSelect.currentValue || ""))
+                        onActivated: appBridge.selectStudent("")
                     }
                     Label { text: "Élève"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
                     ComboBox {
@@ -381,6 +383,7 @@ ApplicationWindow {
                         textRole: "display_name"
                         valueRole: "id"
                         model: appBridge.studentsForClass(studentClassSelect.currentValue || "", studentGroupSelect.currentValue || "")
+                        onActivated: appBridge.selectStudent(currentValue)
                     }
 
                     Label {
