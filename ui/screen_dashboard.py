@@ -131,9 +131,7 @@ class DashboardScreen(QWidget):
 
     def _stat_card(self, value: str, label: str) -> QWidget:
         card = QFrame()
-        card.setStyleSheet(
-            "QFrame{background:rgba(255,255,255,0.72);border:1px solid rgba(128,128,128,0.14);border-radius:18px;padding:4px;}"
-        )
+        card.setProperty("class", "card")
         card.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         l = QVBoxLayout(card); l.setContentsMargins(16, 14, 16, 14); l.setSpacing(4)
         v = QLabel(value); v.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -145,16 +143,14 @@ class DashboardScreen(QWidget):
 
     def _alert_card(self, alert: dict) -> QWidget:
         card = QFrame()
-        card.setStyleSheet(
-            "QFrame{background:rgba(226,75,95,0.07);border:1px solid rgba(226,75,95,0.32);border-radius:16px;}"
-        )
+        card.setProperty("class", "warning-card")
         l = QHBoxLayout(card); l.setContentsMargins(14, 10, 14, 10); l.setSpacing(14)
 
         s = alert["student"]
         badge = QLabel(f"{s['prenom'][0]}{s['nom'][0]}".upper())
         badge.setFixedSize(36, 36)
         badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        badge.setStyleSheet("background:#E05555;color:white;border-radius:18px;"
+        badge.setStyleSheet("background:#E24B5F;color:white;border-radius:18px;"
                             "font-size:13px;font-weight:bold;")
         l.addWidget(badge)
 
@@ -172,7 +168,7 @@ class DashboardScreen(QWidget):
 
         rec = alert["recommended"]
         rec_lbl = QLabel(f"💡 {rec['reason']}")
-        rec_lbl.setStyleSheet("font-size: 12px; color: #9A6600;")
+        rec_lbl.setStyleSheet("font-size: 12px; color: #B87516;")
         rec_lbl.setWordWrap(True)
         rec_lbl.setMaximumWidth(280)
         l.addWidget(rec_lbl)
@@ -180,9 +176,7 @@ class DashboardScreen(QWidget):
 
     def _group_row(self, g: dict) -> QWidget:
         row = QFrame()
-        row.setStyleSheet(
-            "QFrame{background:rgba(255,255,255,0.45);border:1px solid rgba(128,128,128,0.14);border-radius:14px;}"
-        )
+        row.setProperty("class", "card-compact")
         l = QHBoxLayout(row); l.setContentsMargins(14, 10, 14, 10); l.setSpacing(16)
 
         name = QLabel(f"<b>{g['name']}</b>")
