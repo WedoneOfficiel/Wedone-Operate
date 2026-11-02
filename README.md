@@ -127,6 +127,8 @@ Merci à toutes les personnes qui prendront le temps d'essayer cette préversion
 
 *WedoneOfficiel — 02/11/2026*
 
+[Lire l'annonce du Projet Phoenix dans le blog](docs/blog/2026-11-02-reouverture-beta-phoenix.md).
+
 ## Historique des versions
 
 ### Projet Phoenix — Beta 2026.11.02 — 02/11/2026
