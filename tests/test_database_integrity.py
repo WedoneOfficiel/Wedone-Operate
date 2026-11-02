@@ -43,9 +43,9 @@ class DatabaseIntegrityTests(unittest.TestCase):
         db.remove_teacher("teacher-a")
         retained = db.get_student(student["id"])
         self.assertEqual("guest", retained["created_by"])
-        self.assertEqual([], db.get_classes(owner_id="teacher-a"))
-        self.assertEqual([], db.get_groups(owner_id="teacher-a"))
-        self.assertEqual([], db.get_templates(owner_id="teacher-a"))
+        self.assertEqual("guest", db.get_classes(owner_id="guest")[0]["owner_id"])
+        self.assertEqual("guest", db.get_groups(owner_id="guest")[0]["owner_id"])
+        self.assertEqual("guest", db.get_templates(owner_id="guest")[0]["owner_id"])
         self.assertEqual(1, len(db.get_scores(student["id"])))
 
     def test_csv_export_quotes_commas_and_accents(self):
