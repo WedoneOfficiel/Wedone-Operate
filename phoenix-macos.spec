@@ -1,11 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 """macOS bundle recipe for Phoenix.
 
-PySide6's collect_all() also discovers standalone Qt development tools
-(Assistant, Designer, Linguist). Those are not runtime dependencies of this
-application and their nested .app bundles contain symlink layouts that break
-PyInstaller's recursive macOS bundle signing. Exclude those bundles at
-analysis time instead of deleting files from the completed .app bundle.
+Phoenix uses Qt Quick, QML, Controls, Layouts and Dialogs. It does not use
+QtWebEngine or Qt's standalone desktop development tools. Keep the Qt runtime
+collection, but exclude those unrelated modules and nested applications before
+PyInstaller assembles and signs the macOS bundle.
 """
 
 from pathlib import Path
@@ -17,25 +16,41 @@ APP_NAME = "Wedone Operate Phoenix"
 ICON = str(ROOT / "phoenix.icns")
 
 
-def is_standalone_app_bundle(entry):
-    """Return True for any TOC entry inside a nested *.app bundle."""
-    for value in entry[:2]:
-        normalized = str(value).replace("\\", "/").lower()
-        parts = normalized.split("/")
-        if any(part.endswith(".app") or part.endswith("__dot__app") for part in parts):
+def normalized_entry_paths(entry):
+    return [str(value).replace("\\", "/").lower() for value in entry[:2]]
+
+
+def is_unneeded_qt_component(entry):
+    """Exclude QtWebEngine and standalone Qt desktop tools."""
+    for value in normalized_entry_paths(entry):
+        parts = value.split("/")
+        if any(part.startswith("qtwebengine") for part in parts):
+            return True
+        if any(
+            part in {
+                "assistant.app", "designer.app", "linguist.app",
+                "assistant__dot__app", "designer__dot__app", "linguist__dot__app",
+            }
+            for part in parts
+        ):
             return True
     return False
 
 
 datas, binaries, hiddenimports = collect_all("PySide6")
 
-# Keep the Qt runtime, QML modules and plugins, but do not ship Qt's separate
-# desktop tools inside our application bundle.
-datas = [entry for entry in datas if not is_standalone_app_bundle(entry)]
-binaries = [entry for entry in binaries if not is_standalone_app_bundle(entry)]
+# QtWebEngine is not imported by Python or by Main.qml. In particular, do not
+# ship its helper application (QtWebEngineProcess.app) just because collect_all
+# discovered every optional PySide6 module.
+datas = [entry for entry in datas if not is_unneeded_qt_component(entry)]
+binaries = [entry for entry in binaries if not is_unneeded_qt_component(entry)]
+hiddenimports = [
+    module for module in hiddenimports
+    if not module.lower().startswith("pyside6.qtwebengine")
+]
 
-# Fail during analysis if a helper app slipped through the collection.
-assert not any(is_standalone_app_bundle(entry) for entry in datas + binaries)
+assert not any(is_unneeded_qt_component(entry) for entry in datas + binaries)
+assert not any(module.lower().startswith("pyside6.qtwebengine") for module in hiddenimports)
 
 datas += [
     (str(ROOT / "phoenix" / "ui" / "qml"), "phoenix/ui/qml"),
@@ -51,7 +66,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=["PySide6.QtWebEngineCore", "PySide6.QtWebEngineQuick", "PySide6.QtWebEngineWidgets"],
     noarchive=False,
 )
 
@@ -66,7 +81,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
@@ -81,7 +96,7 @@ coll = COLLECT(
     a.binaries,
     a.datas,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     name=APP_NAME,
 )
