@@ -332,6 +332,23 @@ def get_students(teacher_id=None, group_id=None, class_id=None):
         key=lambda s: (s.get("nom", "").casefold(), s.get("prenom", "").casefold())
     )
 
+def get_unassigned_students(teacher_id=None):
+    """Students not attached to a class; group membership remains optional."""
+    students = [
+        student for student in _load_users()["students"]
+        if not student.get("class_id")
+    ]
+    if teacher_id is not None:
+        students = [student for student in students if student.get("created_by") == teacher_id]
+    return sorted(
+        students,
+        key=lambda student: (
+            student.get("nom", "").casefold(),
+            student.get("prenom", "").casefold()
+        )
+    )
+
+
 def get_student(sid):
     for s in _load_users()["students"]:
         if s["id"] == sid: return s
