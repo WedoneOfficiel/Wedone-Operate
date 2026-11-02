@@ -34,6 +34,27 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertNotEqual(first["id"], second["id"])
         self.assertIsNone(db.add_student("Alex", "Martin", "teacher-a"))
 
+    def test_same_name_is_allowed_in_different_classes(self):
+        first_class = db.add_class("CM1", "teacher-a")
+        second_class = db.add_class("CM2", "teacher-a")
+        first = db.add_student("Alex", "Martin", "teacher-a", class_id=first_class["id"])
+        second = db.add_student("Alex", "Martin", "teacher-a", class_id=second_class["id"])
+        self.assertIsNotNone(first)
+        self.assertIsNotNone(second)
+        self.assertNotEqual(first["id"], second["id"])
+
+    def test_removing_group_keeps_students_in_their_class_and_detaches_templates(self):
+        cls = db.add_class("6e A", "teacher-a")
+        group = db.add_group("Groupe A", "teacher-a", class_id=cls["id"])
+        student = db.add_student("Mina", "Petit", "teacher-a", group_id=group["id"])
+        db.save_template("Révisions", "teacher-a", {"operations": ["addition"]}, group_id=group["id"])
+        db.remove_group(group["id"])
+        retained = db.get_student(student["id"])
+        self.assertIsNone(retained["group_id"])
+        self.assertEqual(cls["id"], retained["class_id"])
+        self.assertEqual([student["id"]], [s["id"] for s in db.get_students(class_id=cls["id"])])
+        self.assertIsNone(db.get_templates(owner_id="teacher-a")[0]["group_id"])
+
     def test_removing_teacher_preserves_students_and_scores(self):
         student = db.add_student("Lou", "Durand", "teacher-a")
         db.save_score(student["id"], "CM2", 10, 8, False, ["addition"])
