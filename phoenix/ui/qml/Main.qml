@@ -1371,27 +1371,12 @@ ApplicationWindow {
                     textRole: "label"
                     valueRole: "value"
                     model: [
-                        { label: "Selon le système", value: "system" },
+                        { label: "Automatique · suivre le système", value: "system" },
                         { label: "Clair", value: "light" },
                         { label: "Sombre", value: "dark" }
                     ]
                     currentIndex: appBridge.themeMode === "light" ? 1
                                   : appBridge.themeMode === "dark" ? 2 : 0
-                    onActivated: appBridge.setThemeMode(currentValue)
-                }
-                Label { text: "Apparence"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
-                Label { text: "Thème de l'application"; color: root.colors.textSecondary; font.pixelSize: 14 }
-                AppComboBox {
-                    id: themeSelect
-                    Layout.fillWidth: true
-                    textRole: "label"
-                    valueRole: "value"
-                    model: [
-                        { label: "Automatique · suivre le système", value: "system" },
-                        { label: "Clair", value: "light" },
-                        { label: "Sombre", value: "dark" }
-                    ]
-                    currentIndex: themeMode === "light" ? 1 : themeMode === "dark" ? 2 : 0
                     onActivated: appBridge.setThemeMode(currentValue)
                 }
                 Label { text: "Accessibilité"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
