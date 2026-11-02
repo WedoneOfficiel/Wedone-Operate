@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
 
 ApplicationWindow {
     id: root
@@ -10,15 +11,17 @@ ApplicationWindow {
     minimumHeight: 560
     visible: true
     title: "Wedone Operate"
-    color: "#F4F7FC"
+    color: appBridge.highContrast ? "#FFFFFF" : "#F4F7FC"
 
+    property real uiScale: appBridge.uiScale
+    property string settingsReturnPage: "home"
     property string currentMode: appBridge.mode
     property string page: currentMode === "" ? "welcome" : "home"
     property string classroomArea: ""
 
     Rectangle {
         anchors.fill: parent
-        color: "#F4F7FC"
+        color: appBridge.highContrast ? "#FFFFFF" : "#F4F7FC"
 
         Rectangle {
             width: 500
@@ -168,9 +171,13 @@ ApplicationWindow {
     }
 
     StackLayout {
-        anchors.fill: parent
-        anchors.margins: 42
-        currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : 1
+        x: 42 / root.uiScale
+        y: 42 / root.uiScale
+        width: (parent.width - 84) / root.uiScale
+        height: (parent.height - 84) / root.uiScale
+        scale: root.uiScale
+        transformOrigin: Item.TopLeft
+        currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : root.page === "settings" ? 3 : 1
 
         Item {
             ColumnLayout {
@@ -475,7 +482,20 @@ ApplicationWindow {
                 }
 
                 PrimaryButton {
-                    visible: root.page !== "area"
+                    visible: root.page === "home"
+                    text: "Paramètres"
+                    fillColor: "#E8F0FC"
+                    hoverColor: "#D8E6FA"
+                    textColor: "#1769D2"
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: {
+                        root.settingsReturnPage = root.page
+                        root.page = "settings"
+                    }
+                }
+
+                PrimaryButton {
+                    visible: root.page === "home"
                     text: "Changer de mode"
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: 12
@@ -668,5 +688,124 @@ ApplicationWindow {
                 }
             }
         }
+
+        Item {
+            ColumnLayout {
+                anchors.centerIn: parent
+                width: Math.min(parent.width, 660)
+                spacing: 16
+
+                Label {
+                    text: "Paramètres"
+                    color: "#172A45"
+                    font.pixelSize: 32
+                    font.weight: Font.Bold
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                Label { text: "Accessibilité"; color: "#1769D2"; font.pixelSize: 18; font.weight: Font.DemiBold }
+                Label { text: "Taille de l'interface · " + Math.round(appBridge.uiScale * 100) + "%"; color: "#33445D"; font.pixelSize: 15 }
+                Slider {
+                    id: scaleSlider
+                    Layout.fillWidth: true
+                    from: 0.85
+                    to: 1.25
+                    stepSize: 0.05
+                    value: appBridge.uiScale
+                    onMoved: appBridge.setUiScale(value)
+                }
+                CheckBox {
+                    text: "Contraste renforcé"
+                    checked: appBridge.highContrast
+                    onToggled: appBridge.setHighContrast(checked)
+                }
+                CheckBox {
+                    text: "Réduire les animations"
+                    checked: appBridge.reduceMotion
+                    onToggled: appBridge.setReduceMotion(checked)
+                }
+                Label { text: "Données"; color: "#1769D2"; font.pixelSize: 18; font.weight: Font.DemiBold; Layout.topMargin: 8 }
+                GridLayout {
+                    columns: 2
+                    columnSpacing: 12
+                    rowSpacing: 10
+                    PrimaryButton {
+                        text: "Créer une sauvegarde"
+                        Layout.fillWidth: true
+                        onClicked: appBridge.createBackup()
+                    }
+                    PrimaryButton {
+                        text: "Exporter en JSON"
+                        Layout.fillWidth: true
+                        onClicked: exportDialog.open()
+                    }
+                    PrimaryButton {
+                        text: "Importer un export"
+                        Layout.fillWidth: true
+                        onClicked: importDialog.open()
+                    }
+                    PrimaryButton {
+                        text: "Restaurer une sauvegarde"
+                        Layout.fillWidth: true
+                        onClicked: restoreDialog.open()
+                    }
+                }
+                Button {
+                    text: "Réinitialiser toutes les données"
+                    flat: true
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: resetConfirmation.open()
+                }
+                Label {
+                    visible: appBridge.dataMessage !== ""
+                    text: appBridge.dataMessage
+                    color: "#1769D2"
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+                PrimaryButton {
+                    text: "Retour"
+                    Layout.fillWidth: true
+                    onClicked: root.page = root.settingsReturnPage
+                }
+            }
+        }
+    }
+
+    FileDialog {
+        id: exportDialog
+        title: "Exporter les données Phoenix"
+        fileMode: FileDialog.SaveFile
+        nameFilters: ["Export Phoenix (*.json)"]
+        onAccepted: appBridge.exportData(selectedFile.toLocalFile())
+    }
+
+    FileDialog {
+        id: importDialog
+        title: "Importer un export Phoenix"
+        fileMode: FileDialog.OpenFile
+        nameFilters: ["Export Phoenix (*.json)"]
+        onAccepted: appBridge.importData(selectedFile.toLocalFile())
+    }
+
+    FileDialog {
+        id: restoreDialog
+        title: "Restaurer une sauvegarde Phoenix"
+        fileMode: FileDialog.OpenFile
+        nameFilters: ["Sauvegarde SQLite (*.sqlite3 *.db)"]
+        onAccepted: appBridge.restoreBackup(selectedFile.toLocalFile())
+    }
+
+    Dialog {
+        id: resetConfirmation
+        title: "Réinitialiser les données ?"
+        modal: true
+        standardButtons: Dialog.Yes | Dialog.No
+        anchors.centerIn: parent
+        Label {
+            text: "Toutes les classes, tous les profils, les réglages et l'historique Phoenix seront supprimés. Une sauvegarde de sécurité sera créée avant l'opération."
+            wrapMode: Text.WordWrap
+        }
+        onAccepted: appBridge.resetData()
     }
 }
