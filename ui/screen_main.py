@@ -170,9 +170,15 @@ class MainScreen(QWidget):
         # Niveau du groupe
         student_level = db.get_student_level(s.user_id) if s.is_student() and s.user_id else "CM2"
         student = db.get_student(s.user_id) if s.is_student() and s.user_id else None
-        g = db.get_group(student.get("group_id")) if student and student.get("group_id") else None
-        group_name = g["name"] if g else ""
-        self.info_lbl.setText(f"Groupe : {group_name}  •  Niveau {student_level}" if group_name else f"Niveau {student_level}")
+        group = db.get_group(student.get("group_id")) if student and student.get("group_id") else None
+        cls = db.get_class(student.get("class_id")) if student and student.get("class_id") else None
+        if group:
+            placement = f"Groupe : {group['name']}"
+        elif cls:
+            placement = f"Classe : {cls['name']}"
+        else:
+            placement = "Mode invité" if s.is_guest() else "Élève"
+        self.info_lbl.setText(f"{placement}  ·  Niveau {student_level}")
 
         self.combo_level.setCurrentText(student_level)
 
