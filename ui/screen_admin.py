@@ -31,8 +31,8 @@ class AdminScreen(QWidget):
     def _build_ui(self):
         root = QHBoxLayout(self); root.setContentsMargins(0,0,0,0); root.setSpacing(0)
 
-        nav = QWidget(); nav.setFixedWidth(190)
-        nav.setStyleSheet("border-right: 1px solid rgba(128,128,128,0.2);")
+        nav = QWidget(); nav.setFixedWidth(220)
+        nav.setProperty("class", "side-nav")
         nl = QVBoxLayout(nav); nl.setContentsMargins(12,20,12,20); nl.setSpacing(6)
         nl.setAlignment(Qt.AlignmentFlag.AlignTop)
 
