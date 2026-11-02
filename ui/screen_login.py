@@ -11,6 +11,7 @@ from PyQt6.QtGui import QPixmap
 import database as db
 import session
 from constants import DEFAULT_ADMIN_PASSWORD_PLAIN
+from ui.resources import resource_path
 
 
 class LoginScreen(QWidget):
@@ -33,7 +34,7 @@ class LoginScreen(QWidget):
         logo_row = QHBoxLayout()
         logo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
         logo_lbl = QLabel()
-        pix = QPixmap("icon.png")
+        pix = QPixmap(resource_path("icon.png"))
         if not pix.isNull():
             logo_lbl.setPixmap(pix.scaledToWidth(64, Qt.TransformationMode.SmoothTransformation))
         logo_row.addWidget(logo_lbl)
@@ -81,14 +82,14 @@ class LoginScreen(QWidget):
 
         self.admin_hint = QFrame()
         self.admin_hint.setStyleSheet(
-            "QFrame{background:#FFF8E1;border:1px solid #F0A030;border-radius:6px;}"
+            "QFrame{background:rgba(184,117,22,0.10);border:1px solid rgba(184,117,22,0.38);border-radius:14px;}"
         )
         hl = QVBoxLayout(self.admin_hint)
         hl.setContentsMargins(10, 8, 10, 8); hl.setSpacing(2)
         h1 = QLabel(f"🔑  Mot de passe par défaut : <b>{DEFAULT_ADMIN_PASSWORD_PLAIN}</b>")
-        h1.setStyleSheet("color:#7A5500;font-size:13px;background:transparent;border:none;")
+        h1.setStyleSheet("font-size:13px;background:transparent;border:none;")
         h2 = QLabel("Nous vous invitons à le modifier après la première connexion.")
-        h2.setStyleSheet("color:#9A6600;font-size:12px;background:transparent;border:none;")
+        h2.setStyleSheet("font-size:12px;background:transparent;border:none;")
         hl.addWidget(h1); hl.addWidget(h2)
         l.addWidget(self.admin_hint)
 
@@ -243,7 +244,7 @@ class LoginScreen(QWidget):
                 initiales=cls["name"][:2].upper(),
                 label=cls["name"],
                 sublabel=f"{nb} groupe{'s' if nb > 1 else ''}",
-                color="#0672BC",
+                color="#0879C9",
                 size=(110, 100),
                 on_click=lambda _, c=cls: self._on_class_selected(c)
             )
@@ -262,7 +263,7 @@ class LoginScreen(QWidget):
                 initiales=grp["name"][:2].upper(),
                 label=grp["name"],
                 sublabel=level,
-                color="#0F6E56",
+                color="#269B70",
                 size=(110, 100),
                 on_click=lambda _, g=grp: self._on_group_selected(g)
             )
@@ -280,7 +281,7 @@ class LoginScreen(QWidget):
                 initiales=initiales,
                 label=s["prenom"],
                 sublabel=s["nom"],
-                color="#534AB7",
+                color="#2998E5",
                 size=(100, 95),
                 on_click=lambda _, st=s: self._login_student(st)
             )
@@ -290,14 +291,8 @@ class LoginScreen(QWidget):
         card = QPushButton()
         card.setFixedSize(*size)
         card.setCursor(Qt.CursorShape.PointingHandCursor)
-        card.setStyleSheet(f"""
-            QPushButton {{
-                background:#F4F6F9; border:1.5px solid #DDE3EC;
-                border-radius:10px; font-size:12px;
-            }}
-            QPushButton:hover {{ border-color:{color}; background:#EBF4FC; }}
-            QPushButton:pressed {{ background:#D6EAF8; }}
-        """)
+        card.setProperty("class", "student-card")
+        card.setStyleSheet("font-size:12px;")
         inner = QVBoxLayout(card)
         inner.setContentsMargins(4, 8, 4, 6); inner.setSpacing(3)
 
@@ -314,7 +309,7 @@ class LoginScreen(QWidget):
 
         sub = QLabel(sublabel)
         sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sub.setStyleSheet("font-size:11px;color:#5A6270;background:transparent;")
+        sub.setStyleSheet("font-size:11px;background:transparent;")
 
         inner.addLayout(br); inner.addWidget(lbl); inner.addWidget(sub)
         card.clicked.connect(on_click)
