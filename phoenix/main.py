@@ -257,7 +257,7 @@ def main(argv: list[str] | None = None) -> int:
             self._active_student_id = None
             self._teacher_id = None
             self.modeChanged.emit("")
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
             self.progressChanged.emit()
 
         @Slot(str, result="QVariantList")
@@ -277,7 +277,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Profil professeur créé."
             except Exception as exc:
                 self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str, str)
         def loginTeacher(self, teacher_id: str, password: str) -> None:
@@ -286,13 +286,13 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Connexion réussie."
             else:
                 self._classroom_message = "Mot de passe incorrect."
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot()
         def logoutTeacher(self) -> None:
             self._teacher_id = None
             self._classroom_message = "Vous êtes déconnecté."
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str, str)
         def createClass(self, name: str, school_year: str) -> None:
@@ -304,7 +304,7 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = "Classe créée."
                 except Exception as exc:
                     self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str, str)
         def createGroup(self, class_id: str, name: str) -> None:
@@ -316,7 +316,7 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = "Groupe créé."
                 except Exception as exc:
                     self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str, str, str)
         def createStudent(self, class_id: str, display_name: str, group_id: str) -> None:
@@ -328,7 +328,7 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = "Élève ajouté."
                 except Exception as exc:
                     self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str)
         def archiveStudent(self, student_id: str) -> None:
@@ -343,7 +343,7 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = "Élève archivé. Son historique est conservé."
                 except Exception as exc:
                     self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str)
         def archiveGroup(self, group_id: str) -> None:
@@ -355,7 +355,7 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = "Groupe archivé."
                 except Exception as exc:
                     self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str)
         def archiveClass(self, class_id: str) -> None:
@@ -369,7 +369,7 @@ def main(argv: list[str] | None = None) -> int:
                     self.progressChanged.emit()
                 except Exception as exc:
                     self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str)
         def updateTeacherProfile(self, display_name: str) -> None:
@@ -381,12 +381,12 @@ def main(argv: list[str] | None = None) -> int:
                     self._classroom_message = "Profil mis à jour."
                 except Exception as exc:
                     self._classroom_message = str(exc)
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
 
         @Slot(str)
         def selectStudent(self, student_id: str) -> None:
             self._active_student_id = student_id or None
-            self.classroomChanged.emit()
+            self._emit_classroom_changed()
             self.progressChanged.emit()
 
         @Slot(str, int, int)
