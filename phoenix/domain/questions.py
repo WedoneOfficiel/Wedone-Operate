@@ -18,7 +18,10 @@ class Question:
 
     @property
     def signature(self) -> tuple[str, int, int]:
-        return (self.operation, self.operands[0], self.operands[1])
+        a, b = self.operands
+        if self.operation in ("addition", "multiplication"):
+            a, b = sorted((a, b))
+        return (self.operation, a, b)
 
 
 def _integer_question(skill: Skill, difficulty: int, rng: random.Random) -> Question:
