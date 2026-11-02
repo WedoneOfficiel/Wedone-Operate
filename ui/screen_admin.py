@@ -360,12 +360,13 @@ class AdminScreen(QWidget):
         owner_id = session.current.user_id if session.current.is_teacher() else None
         for t in db.get_templates(owner_id=owner_id):
             g = db.get_group(t.get("group_id"))
+            cls = db.get_class(t.get("class_id"))
             c = t["config"]
             ops = "+".join({"addition":"+","soustraction":"−","multiplication":"×","division":"÷"}.get(o,o)
                            for o in c.get("operations",[]))
-            gname = f" → {g['name']}" if g else ""
+            target = f" → Groupe {g['name']}" if g else (f" → Classe {cls['name']}" if cls else " → Modèle libre")
             item = QListWidgetItem(
-                f"  {t['name']}{gname}  —  {c.get('nb_epreuves',10)} épr.  {c.get('level','?')}  {ops}"
+                f"  {t['name']}{target}  —  {c.get('nb_epreuves',10)} épr.  {c.get('level','?')}  {ops}"
             )
             item.setData(Qt.ItemDataRole.UserRole, t)
             self.templates_list.addItem(item)
@@ -792,12 +793,20 @@ class AddTemplateDialog(QDialog):
         self._name = QLineEdit(); self._name.setPlaceholderText("ex. Tables de multiplication CM1")
         l.addWidget(self._name)
 
-        l.addWidget(QLabel("Groupe cible"))
-        self._group = QComboBox(); self._group.addItem("— Aucun groupe spécifique —", userData=None)
-        owner_id = None if session.current.is_admin() else session.current.user_id
-        for g in db.get_groups(owner_id=owner_id):
-            self._group.addItem(f"{g['name']} ({g.get('level','')})", userData=g["id"])
+        self._owner_id = session.current.user_id if session.current.is_teacher() else "guest"
+        l.addWidget(QLabel("Classe cible (facultatif)"))
+        self._class = QComboBox()
+        self._class.addItem("— Modèle libre —", userData=None)
+        for cls in db.get_classes(owner_id=self._owner_id):
+            self._class.addItem(f"{cls['name']} · {cls.get('level', 'CM2')}", userData=cls["id"])
+        self._class.currentIndexChanged.connect(self._refresh_groups)
+        l.addWidget(self._class)
+
+        l.addWidget(QLabel("Groupe cible (facultatif, prioritaire sur la classe)"))
+        self._group = QComboBox()
+        self._group.currentIndexChanged.connect(self._on_group_changed)
         l.addWidget(self._group)
+        self._refresh_groups()
 
         l.addWidget(QLabel("Niveau scolaire"))
         self._level = QComboBox(); self._level.addItems(SCHOOL_LEVELS); self._level.setCurrentText("CM2")
@@ -827,6 +836,13 @@ class AddTemplateDialog(QDialog):
             self._mul.setChecked("multiplication" in config.get("operations", []))
             self._div.setChecked("division" in config.get("operations", []))
             self._timer.setChecked(bool(config.get("timer_enabled", False)))
+            class_id = template.get("class_id")
+            if not class_id and template.get("group_id"):
+                group = db.get_group(template["group_id"])
+                class_id = group.get("class_id") if group else None
+            class_index = self._class.findData(class_id)
+            if class_index >= 0: self._class.setCurrentIndex(class_index)
+            self._refresh_groups()
             index = self._group.findData(template.get("group_id"))
             if index >= 0: self._group.setCurrentIndex(index)
 
@@ -837,6 +853,32 @@ class AddTemplateDialog(QDialog):
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
         _wire_enter(self, ok)
 
+    def _refresh_groups(self):
+        if not hasattr(self, "_group"):
+            return
+        class_id = self._class.currentData()
+        previous = self._group.currentData() if self._group.count() else (
+            self._template.get("group_id") if self._template else None
+        )
+        self._group.blockSignals(True)
+        self._group.clear()
+        self._group.addItem("— Aucun groupe —", userData=None)
+        for group in db.get_groups(owner_id=self._owner_id):
+            if class_id and group.get("class_id") not in (None, class_id):
+                continue
+            self._group.addItem(f"{group['name']} · {group.get('level', 'CM2')}", userData=group["id"])
+        index = self._group.findData(previous)
+        if index >= 0: self._group.setCurrentIndex(index)
+        self._group.blockSignals(False)
+
+    def _on_group_changed(self):
+        group_id = self._group.currentData()
+        group = db.get_group(group_id) if group_id else None
+        if group and group.get("class_id"):
+            index = self._class.findData(group["class_id"])
+            if index >= 0 and self._class.currentIndex() != index:
+                self._class.setCurrentIndex(index)
+
     def _ok(self):
         name = self._name.text().strip()
         if not name: self._err.setText("Nom obligatoire."); self._err.show(); return
@@ -845,12 +887,12 @@ class AddTemplateDialog(QDialog):
         if not ops: self._err.setText("Sélectionnez au moins une opération."); self._err.show(); return
         config = {"level": self._level.currentText(), "nb_epreuves": self._nb.value(),
                   "operations": ops, "timer_enabled": self._timer.isChecked()}
+        group_id = self._group.currentData()
+        class_id = self._class.currentData()
         if self._template:
-            ok = db.update_template(self._template["id"], name, config, self._group.currentData())
+            ok = db.update_template(self._template["id"], name, config, group_id, class_id)
         else:
-            owner_id = session.current.user_id if session.current.is_teacher() else "guest"
-            db.save_template(name, owner_id, config, self._group.currentData())
-            ok = True
+            ok = db.save_template(name, self._owner_id, config, group_id, class_id)
         if not ok:
             self._err.setText("Ce nom existe déjà ou le groupe est invalide."); self._err.show(); return
         self.accept()
