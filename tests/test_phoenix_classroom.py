@@ -38,7 +38,7 @@ class ClassroomRepositoryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.repository.create_class("   ")
         with self.assertRaises(ValueError):
-            self.repository.create_teacher("Professeur", "MotDePasse123!")
+            self.repository.create_teacher("", "MotDePasse123!")
         class_id = self.repository.create_class("Sixième")
         with self.assertRaises(ValueError):
             self.repository.create_student(class_id, " ")
