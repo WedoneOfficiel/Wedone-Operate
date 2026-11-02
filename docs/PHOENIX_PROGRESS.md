@@ -20,7 +20,8 @@ Dernière mise à jour : 2 novembre 2026
 - L'usage individuel arrive directement sur la configuration de séance, sans écran de connexion ni profil fictif.
 - Tableau de bord initial avec nombre de séances, réponses traitées et précision calculée sur les réponses réellement données.
 - Progression individuelle et progression par élève, avec agrégation pondérée par question et ventilation par compétence.
-- Parcours classe initial : création de profils professeurs protégés par mot de passe PBKDF2, création de classes et ajout d'élèves ; sélection de classe/groupe/élève côté élève ; entraînement rapide sans profil.
+- Parcours classe initial : création de profils professeurs protégés par mot de passe PBKDF2, création de classes, groupes et élèves ; sélection de classe/groupe/élève côté élève ; entraînement rapide sans profil.
+- Archivage confirmé des classes, groupes et élèves depuis l'espace professeur, avec confirmation et conservation des historiques.
 - Workflow de packaging PyInstaller séparé pour Windows, macOS et Linux.
 - Premiers réglages d'accessibilité persistants : échelle globale de l'interface, contraste renforcé et réduction des animations.
 - Centre de données dans les paramètres : sauvegarde SQLite, restauration avec copie de sécurité, export/import JSON versionné et réinitialisation confirmée avec sauvegarde préalable.
