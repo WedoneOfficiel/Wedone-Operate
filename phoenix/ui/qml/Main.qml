@@ -14,6 +14,7 @@ ApplicationWindow {
     color: appBridge.highContrast ? "#FFFFFF" : "#F4F7FC"
 
     property real uiScale: appBridge.uiScale
+    property var progressSummary: JSON.parse(appBridge.progressJson)
     property string settingsReturnPage: "home"
     property string currentMode: appBridge.mode
     property string page: currentMode === "" ? "welcome" : "home"
@@ -242,6 +243,44 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                 }
 
+                RowLayout {
+                    visible: root.currentMode === "individual"
+                    Layout.alignment: Qt.AlignHCenter
+                    spacing: 12
+                    Repeater {
+                        model: [
+                            { label: "Séances", value: root.progressSummary.sessions },
+                            { label: "Réponses", value: root.progressSummary.answered },
+                            { label: "Réussite", value: root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%" }
+                        ]
+                        delegate: Rectangle {
+                            required property var modelData
+                            width: 150
+                            height: 88
+                            radius: 16
+                            color: "#FFFFFF"
+                            border.color: "#E3EAF4"
+                            ColumnLayout {
+                                anchors.centerIn: parent
+                                spacing: 4
+                                Label {
+                                    text: modelData.value
+                                    color: "#1769D2"
+                                    font.pixelSize: 23
+                                    font.weight: Font.Bold
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+                                Label {
+                                    text: modelData.label
+                                    color: "#66768E"
+                                    font.pixelSize: 12
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+                            }
+                        }
+                    }
+                }
+
                 PrimaryButton {
                     visible: root.currentMode === "individual"
                     text: "Commencer une séance"
@@ -342,6 +381,15 @@ ApplicationWindow {
                         textRole: "display_name"
                         valueRole: "id"
                         model: appBridge.studentsForClass(studentClassSelect.currentValue || "", studentGroupSelect.currentValue || "")
+                    }
+
+                    Label {
+                        visible: !!studentProfileSelect.currentValue
+                        text: root.progressSummary.sessions === 0 ? "Pas encore de résultat pour cet élève." : "Séances : " + root.progressSummary.sessions + " · Réponses : " + root.progressSummary.answered + " · Réussite : " + (root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%")
+                        color: "#66768E"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
                     }
                     PrimaryButton {
                         text: "Continuer"
