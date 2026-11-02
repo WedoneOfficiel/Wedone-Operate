@@ -146,6 +146,7 @@ class SettingsScreen(QWidget):
         btn = QPushButton("Modifier le mot de passe")
         btn.setFixedWidth(220)
         btn.clicked.connect(self._change_password)
+        self.new_pwd2.returnPressed.connect(self._change_password)
         l.addWidget(btn)
         l.addStretch()
         return w
@@ -193,19 +194,30 @@ class SettingsScreen(QWidget):
 
     def _load_values(self):
         s = self._settings
-        theme_map = {"system": 0, "light": 1, "dark": 2}
-        self.theme_combo.setCurrentIndex(theme_map.get(s.get("theme", "system"), 0))
-        self.auto_update_cb.setChecked(s.get("auto_update", True))
-        # Migrate the former abstract difficulty labels to real school levels.
-        legacy_levels = {"Facile": "CE1", "Moyen": "CM2", "Difficile": "3e"}
-        diff = legacy_levels.get(s.get("difficulty"), s.get("difficulty", "CM2"))
-        if diff in SCHOOL_LEVELS:
-            self.diff_combo.setCurrentText(diff)
-        self.cb_add.setChecked(s.get("addition_enabled", True))
-        self.cb_sub.setChecked(s.get("subtraction_enabled", True))
-        self.cb_mul.setChecked(s.get("multiplication_enabled", True))
-        self.cb_div.setChecked(s.get("division_enabled", True))
-        self.cb_timer_def.setChecked(s.get("timer_enabled", False))
+        # Loading saved values must never trigger _save() midway through the
+        # refresh (which could persist stale values from the remaining fields).
+        controls = (
+            self.theme_combo, self.auto_update_cb, self.diff_combo,
+            self.cb_add, self.cb_sub, self.cb_mul, self.cb_div, self.cb_timer_def
+        )
+        previous_states = [control.blockSignals(True) for control in controls]
+        try:
+            theme_map = {"system": 0, "light": 1, "dark": 2}
+            self.theme_combo.setCurrentIndex(theme_map.get(s.get("theme", "system"), 0))
+            self.auto_update_cb.setChecked(s.get("auto_update", True))
+            # Migrate the former abstract difficulty labels to real school levels.
+            legacy_levels = {"Facile": "CE1", "Moyen": "CM2", "Difficile": "3e"}
+            diff = legacy_levels.get(s.get("difficulty"), s.get("difficulty", "CM2"))
+            if diff in SCHOOL_LEVELS:
+                self.diff_combo.setCurrentText(diff)
+            self.cb_add.setChecked(s.get("addition_enabled", True))
+            self.cb_sub.setChecked(s.get("subtraction_enabled", True))
+            self.cb_mul.setChecked(s.get("multiplication_enabled", True))
+            self.cb_div.setChecked(s.get("division_enabled", True))
+            self.cb_timer_def.setChecked(s.get("timer_enabled", False))
+        finally:
+            for control, previous in zip(controls, previous_states):
+                control.blockSignals(previous)
 
     def _save(self):
         theme_map = {0: "system", 1: "light", 2: "dark"}
