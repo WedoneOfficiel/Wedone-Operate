@@ -10,7 +10,6 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QPixmap
 import database as db
 import session
-from constants import DEFAULT_ADMIN_PASSWORD_PLAIN
 from ui.resources import resource_path
 
 
@@ -65,14 +64,14 @@ class LoginScreen(QWidget):
 
         self.stack = QStackedWidget()
         self.stack.setMinimumHeight(280)
-        self.stack.addWidget(self._build_admin_panel())    # 0
+        self.stack.addWidget(self._build_guest_panel())    # 0
         self.stack.addWidget(self._build_teacher_panel())  # 1
         self.stack.addWidget(self._build_student_panel())  # 2
         center.addWidget(self.stack)
 
         root.addLayout(center)
         root.addStretch(1)
-        self._switch_tab(2)
+        self._switch_tab(0)
 
     # ── Panneaux ──────────────────────────────────────────────────────
 
@@ -222,8 +221,13 @@ class LoginScreen(QWidget):
         self._selected_group = grp
         level = grp.get("level", "")
         level_str = f" ({level})" if level else ""
-        self._refresh_profile_cards(grp["id"])
+        self._refresh_profile_cards(group_id=grp["id"])
         self._go_step(2, f"{self._selected_class['name']}  ›  {grp['name']}{level_str}  —  Qui êtes-vous ?")
+
+    def _on_ungrouped_selected(self, class_id: str):
+        self._selected_group = None
+        self._refresh_profile_cards(class_id=class_id)
+        self._go_step(2, f"{self._selected_class['name']}  ›  Élèves sans groupe  —  Qui êtes-vous ?")
 
     # ── Refresh cards ─────────────────────────────────────────────────
 
@@ -248,9 +252,21 @@ class LoginScreen(QWidget):
     def _refresh_group_cards(self, class_id: str):
         self._clear_layout(self.group_cards_l)
         groups = db.get_groups(class_id=class_id)
-        if not groups:
-            self.no_group_lbl.show(); return
+        ungrouped = [s for s in db.get_students(class_id=class_id) if not s.get("group_id")]
+        if not groups and not ungrouped:
+            self.no_group_lbl.show()
+            return
         self.no_group_lbl.hide()
+        if ungrouped:
+            card = self._make_icon_card(
+                initiales="•",
+                label="Élèves sans groupe",
+                sublabel=f"{len(ungrouped)} élève{'s' if len(ungrouped) > 1 else ''}",
+                color="#2998E5",
+                size=(130, 100),
+                on_click=lambda _, cid=class_id: self._on_ungrouped_selected(cid)
+            )
+            self.group_cards_l.addWidget(card)
         for grp in groups:
             nb = len(db.get_students(group_id=grp["id"]))
             level = grp.get("level", "")
@@ -264,9 +280,9 @@ class LoginScreen(QWidget):
             )
             self.group_cards_l.addWidget(card)
 
-    def _refresh_profile_cards(self, group_id: str):
+    def _refresh_profile_cards(self, group_id=None, class_id=None):
         self._clear_layout(self.profile_cards_l)
-        students = db.get_students(group_id=group_id)
+        students = db.get_students(group_id=group_id) if group_id else db.get_students(class_id=class_id)
         if not students:
             self.no_profile_lbl.show(); return
         self.no_profile_lbl.hide()
@@ -319,8 +335,7 @@ class LoginScreen(QWidget):
     def _switch_tab(self, idx: int):
         self.stack.setCurrentIndex(idx)
         for i, btn in enumerate(self._tab_btns): btn.setChecked(i == idx)
-        if idx == 0: self.admin_hint.setVisible(db.is_admin_first_login())
-        elif idx == 1: self._refresh_teacher_combo()
+        if idx == 1: self._refresh_teacher_combo()
         elif idx == 2:
             self._go_step(0, "Sélectionnez votre classe")
             self._refresh_class_cards()
