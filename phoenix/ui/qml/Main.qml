@@ -373,7 +373,7 @@ ApplicationWindow {
                         implicitHeight: 46
                         textRole: "name"
                         valueRole: "id"
-                        model: [{ name: "Tous les groupes", id: "" }].concat(appBridge.groupsForClass(studentClassSelect.currentValue || ""))
+                        model: { appBridge.classroomRevision; return [{ name: "Tous les groupes", id: "" }].concat(appBridge.groupsForClass(studentClassSelect.currentValue || "")) }
                         onActivated: appBridge.selectStudent("")
                     }
                     Label { text: "Élève"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
@@ -383,7 +383,7 @@ ApplicationWindow {
                         implicitHeight: 46
                         textRole: "display_name"
                         valueRole: "id"
-                        model: appBridge.studentsForClass(studentClassSelect.currentValue || "", studentGroupSelect.currentValue || "")
+                        model: { appBridge.classroomRevision; return appBridge.studentsForClass(studentClassSelect.currentValue || "", studentGroupSelect.currentValue || "") }
                         onActivated: appBridge.selectStudent(currentValue)
                     }
 
@@ -493,7 +493,7 @@ ApplicationWindow {
                         implicitHeight: 44
                         textRole: "name"
                         valueRole: "id"
-                        model: [{ name: "Aucun groupe", id: "" }].concat(appBridge.groupsForClass(teacherClassSelect.currentValue || ""))
+                        model: { appBridge.classroomRevision; return [{ name: "Aucun groupe", id: "" }].concat(appBridge.groupsForClass(teacherClassSelect.currentValue || "")) }
                     }
                     TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, teacherGroupSelect.currentValue || "") }
                     PrimaryButton {
@@ -539,7 +539,7 @@ ApplicationWindow {
                         implicitHeight: 44
                         textRole: "display_name"
                         valueRole: "id"
-                        model: appBridge.studentsForClass(teacherClassSelect.currentValue || "", teacherGroupSelect.currentValue || "")
+                        model: { appBridge.classroomRevision; return appBridge.studentsForClass(teacherClassSelect.currentValue || "", teacherGroupSelect.currentValue || "") }
                     }
                     PrimaryButton {
                         text: "Archiver l'élève sélectionné"
