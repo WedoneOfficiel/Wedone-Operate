@@ -26,7 +26,8 @@ from datetime import datetime
 def main(argv: list[str] | None = None) -> int:
     try:
         from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot
-        from PySide6.QtGui import QGuiApplication
+        from PySide6.QtGui import QGuiApplication, QIcon, QImage, QImageReader
+        from PySide6.QtQuick import QQuickImageProvider
         from PySide6.QtQml import QQmlApplicationEngine
     except ImportError as exc:
         raise SystemExit(
@@ -476,11 +477,41 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationName("Wedone Operate Phoenix")
     app.setOrganizationName("WedoneOfficiel")
 
+    def resource_path(name: str) -> Path:
+        bundle_root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
+        return bundle_root / name
+
+    icon_path = resource_path("icon.png")
+    if icon_path.is_file():
+        app.setWindowIcon(QIcon(str(icon_path)))
+
+    class BrandingImageProvider(QQuickImageProvider):
+        def __init__(self):
+            super().__init__(QQuickImageProvider.Image)
+
+        def requestImage(self, image_id, size, requested_size):
+            reader = QImageReader(str(icon_path))
+            image = reader.read()
+            if image.isNull():
+                image = QIcon(str(icon_path)).pixmap(256, 256).toImage()
+            if requested_size.width() > 0 and requested_size.height() > 0:
+                image = image.scaled(
+                    requested_size,
+                    1,  # Qt.IgnoreAspectRatio; the source artwork is square.
+                    1,  # Qt.SmoothTransformation
+                )
+            if size is not None:
+                size.setWidth(image.width())
+                size.setHeight(image.height())
+            return image
+
     database = Database(get_database_path())
     database.initialize()
     bridge = AppBridge(database)
 
     engine = QQmlApplicationEngine()
+    if icon_path.is_file():
+        engine.addImageProvider("branding", BrandingImageProvider())
     engine.rootContext().setContextProperty("appBridge", bridge)
     qml_file = Path(__file__).parent / "ui" / "qml" / "Main.qml"
     engine.load(QUrl.fromLocalFile(str(qml_file.resolve())))
