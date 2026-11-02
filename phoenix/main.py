@@ -26,7 +26,7 @@ from datetime import datetime
 def main(argv: list[str] | None = None) -> int:
     try:
         from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot
-        from PySide6.QtGui import QGuiApplication, QIcon, QImage, QImageReader
+        from PySide6.QtGui import QGuiApplication, QIcon, QImageReader
         from PySide6.QtQuick import QQuickImageProvider
         from PySide6.QtQml import QQmlApplicationEngine
     except ImportError as exc:
@@ -495,11 +495,7 @@ def main(argv: list[str] | None = None) -> int:
             if image.isNull():
                 image = QIcon(str(icon_path)).pixmap(256, 256).toImage()
             if requested_size.width() > 0 and requested_size.height() > 0:
-                image = image.scaled(
-                    requested_size,
-                    1,  # Qt.IgnoreAspectRatio; the source artwork is square.
-                    1,  # Qt.SmoothTransformation
-                )
+                image = image.scaled(requested_size)
             if size is not None:
                 size.setWidth(image.width())
                 size.setHeight(image.height())
