@@ -169,7 +169,7 @@ ApplicationWindow {
     StackLayout {
         anchors.fill: parent
         anchors.margins: 42
-        currentIndex: root.page === "welcome" ? 0 : root.page === "home" ? 1 : 2
+        currentIndex: root.page === "welcome" ? 0 : (root.page === "home" || root.page === "area") ? 1 : 2
 
         Item {
             ColumnLayout {
@@ -293,6 +293,18 @@ ApplicationWindow {
                     font.pixelSize: 28
                     font.weight: Font.DemiBold
                     Layout.alignment: Qt.AlignHCenter
+                }
+
+                PrimaryButton {
+                    visible: root.page === "area"
+                    text: "Retour à l'espace classe"
+                    fillColor: "#E8F0FC"
+                    hoverColor: "#D8E6FA"
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: {
+                        root.classroomArea = ""
+                        root.page = "home"
+                    }
                 }
 
                 PrimaryButton {
