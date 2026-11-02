@@ -28,6 +28,8 @@ class GameScreen(QWidget):
         self._timer.timeout.connect(self._tick)
         self._time_left = 0.0
         self._epreuve_start = 0.0
+        self._feedback_pause = 0.0
+        self._feedback_started = None
         self._feedback_timer = QTimer(self)
         self._feedback_timer.setSingleShot(True)
         self._feedback_timer.timeout.connect(self._next_question)
@@ -139,6 +141,8 @@ class GameScreen(QWidget):
         self._idx = 0
         self._score = 0
         self._details = []
+        self._feedback_pause = 0.0
+        self._feedback_started = None
         self._session_start = time.monotonic()
         self._session_bar.setMaximum(len(self._questions))
         self._session_bar.setValue(0)
@@ -174,7 +178,9 @@ class GameScreen(QWidget):
             a, b = random.randint(r[0], r[1]), random.randint(r[2], r[3])
             return a, b, a + b, "+"
         elif op == "soustraction":
-            a = random.randint(r[0], r[1])
+            # Ensure the first operand can always accommodate the minimum
+            # second operand (notably for 5e and above, where min_b is 2).
+            a = random.randint(max(r[0], r[2]), r[1])
             b = random.randint(r[2], min(r[3], a))
             return a, b, a - b, "−"
         elif op == "multiplication":
@@ -299,6 +305,7 @@ class GameScreen(QWidget):
                     self._timer.start()
                 return
 
+        self._feedback_started = time.monotonic()
         self._details.append({
             "question":  f"{q['a']} {q['sym']} {q['b']}",
             "expected":  q["result"],
@@ -323,6 +330,9 @@ class GameScreen(QWidget):
 
     # ── Navigation ────────────────────────────────────────────────────
     def _next_question(self):
+        if self._feedback_started is not None:
+            self._feedback_pause += max(0.0, time.monotonic() - self._feedback_started)
+            self._feedback_started = None
         self._idx += 1
         if self._idx >= len(self._questions):
             self._finish()
@@ -332,7 +342,8 @@ class GameScreen(QWidget):
     def _finish(self):
         self._timer.stop()
         self._feedback_timer.stop()
-        elapsed = time.monotonic() - self._session_start
+        # The 950 ms answer-feedback animation is not practice time.
+        elapsed = max(0.0, time.monotonic() - self._session_start - self._feedback_pause)
         n = len(self._questions)
         results = {
             "student_id":     self._config.get("student_id"),
