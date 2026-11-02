@@ -4,7 +4,7 @@
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QSpinBox, QComboBox, QCheckBox, QFrame, QMessageBox
+    QSpinBox, QComboBox, QCheckBox, QFrame, QMessageBox, QGridLayout
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 import session, database as db
@@ -23,79 +23,143 @@ class MainScreen(QWidget):
 
     def _build_ui(self):
         root = QVBoxLayout(self)
-        root.setContentsMargins(40, 28, 40, 28); root.setSpacing(18)
+        root.setContentsMargins(32, 24, 32, 24)
+        root.setSpacing(18)
 
         header = QHBoxLayout()
-        left = QVBoxLayout(); left.setSpacing(2)
+        identity = QVBoxLayout()
+        identity.setSpacing(3)
         self.welcome_lbl = QLabel("Bienvenue !")
-        self.welcome_lbl.setStyleSheet("font-size: 22px; font-weight: bold;")
+        self.welcome_lbl.setObjectName("title")
         self.info_lbl = QLabel("")
         self.info_lbl.setObjectName("subtitle")
-        left.addWidget(self.welcome_lbl); left.addWidget(self.info_lbl)
-        header.addLayout(left); header.addStretch()
+        identity.addWidget(self.welcome_lbl)
+        identity.addWidget(self.info_lbl)
+        header.addLayout(identity)
+        header.addStretch()
 
-        for label, signal in [("📊 Stats", self.open_stats),
-                               ("⚙ Paramètres", self.open_settings),
-                               ("⬅ Déconnexion", self.logout)]:
-            btn = QPushButton(label); btn.setProperty("class", "secondary")
-            btn.clicked.connect(signal); header.addWidget(btn)
+        for label, signal in [
+            ("Statistiques", self.open_stats),
+            ("Paramètres", self.open_settings),
+            ("Déconnexion", self.logout),
+        ]:
+            button = QPushButton(label)
+            button.setProperty("class", "secondary")
+            button.clicked.connect(signal)
+            header.addWidget(button)
         root.addLayout(header)
 
-        sep = QFrame(); sep.setFrameShape(QFrame.Shape.HLine); root.addWidget(sep)
-
-        # Bandeau modèle assigné par le prof
         self.template_banner = QFrame()
-        self.template_banner.setObjectName("templateBanner")
-        self.template_banner.setStyleSheet(
-            "QFrame#templateBanner{background:rgba(8,121,201,0.09);border:1px solid rgba(8,121,201,0.25);border-radius:14px;}"
-        )
-        tb_l = QHBoxLayout(self.template_banner); tb_l.setContentsMargins(12,8,12,8)
+        self.template_banner.setProperty("class", "card-compact")
+        banner_layout = QHBoxLayout(self.template_banner)
+        banner_layout.setContentsMargins(14, 10, 14, 10)
         self.template_lbl = QLabel("")
-        self.template_lbl.setStyleSheet("font-size:13px;background:transparent;border:none;")
-        tb_l.addWidget(self.template_lbl); tb_l.addStretch()
+        self.template_lbl.setWordWrap(True)
+        banner_layout.addWidget(self.template_lbl)
         self.template_banner.hide()
         root.addWidget(self.template_banner)
 
-        section = QLabel("Configurer ta session")
-        section.setStyleSheet("font-size: 16px; font-weight: bold;")
-        root.addWidget(section)
+        content = QHBoxLayout()
+        content.setSpacing(16)
 
-        # Nb épreuves
-        row1 = QHBoxLayout(); row1.addWidget(QLabel("Nombre d'épreuves :"))
-        self.spin = QSpinBox(); self.spin.setMinimum(1); self.spin.setMaximum(100)
-        self.spin.setValue(10); self.spin.setFixedWidth(80)
-        row1.addWidget(self.spin); row1.addStretch(); root.addLayout(row1)
+        config_card = QFrame()
+        config_card.setProperty("class", "card")
+        config_layout = QVBoxLayout(config_card)
+        config_layout.setContentsMargins(20, 20, 20, 20)
+        config_layout.setSpacing(14)
 
-        # Niveau scolaire (pré-rempli depuis le groupe)
-        row2 = QHBoxLayout(); row2.addWidget(QLabel("Niveau :"))
-        self.combo_level = QComboBox(); self.combo_level.addItems(SCHOOL_LEVELS)
-        self.combo_level.setCurrentText("CM2"); self.combo_level.setFixedWidth(120)
+        section = QLabel("Préparer une session")
+        section.setObjectName("section")
+        config_layout.addWidget(section)
+        intro = QLabel("Choisissez un niveau et les opérations à travailler.")
+        intro.setObjectName("subtitle")
+        intro.setWordWrap(True)
+        config_layout.addWidget(intro)
+
+        form = QGridLayout()
+        form.setHorizontalSpacing(12)
+        form.setVerticalSpacing(10)
+        form.addWidget(QLabel("Nombre d'épreuves"), 0, 0)
+        self.spin = QSpinBox()
+        self.spin.setRange(1, 100)
+        self.spin.setValue(10)
+        self.spin.setMinimumWidth(110)
+        form.addWidget(self.spin, 0, 1)
+        form.addWidget(QLabel("Niveau scolaire"), 1, 0)
+        self.combo_level = QComboBox()
+        self.combo_level.addItems(SCHOOL_LEVELS)
+        self.combo_level.setCurrentText("CM2")
+        self.combo_level.setMinimumWidth(130)
         self.combo_level.currentTextChanged.connect(self._on_level_changed)
-        row2.addWidget(self.combo_level); row2.addStretch(); root.addLayout(row2)
+        form.addWidget(self.combo_level, 1, 1)
+        config_layout.addLayout(form)
 
-        # Opérations
-        ops_box = QFrame(); ops_box.setObjectName("opsBox")
-        ops_l = QHBoxLayout(ops_box); ops_l.setContentsMargins(12,10,12,10)
-        self.cb_add = QCheckBox("Addition"); self.cb_sub = QCheckBox("Soustraction")
-        self.cb_mul = QCheckBox("Multiplication"); self.cb_div = QCheckBox("Division")
-        for cb in (self.cb_add, self.cb_sub, self.cb_mul, self.cb_div):
-            cb.setChecked(True); ops_l.addWidget(cb)
-        ops_l.addStretch(); root.addWidget(ops_box)
+        ops_title = QLabel("Opérations")
+        ops_title.setStyleSheet("font-weight:700;")
+        config_layout.addWidget(ops_title)
+        ops_box = QFrame()
+        ops_box.setObjectName("opsBox")
+        ops_layout = QGridLayout(ops_box)
+        ops_layout.setContentsMargins(14, 12, 14, 12)
+        ops_layout.setHorizontalSpacing(18)
+        ops_layout.setVerticalSpacing(12)
+        self.cb_add = QCheckBox("Addition")
+        self.cb_sub = QCheckBox("Soustraction")
+        self.cb_mul = QCheckBox("Multiplication")
+        self.cb_div = QCheckBox("Division")
+        for checkbox in (self.cb_add, self.cb_sub, self.cb_mul, self.cb_div):
+            checkbox.setChecked(True)
+        ops_layout.addWidget(self.cb_add, 0, 0)
+        ops_layout.addWidget(self.cb_sub, 0, 1)
+        ops_layout.addWidget(self.cb_mul, 1, 0)
+        ops_layout.addWidget(self.cb_div, 1, 1)
+        config_layout.addWidget(ops_box)
 
-        # Chrono
-        chrono_row = QHBoxLayout()
-        self.cb_timer = QCheckBox("Session chronométrée")
+        timer_row = QHBoxLayout()
+        self.cb_timer = QCheckBox("Activer le chronomètre")
         self.cb_timer.stateChanged.connect(self._update_timer_info)
-        self.timer_info = QLabel(""); self.timer_info.setObjectName("subtitle")
-        chrono_row.addWidget(self.cb_timer); chrono_row.addWidget(self.timer_info)
-        chrono_row.addStretch(); root.addLayout(chrono_row)
+        self.timer_info = QLabel("")
+        self.timer_info.setObjectName("subtitle")
+        timer_row.addWidget(self.cb_timer)
+        timer_row.addStretch()
+        timer_row.addWidget(self.timer_info)
+        config_layout.addLayout(timer_row)
+        content.addWidget(config_card, stretch=3)
 
-        root.addStretch()
-        sep2 = QFrame(); sep2.setFrameShape(QFrame.Shape.HLine); root.addWidget(sep2)
+        guide_card = QFrame()
+        guide_card.setProperty("class", "card")
+        guide_layout = QVBoxLayout(guide_card)
+        guide_layout.setContentsMargins(20, 20, 20, 20)
+        guide_layout.setSpacing(12)
+        guide_title = QLabel("Un entraînement utile")
+        guide_title.setObjectName("section")
+        guide_layout.addWidget(guide_title)
+        guide_copy = QLabel(
+            "Commencez sans pression. Les opérations non adaptées au niveau choisi "
+            "sont automatiquement désactivées."
+        )
+        guide_copy.setWordWrap(True)
+        guide_copy.setObjectName("subtitle")
+        guide_layout.addWidget(guide_copy)
+        guide_layout.addSpacing(6)
+        for heading, detail in [
+            ("1. S'entraîner", "Des questions générées à chaque session."),
+            ("2. Comprendre", "La correction s'affiche après chaque réponse."),
+            ("3. Progresser", "Les résultats sont conservés pour les profils élèves."),
+        ]:
+            item_title = QLabel(heading)
+            item_title.setStyleSheet("font-weight:700;")
+            item_detail = QLabel(detail)
+            item_detail.setObjectName("subtitle")
+            item_detail.setWordWrap(True)
+            guide_layout.addWidget(item_title)
+            guide_layout.addWidget(item_detail)
+        guide_layout.addStretch()
+        content.addWidget(guide_card, stretch=2)
+        root.addLayout(content, stretch=1)
 
-        self.start_btn = QPushButton("▶  Commencer la session")
+        self.start_btn = QPushButton("Commencer la session")
         self.start_btn.setFixedHeight(48)
-        self.start_btn.setStyleSheet("font-size: 16px;")
         self.start_btn.clicked.connect(self._on_start)
         root.addWidget(self.start_btn)
 
