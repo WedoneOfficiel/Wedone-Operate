@@ -360,13 +360,6 @@ def add_student(prenom, nom, teacher_id, group_id=None, class_id=None):
     if not prenom or not nom:
         return None
     norm = (prenom.casefold(), nom.casefold())
-    # Identical names are valid in different teacher workspaces.
-    if any(
-        (s.get("prenom", "").casefold(), s.get("nom", "").casefold()) == norm
-        and s.get("created_by") == teacher_id
-        for s in d["students"]
-    ):
-        return None
     if group_id:
         group = get_group(group_id)
         if not group or (teacher_id and group.get("owner_id") != teacher_id):
