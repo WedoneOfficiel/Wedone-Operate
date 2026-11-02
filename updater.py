@@ -1,7 +1,7 @@
 # updater.py — Wedone Operate
 # Vérification des mises à jour via l'API GitHub Releases.
-# Logique : chaque release GitHub est identifiée par son tag (ex. "2026.03.17").
-# Une version est considérée plus récente si son tag est lexicographiquement supérieur.
+
+import re
 
 import requests
 from constants import APP_VERSION, GITHUB_REPO
@@ -11,52 +11,59 @@ RELEASES_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
 TIMEOUT = 5  # secondes
 
+# Les releases historiques utilisent notamment "Stable-v2026.03.17".
+# On extrait la version numérique sans dépendre du préfixe de canal.
+_VERSION_PATTERN = re.compile(r"\d+(?:\.\d+){1,3}")
+
+
+def _normalize_version_tag(tag: str) -> str:
+    """Extrait une version numérique d'un tag (ex. Stable-v2026.03.17)."""
+    match = _VERSION_PATTERN.search(str(tag or "").strip())
+    return match.group(0) if match else ""
+
 
 def _parse_version(tag: str) -> tuple[int, ...]:
     """
-    Convertit un tag "2026.03.17" en tuple (2026, 3, 17) pour comparaison fiable.
-    Ignore les préfixes éventuels comme 'v'.
+    Convertit un tag en tuple comparable.
+    Accepte notamment 2026.03.17, v2026.03.17 et Stable-v2026.03.17.
+    Un tag sans version numérique renvoie un tuple vide.
     """
-    tag = tag.lstrip("v").strip()
+    normalized = _normalize_version_tag(tag)
+    if not normalized:
+        return ()
     try:
-        return tuple(int(x) for x in tag.split("."))
+        return tuple(int(part) for part in normalized.split("."))
     except ValueError:
-        return (0,)
+        return ()
 
 
 def check_for_update() -> dict | None:
     """
-    Interroge l'API GitHub Releases.
+    Retourne les informations de mise à jour si la dernière release est
+    strictement plus récente que la version installée.
 
-    Retourne un dict si une mise à jour est disponible :
-        {
-            "version":   "2026.06.01",
-            "url":       "https://github.com/.../releases/tag/2026.06.01",
-            "changelog": "- Nouvelle feature\n- Correction de bug",
-        }
-
-    Retourne None si le logiciel est à jour ou si la vérification échoue.
+    Les erreurs réseau ou les réponses GitHub invalides ne bloquent pas
+    le démarrage de l'application.
     """
     try:
         response = requests.get(RELEASES_API, timeout=TIMEOUT)
         response.raise_for_status()
         data = response.json()
 
-        latest_tag  = data.get("tag_name", "").lstrip("v").strip()
-        changelog   = data.get("body", "Aucune note de version disponible.")
-        release_url = data.get("html_url", RELEASES_PAGE)
-
-        if not latest_tag:
+        raw_tag = data.get("tag_name", "")
+        latest_version = _parse_version(raw_tag)
+        current_version = _parse_version(APP_VERSION)
+        if not latest_version or not current_version:
             return None
 
-        if _parse_version(latest_tag) > _parse_version(APP_VERSION):
+        if latest_version > current_version:
             return {
-                "version":   latest_tag,
-                "url":       release_url,
-                "changelog": changelog,
+                "version": _normalize_version_tag(raw_tag),
+                "url": data.get("html_url") or RELEASES_PAGE,
+                "changelog": data.get("body") or "Aucune note de version disponible.",
             }
 
         return None
 
-    except requests.exceptions.RequestException:
+    except (requests.exceptions.RequestException, ValueError, TypeError, AttributeError):
         return None
