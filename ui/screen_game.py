@@ -42,18 +42,15 @@ class GameScreen(QWidget):
 
         # ── Barre de progression session (permanente, tout en haut) ───
         self._session_bar = QProgressBar()
+        self._session_bar.setObjectName("session-progress")
         self._session_bar.setTextVisible(False)
         self._session_bar.setFixedHeight(5)
-        self._session_bar.setStyleSheet(
-            "QProgressBar{border:none;border-radius:0;background:rgba(128,128,128,0.1);}"
-            "QProgressBar::chunk{background:#0879C9;border-radius:0;}"
-        )
         root.addWidget(self._session_bar)
 
         # ── En-tête ───────────────────────────────────────────────────
         topbar = QFrame()
         topbar.setFixedHeight(54)
-        topbar.setStyleSheet("border-bottom: 1px solid rgba(128,128,128,0.12);")
+        topbar.setProperty("class", "app-header")
         tl = QHBoxLayout(topbar)
         tl.setContentsMargins(24, 0, 24, 0)
 
@@ -113,6 +110,7 @@ class GameScreen(QWidget):
         fbg_layout.addWidget(self._answer_input, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self._feedback_lbl = QLabel("")
+        self._feedback_lbl.setObjectName("feedback")
         self._feedback_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._feedback_lbl.setStyleSheet("font-size: 16px; font-weight: 500;")
         fbg_layout.addWidget(self._feedback_lbl)
@@ -122,7 +120,7 @@ class GameScreen(QWidget):
         # ── Bouton valider ────────────────────────────────────────────
         bottom = QFrame()
         bottom.setFixedHeight(68)
-        bottom.setStyleSheet("border-top: 1px solid rgba(128,128,128,0.12);")
+        bottom.setProperty("class", "app-footer")
         bl = QHBoxLayout(bottom)
         bl.setContentsMargins(24, 0, 24, 0)
         bl.addStretch()
@@ -249,9 +247,8 @@ class GameScreen(QWidget):
         else:
             color, cls = "#E24B5F", "timer-red"
 
-        self._chrono_lbl.setStyleSheet(
-            f"font-size:16px;font-weight:500;color:{color};"
-        )
+        self._chrono_lbl.setObjectName(cls)
+        self._chrono_lbl.setStyleSheet("font-size:16px;font-weight:600;")
         self._chrono_bar.setProperty("class", cls)
         self._chrono_bar.style().unpolish(self._chrono_bar)
         self._chrono_bar.style().polish(self._chrono_bar)
@@ -274,8 +271,8 @@ class GameScreen(QWidget):
 
         if timed_out:
             self._set_bg_feedback("error")
-            self._feedback_lbl.setObjectName("feedback")
-            self._feedback_lbl.setStyleSheet("color:#E24B5F;")
+            self._feedback_lbl.setProperty("class", "error")
+            self._feedback_lbl.setStyleSheet("font-size:16px;font-weight:600;")
             self._feedback_lbl.setText(f"⏱  Temps écoulé !  La réponse était  {q['result']}")
         else:
             try:
@@ -283,18 +280,18 @@ class GameScreen(QWidget):
                     correct = True
                     self._score += 1
                     self._set_bg_feedback("success")
-                    self._feedback_lbl.setObjectName("feedback")
-                    self._feedback_lbl.setStyleSheet("color:#269B70;")
+                    self._feedback_lbl.setProperty("class", "success")
+                    self._feedback_lbl.setStyleSheet("font-size:16px;font-weight:600;")
                     self._feedback_lbl.setText("✔  Bonne réponse !")
                 else:
                     self._set_bg_feedback("error")
-                    self._feedback_lbl.setObjectName("feedback")
-                    self._feedback_lbl.setStyleSheet("color:#E24B5F;")
+                    self._feedback_lbl.setProperty("class", "error")
+                    self._feedback_lbl.setStyleSheet("font-size:16px;font-weight:600;")
                     self._feedback_lbl.setText(f"✘  Incorrect.  La réponse était  {q['result']}")
             except ValueError:
                 # Saisie invalide : on relance
-                self._feedback_lbl.setObjectName("feedback")
-                self._feedback_lbl.setStyleSheet("color:#B87516;")
+                self._feedback_lbl.setProperty("class", "warning")
+                self._feedback_lbl.setStyleSheet("font-size:16px;font-weight:600;")
                 self._feedback_lbl.setText("⚠  Entrez un nombre entier.")
                 self._answer_input.setEnabled(True)
                 self._validate_btn.setEnabled(True)
@@ -320,14 +317,14 @@ class GameScreen(QWidget):
 
     def _set_bg_feedback(self, kind: str):
         """Flash de couleur sur le fond de la zone question."""
-        if kind == "success":
-            color = "rgba(28,138,78,0.10)"
-        else:
-            color = "rgba(192,57,43,0.10)"
-        self._feedback_bg.setStyleSheet(f"background-color: {color};")
+        self._feedback_bg.setProperty("class", "feedback-success" if kind == "success" else "feedback-error")
+        self._feedback_bg.style().unpolish(self._feedback_bg)
+        self._feedback_bg.style().polish(self._feedback_bg)
 
     def _reset_bg(self):
-        self._feedback_bg.setStyleSheet("background-color: transparent;")
+        self._feedback_bg.setProperty("class", "")
+        self._feedback_bg.style().unpolish(self._feedback_bg)
+        self._feedback_bg.style().polish(self._feedback_bg)
 
     # ── Navigation ────────────────────────────────────────────────────
     def _next_question(self):
