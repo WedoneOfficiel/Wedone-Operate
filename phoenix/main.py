@@ -295,7 +295,7 @@ def main(argv: list[str] | None = None) -> int:
             self._high_contrast = bool(self._database.get_setting("high_contrast", False))
             self._theme_mode = str(self._database.get_setting("theme_mode", "system"))
             if self._theme_mode not in ("system", "light", "dark"):
-                self._theme_mode = "dark"
+                self._theme_mode = "system"
             apply_application_palette(self._theme_mode, self._high_contrast)
             self._reduce_motion = bool(self._database.get_setting("reduce_motion", False))
             self._data_message = message
