@@ -18,6 +18,8 @@ Dernière mise à jour : 2 novembre 2026
 - Cycle de séance persisté : démarrage, réponses, validation, résultat final et abandon avec conservation des réponses déjà données.
 - Parcours classe initial : création de profils professeurs protégés par mot de passe PBKDF2, création de classes et ajout d'élèves ; sélection de classe/groupe/élève côté élève ; entraînement rapide sans profil.
 - Workflow de packaging PyInstaller séparé pour Windows, macOS et Linux.
+- Premiers réglages d'accessibilité persistants : échelle globale de l'interface, contraste renforcé et réduction des animations.
+- Centre de données dans les paramètres : sauvegarde SQLite, restauration avec copie de sécurité, export/import JSON versionné et réinitialisation confirmée avec sauvegarde préalable.
 - CI configurée pour exécuter ses contrôles sur `phoenix-rebuild`, sur Ubuntu, Windows et macOS.
 - Prototype PySide6 + Qt Quick/QML ajouté : écran de premier démarrage, choix individuel/classe, entrée élève et entrée professeur distinctes.
 - Choix du mode enregistré dans SQLite et conservé au redémarrage.
@@ -28,7 +30,8 @@ Dernière mise à jour : 2 novembre 2026
 - Résultat réel des tests sur macOS, Windows et Linux via GitHub Actions : le pipeline est configuré, mais son résultat n'a pas encore été confirmé ici.
 - Vérification visuelle manuelle du prototype QML sur les trois systèmes.
 - Exécution confirmée des workflows CI et de packaging : les workflows sont configurés, mais aucun résultat d'exécution n'est encore disponible ici.
-- Compléter la gestion des groupes dans l'espace professeur, les écrans de progression et l'édition complète des profils.
+- Compléter l'édition/archivage des classes, groupes et élèves dans l'espace professeur, les écrans de progression et l'édition complète des profils.
+- Vérifier les dialogues natifs de sélection de fichiers et la lisibilité du centre de données aux petites tailles de fenêtre.
 - Enrichir progressivement les compétences collège/lycée après validation pédagogique et tests de correction.
 - Tests de restauration en présence de fichiers WAL/SHM et de bases verrouillées.
 - Gestion des migrations successives et récupération après interruption.
