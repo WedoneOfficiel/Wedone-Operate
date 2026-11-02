@@ -12,7 +12,7 @@ from PyQt6.QtGui import QIcon
 import settings as cfg
 import database as db
 import session
-from constants import DIFFICULTY_LEVELS, APP_VERSION, APP_NAME
+from constants import SCHOOL_LEVELS, APP_VERSION, APP_NAME
 
 
 class SettingsScreen(QWidget):
@@ -114,9 +114,9 @@ class SettingsScreen(QWidget):
 
     def _build_epreuves(self):
         w, l = self._section_wrapper("Épreuves — Valeurs par défaut")
-        l.addWidget(QLabel("Niveau par défaut :"))
+        l.addWidget(QLabel("Niveau scolaire par défaut :"))
         self.diff_combo = QComboBox()
-        self.diff_combo.addItems(DIFFICULTY_LEVELS)
+        self.diff_combo.addItems(SCHOOL_LEVELS)
         self.diff_combo.setFixedWidth(180)
         self.diff_combo.currentTextChanged.connect(self._save)
         l.addWidget(self.diff_combo)
@@ -196,8 +196,10 @@ class SettingsScreen(QWidget):
         theme_map = {"system": 0, "light": 1, "dark": 2}
         self.theme_combo.setCurrentIndex(theme_map.get(s.get("theme", "system"), 0))
         self.auto_update_cb.setChecked(s.get("auto_update", True))
-        diff = s.get("difficulty", "Moyen")
-        if diff in DIFFICULTY_LEVELS:
+        # Migrate the former abstract difficulty labels to real school levels.
+        legacy_levels = {"Facile": "CE1", "Moyen": "CM2", "Difficile": "3e"}
+        diff = legacy_levels.get(s.get("difficulty"), s.get("difficulty", "CM2"))
+        if diff in SCHOOL_LEVELS:
             self.diff_combo.setCurrentText(diff)
         self.cb_add.setChecked(s.get("addition_enabled", True))
         self.cb_sub.setChecked(s.get("subtraction_enabled", True))
