@@ -752,7 +752,7 @@ def main(argv: list[str] | None = None) -> int:
     qt_qml_errors: list[str] = []
 
     def qt_message_handler(mode, context, message):
-        if mode in (QtMsgType.Warning, QtMsgType.Critical, QtMsgType.Fatal):
+        if mode in (QtMsgType.QtWarningMsg, QtMsgType.QtCriticalMsg, QtMsgType.QtFatalMsg):
             location = ""
             if context is not None and context.file:
                 location = f" ({context.file}:{context.line})"
