@@ -13,6 +13,14 @@ import session
 from constants import SCHOOL_LEVELS, DIFFICULTY_LEVELS
 
 
+def _wire_enter(dialog, submit_button):
+    """Make Enter submit any text field in a form, consistently across dialogs."""
+    submit_button.setDefault(True)
+    submit_button.setAutoDefault(True)
+    for field in dialog.findChildren(QLineEdit):
+        field.returnPressed.connect(submit_button.click)
+
+
 class AdminScreen(QWidget):
     go_back = pyqtSignal()
 
@@ -101,8 +109,12 @@ class AdminScreen(QWidget):
     def _build_teachers(self):
         w, l = self._section("Professeurs", "＋ Ajouter", self._add_teacher)
         self.teachers_list = QListWidget(); l.addWidget(self.teachers_list)
-        d = QPushButton("🗑 Supprimer"); d.setProperty("class","danger"); d.setFixedWidth(200)
-        d.clicked.connect(self._del_teacher); l.addWidget(d)
+        acts = QHBoxLayout()
+        edit = QPushButton("✏ Modifier"); edit.setProperty("class", "secondary")
+        edit.clicked.connect(self._edit_teacher)
+        d = QPushButton("🗑 Supprimer"); d.setProperty("class", "danger")
+        d.clicked.connect(self._del_teacher)
+        acts.addWidget(edit); acts.addWidget(d); acts.addStretch(); l.addLayout(acts)
         return w
 
     def _refresh_teachers(self):
@@ -116,6 +128,14 @@ class AdminScreen(QWidget):
     def _add_teacher(self):
         dlg = AddTeacherDialog(self)
         if dlg.exec() == QDialog.DialogCode.Accepted: self._refresh_teachers()
+
+    def _edit_teacher(self):
+        item = self.teachers_list.currentItem()
+        if not item: return
+        teacher = item.data(Qt.ItemDataRole.UserRole)
+        dlg = EditTeacherDialog(teacher, self)
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            self._refresh_teachers()
 
     def _del_teacher(self):
         item = self.teachers_list.currentItem()
@@ -132,8 +152,12 @@ class AdminScreen(QWidget):
     def _build_classes(self):
         w, l = self._section("Classes", "＋ Ajouter une classe", self._add_class)
         self.classes_list = QListWidget(); l.addWidget(self.classes_list)
-        d = QPushButton("🗑 Supprimer"); d.setProperty("class","danger"); d.setFixedWidth(200)
-        d.clicked.connect(self._del_class); l.addWidget(d)
+        acts = QHBoxLayout()
+        edit = QPushButton("✏ Modifier"); edit.setProperty("class", "secondary")
+        edit.clicked.connect(self._edit_class)
+        d = QPushButton("🗑 Supprimer"); d.setProperty("class","danger")
+        d.clicked.connect(self._del_class)
+        acts.addWidget(edit); acts.addWidget(d); acts.addStretch(); l.addLayout(acts)
         return w
 
     def _refresh_classes(self):
@@ -159,6 +183,16 @@ class AdminScreen(QWidget):
             else:
                 self._refresh_classes()
 
+    def _edit_class(self):
+        item = self.classes_list.currentItem()
+        if not item: return
+        cls = item.data(Qt.ItemDataRole.UserRole)
+        dlg = EditClassDialog(cls, self)
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            if not db.update_class(cls["id"], dlg.value(), dlg.level()):
+                QMessageBox.warning(self, "Modification impossible", "Ce nom existe déjà ou les informations sont invalides.")
+            self._refresh_classes()
+
     def _del_class(self):
         item = self.classes_list.currentItem()
         if not item: return
@@ -180,8 +214,8 @@ class AdminScreen(QWidget):
         l.addLayout(fr)
         self.groups_list = QListWidget(); l.addWidget(self.groups_list)
         acts = QHBoxLayout()
-        edit_btn = QPushButton("✏ Modifier le niveau"); edit_btn.setProperty("class","secondary")
-        edit_btn.clicked.connect(self._edit_group_level)
+        edit_btn = QPushButton("✏ Modifier"); edit_btn.setProperty("class","secondary")
+        edit_btn.clicked.connect(self._edit_group)
         d = QPushButton("🗑 Supprimer"); d.setProperty("class","danger")
         d.clicked.connect(self._del_group)
         acts.addWidget(edit_btn); acts.addWidget(d); acts.addStretch()
@@ -214,12 +248,15 @@ class AdminScreen(QWidget):
         dlg = AddGroupDialog(self)
         if dlg.exec() == QDialog.DialogCode.Accepted: self._refresh_groups()
 
-    def _edit_group_level(self):
+    def _edit_group(self):
         item = self.groups_list.currentItem()
         if not item: return
-        g = item.data(Qt.ItemDataRole.UserRole)
-        dlg = EditGroupLevelDialog(g, self)
-        if dlg.exec() == QDialog.DialogCode.Accepted: self._refresh_groups()
+        group = item.data(Qt.ItemDataRole.UserRole)
+        dlg = EditGroupDialog(group, self)
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            if not db.update_group(group["id"], name=dlg.name(), level=dlg.level(), class_id=dlg.class_id()):
+                QMessageBox.warning(self, "Modification impossible", "Vérifie le nom, la classe et le niveau du groupe.")
+            self._refresh_groups()
 
     def _del_group(self):
         item = self.groups_list.currentItem()
@@ -242,11 +279,13 @@ class AdminScreen(QWidget):
         l.addLayout(fr)
         self.students_list = QListWidget(); l.addWidget(self.students_list)
         acts = QHBoxLayout()
+        edit = QPushButton("✏ Modifier"); edit.setProperty("class", "secondary")
+        edit.clicked.connect(self._edit_student)
         assign_btn = QPushButton("📂 Assigner groupe"); assign_btn.setProperty("class","secondary")
         assign_btn.clicked.connect(self._assign_group)
         d = QPushButton("🗑 Supprimer"); d.setProperty("class","danger")
         d.clicked.connect(self._del_student)
-        acts.addWidget(assign_btn); acts.addWidget(d); acts.addStretch()
+        acts.addWidget(edit); acts.addWidget(assign_btn); acts.addWidget(d); acts.addStretch()
         l.addLayout(acts)
         return w
 
@@ -271,6 +310,16 @@ class AdminScreen(QWidget):
     def _add_student(self):
         dlg = AddStudentDialog(self)
         if dlg.exec() == QDialog.DialogCode.Accepted: self._refresh_students()
+
+    def _edit_student(self):
+        item = self.students_list.currentItem()
+        if not item: return
+        student = item.data(Qt.ItemDataRole.UserRole)
+        dlg = EditStudentDialog(student, self)
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            if not db.update_student(student["id"], dlg.prenom(), dlg.nom(), dlg.class_id(), dlg.group_id()):
+                QMessageBox.warning(self, "Modification impossible", "Vérifie l'identité et le rattachement de l'élève.")
+            self._refresh_students()
 
     def _del_student(self):
         item = self.students_list.currentItem()
@@ -299,6 +348,8 @@ class AdminScreen(QWidget):
         l.addWidget(info)
         self.templates_list = QListWidget(); l.addWidget(self.templates_list)
         acts = QHBoxLayout()
+        edit = QPushButton("✏ Modifier"); edit.setProperty("class", "secondary")
+        edit.clicked.connect(self._edit_template); acts.addWidget(edit)
         d = QPushButton("🗑 Supprimer"); d.setProperty("class","danger")
         d.clicked.connect(self._del_template); acts.addWidget(d); acts.addStretch()
         l.addLayout(acts)
@@ -322,6 +373,14 @@ class AdminScreen(QWidget):
     def _add_template(self):
         dlg = AddTemplateDialog(self)
         if dlg.exec() == QDialog.DialogCode.Accepted: self._refresh_templates()
+
+    def _edit_template(self):
+        item = self.templates_list.currentItem()
+        if not item: return
+        template = item.data(Qt.ItemDataRole.UserRole)
+        dlg = AddTemplateDialog(self, template=template)
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            self._refresh_templates()
 
     def _del_template(self):
         item = self.templates_list.currentItem()
@@ -367,6 +426,7 @@ class AddClassDialog(QDialog):
         buttons.addWidget(cancel)
         buttons.addWidget(create)
         layout.addLayout(buttons)
+        _wire_enter(self, create)
 
     def value(self):
         return self._name.text().strip()
@@ -394,6 +454,7 @@ class SimpleNameDialog(QDialog):
         cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
         ok = QPushButton("Créer"); ok.clicked.connect(self._ok)
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
+        _wire_enter(self, ok)
     def value(self): return self._input.text().strip()
     def _ok(self):
         if not self._input.text().strip():
@@ -416,6 +477,7 @@ class AddTeacherDialog(QDialog):
         cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
         ok = QPushButton("Créer"); ok.clicked.connect(self._ok)
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
+        _wire_enter(self, ok)
     def _ok(self):
         p, n, pwd = self._prenom.text().strip(), self._nom.text().strip(), self._pwd.text()
         if not p or not n: self._err.setText("Prénom et nom obligatoires."); self._err.show(); return
@@ -450,6 +512,7 @@ class AddGroupDialog(QDialog):
         cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
         ok = QPushButton("Créer"); ok.clicked.connect(self._ok)
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
+        _wire_enter(self, ok)
     def _ok(self):
         name = self._name.text().strip()
         if not name: self._err.setText("Nom obligatoire."); self._err.show(); return
@@ -472,6 +535,7 @@ class EditGroupLevelDialog(QDialog):
         cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
         ok = QPushButton("Enregistrer"); ok.clicked.connect(self._ok)
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
+        _wire_enter(self, ok)
     def _ok(self):
         db.update_group(self._group["id"], level=self._level.currentText()); self.accept()
 
@@ -524,6 +588,7 @@ class AddStudentDialog(QDialog):
         buttons.addWidget(cancel)
         buttons.addWidget(create)
         layout.addLayout(buttons)
+        _wire_enter(self, create)
 
     def _refresh_groups(self):
         owner_id = session.current.user_id if session.current.is_teacher() else None
@@ -573,12 +638,14 @@ class AssignGroupDialog(QDialog):
         cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
         ok = QPushButton("Assigner"); ok.clicked.connect(self._ok)
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
+        _wire_enter(self, ok)
     def _ok(self): db.assign_student_group(self._s["id"], self._combo.currentData()); self.accept()
 
 
 class AddTemplateDialog(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent); self.setWindowTitle("Créer un modèle de session")
+    def __init__(self, parent=None, template=None):
+        super().__init__(parent); self._template = template
+        self.setWindowTitle("Modifier le modèle" if template else "Créer un modèle de session")
         self.setWindowIcon(QIcon("icon.png")); self.setMinimumWidth(380)
         l = QVBoxLayout(self); l.setSpacing(10); l.setContentsMargins(22,20,22,20)
 
@@ -611,11 +678,25 @@ class AddTemplateDialog(QDialog):
 
         self._timer = QCheckBox("Session chronométrée"); l.addWidget(self._timer)
 
+        if template:
+            config = template.get("config", {})
+            self._name.setText(template.get("name", ""))
+            self._level.setCurrentText(config.get("level", "CM2"))
+            self._nb.setValue(max(1, min(100, int(config.get("nb_epreuves", 10)))))
+            self._add.setChecked("addition" in config.get("operations", []))
+            self._sub.setChecked("soustraction" in config.get("operations", []))
+            self._mul.setChecked("multiplication" in config.get("operations", []))
+            self._div.setChecked("division" in config.get("operations", []))
+            self._timer.setChecked(bool(config.get("timer_enabled", False)))
+            index = self._group.findData(template.get("group_id"))
+            if index >= 0: self._group.setCurrentIndex(index)
+
         self._err = QLabel(""); self._err.setObjectName("error"); self._err.hide(); l.addWidget(self._err)
         btns = QHBoxLayout()
         cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
         ok = QPushButton("Créer"); ok.clicked.connect(self._ok)
         btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
+        _wire_enter(self, ok)
 
     def _ok(self):
         name = self._name.text().strip()
@@ -625,6 +706,12 @@ class AddTemplateDialog(QDialog):
         if not ops: self._err.setText("Sélectionnez au moins une opération."); self._err.show(); return
         config = {"level": self._level.currentText(), "nb_epreuves": self._nb.value(),
                   "operations": ops, "timer_enabled": self._timer.isChecked()}
-        owner_id = session.current.user_id if session.current.is_teacher() else "admin"
-        db.save_template(name, owner_id, config, self._group.currentData())
+        if self._template:
+            ok = db.update_template(self._template["id"], name, config, self._group.currentData())
+        else:
+            owner_id = session.current.user_id if session.current.is_teacher() else "guest"
+            db.save_template(name, owner_id, config, self._group.currentData())
+            ok = True
+        if not ok:
+            self._err.setText("Ce nom existe déjà ou le groupe est invalide."); self._err.show(); return
         self.accept()
