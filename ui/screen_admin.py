@@ -501,7 +501,7 @@ class AddStudentDialog(QDialog):
         self._class = QComboBox()
         self._class.addItem("— Sans classe —", userData=None)
         for cls in db.get_classes(owner_id=owner_id):
-            self._class.addItem(cls["name"], userData=cls["id"])
+            self._class.addItem(f"{cls['name']} · {cls.get('level', 'CM2')}", userData=cls["id"])
         self._class.currentIndexChanged.connect(self._refresh_groups)
         layout.addWidget(self._class)
 
