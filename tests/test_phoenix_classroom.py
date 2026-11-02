@@ -38,7 +38,7 @@ class ClassroomRepositoryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.repository.create_class("   ")
         with self.assertRaises(ValueError):
-            self.repository.create_teacher("")
+            self.repository.create_teacher("Professeur", "MotDePasse123!")
         class_id = self.repository.create_class("Sixième")
         with self.assertRaises(ValueError):
             self.repository.create_student(class_id, " ")
@@ -55,7 +55,7 @@ class ClassroomRepositoryTests(unittest.TestCase):
         self.assertIsNotNone(row["archived_at"])
 
     def test_teacher_profile_can_be_edited(self):
-        teacher_id = self.repository.create_teacher("Professeur A")
+        teacher_id = self.repository.create_teacher("Professeur A", "MotDePasse123!")
         self.repository.update_teacher(teacher_id, "Professeur B")
         with self.database.connect() as connection:
             row = connection.execute(
