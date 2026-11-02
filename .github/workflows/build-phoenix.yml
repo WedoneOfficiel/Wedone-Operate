@@ -81,11 +81,22 @@ jobs:
           test -d "$app" || { echo "::error::PyInstaller did not produce the expected .app bundle"; exit 1; }
           test -f "$app/Contents/Info.plist" || { echo "::error::Info.plist is missing"; exit 1; }
           test -x "$app/Contents/MacOS/Wedone Operate Phoenix" || { echo "::error::Application executable is missing"; exit 1; }
-          if find "$app/Contents/Frameworks/PySide6" -type d \\( -name '*.app' -o -name '*__dot__app' \\) -print -quit | grep -q .; then
-            echo "::error::A standalone Qt helper app was unexpectedly included in the runtime bundle"
-            find "$app/Contents/Frameworks/PySide6" -type d \\( -name '*.app' -o -name '*__dot__app' \\) -print
-            exit 1
-          fi
+          python - <<'PY'
+          from pathlib import Path
+          frameworks = Path("dist/Wedone Operate Phoenix.app/Contents/Frameworks")
+          offenders = [
+              path for path in frameworks.rglob("*")
+              if path.is_dir() and (
+                  path.name.endswith(".app") or path.name.endswith("__dot__app")
+              )
+          ]
+          if offenders:
+              print("::error::A standalone Qt helper app was unexpectedly included in the runtime bundle")
+              for path in offenders:
+                  print(path)
+              raise SystemExit(1)
+          print("No standalone Qt helper app bundles found.")
+          PY
           codesign --verify --deep --strict --verbose=2 "$app"
       - name: Package
         run: ditto -c -k --sequesterRsrc --keepParent "dist/Wedone Operate Phoenix.app" "Wedone-Operate-Phoenix-macOS-arm64.zip"
