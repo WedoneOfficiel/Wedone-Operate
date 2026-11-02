@@ -21,56 +21,92 @@ class LoginScreen(QWidget):
         self._build_ui()
 
     def _build_ui(self):
-        root = QVBoxLayout(self)
-        root.setContentsMargins(0, 0, 0, 0)
-        root.addStretch(1)
+        root = QHBoxLayout(self)
+        root.setContentsMargins(34, 30, 34, 30)
+        root.setSpacing(28)
 
-        center = QVBoxLayout()
-        center.setContentsMargins(80, 0, 80, 0)
-        center.setSpacing(0)
+        # Brand panel: clear introduction and product identity.
+        hero = QWidget()
+        hero_layout = QVBoxLayout(hero)
+        hero_layout.setContentsMargins(8, 12, 8, 12)
+        hero_layout.setSpacing(16)
+        hero_layout.addStretch(1)
 
-        # Logo + titre
-        logo_row = QHBoxLayout()
-        logo_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        logo_lbl = QLabel()
+        logo = QLabel()
+        logo.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         pix = QPixmap(resource_path("icon.png"))
         if not pix.isNull():
-            logo_lbl.setPixmap(pix.scaledToWidth(64, Qt.TransformationMode.SmoothTransformation))
-        logo_row.addWidget(logo_lbl)
-        center.addLayout(logo_row)
-        center.addSpacing(12)
+            logo.setPixmap(pix.scaledToWidth(72, Qt.TransformationMode.SmoothTransformation))
+        hero_layout.addWidget(logo)
 
-        title = QLabel("Wedone Operate")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setStyleSheet("font-size: 26px; font-weight: bold;")
-        center.addWidget(title)
-        sub = QLabel("Entraînement au calcul mental")
-        sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sub.setObjectName("subtitle")
-        center.addWidget(sub)
-        center.addSpacing(28)
+        eyebrow = QLabel("WEDONE  /  APPRENTISSAGE")
+        eyebrow.setObjectName("subtitle")
+        eyebrow.setStyleSheet("font-size:11px;font-weight:800;letter-spacing:1.5px;")
+        hero_layout.addWidget(eyebrow)
 
-        # Onglets
-        tabs_row = QHBoxLayout(); tabs_row.setSpacing(0)
+        brand = QLabel("Wedone Operate")
+        brand.setObjectName("title")
+        brand.setStyleSheet("font-size:30px;")
+        hero_layout.addWidget(brand)
+
+        headline = QLabel("Le calcul mental,\nà votre rythme.")
+        headline.setWordWrap(True)
+        headline.setStyleSheet("font-family:'Manrope';font-size:27px;font-weight:800;")
+        hero_layout.addWidget(headline)
+
+        description = QLabel(
+            "Des entraînements clairs et progressifs, pour s'exercer seul ou suivre "
+            "le travail de plusieurs classes."
+        )
+        description.setObjectName("subtitle")
+        description.setWordWrap(True)
+        description.setMaximumWidth(360)
+        hero_layout.addWidget(description)
+
+        hero_layout.addSpacing(12)
+        for label in ("✓  Utilisation locale", "✓  Aucun compte obligatoire", "✓  Groupes facultatifs"):
+            item = QLabel(label)
+            item.setStyleSheet("font-size:13px;font-weight:600;")
+            hero_layout.addWidget(item)
+        hero_layout.addStretch(2)
+        root.addWidget(hero, stretch=1)
+
+        # Access panel: all entry modes share one consistent surface.
+        panel = QFrame()
+        panel.setProperty("class", "card")
+        panel.setMinimumWidth(390)
+        panel_layout = QVBoxLayout(panel)
+        panel_layout.setContentsMargins(24, 24, 24, 24)
+        panel_layout.setSpacing(12)
+
+        panel_title = QLabel("Accéder à l'application")
+        panel_title.setObjectName("section")
+        panel_layout.addWidget(panel_title)
+        panel_subtitle = QLabel("Choisissez votre mode d'utilisation.")
+        panel_subtitle.setObjectName("subtitle")
+        panel_layout.addWidget(panel_subtitle)
+
+        tabs_row = QHBoxLayout()
+        tabs_row.setSpacing(6)
         self._tab_btns = []
-        for i, label in enumerate(["Invité", "Professeur", "Élève"]):
-            btn = QPushButton(label)
-            btn.setCheckable(True)
-            btn.setProperty("class", "tab")
-            btn.clicked.connect(lambda _, idx=i: self._switch_tab(idx))
-            self._tab_btns.append(btn)
-            tabs_row.addWidget(btn)
-        center.addLayout(tabs_row)
+        for index, label in enumerate(["Invité", "Professeur", "Élève"]):
+            button = QPushButton(label)
+            button.setCheckable(True)
+            button.setProperty("class", "tab")
+            button.setFixedHeight(40)
+            button.clicked.connect(lambda _, idx=index: self._switch_tab(idx))
+            self._tab_btns.append(button)
+            tabs_row.addWidget(button)
+        panel_layout.addLayout(tabs_row)
 
         self.stack = QStackedWidget()
-        self.stack.setMinimumHeight(280)
-        self.stack.addWidget(self._build_guest_panel())    # 0
-        self.stack.addWidget(self._build_teacher_panel())  # 1
-        self.stack.addWidget(self._build_student_panel())  # 2
-        center.addWidget(self.stack)
+        self.stack.setMinimumHeight(340)
+        self.stack.addWidget(self._build_guest_panel())
+        self.stack.addWidget(self._build_teacher_panel())
+        self.stack.addWidget(self._build_student_panel())
+        panel_layout.addWidget(self.stack, stretch=1)
 
-        root.addLayout(center)
-        root.addStretch(1)
+        root.addWidget(panel, stretch=1)
         self._switch_tab(0)
 
     # ── Panneaux ──────────────────────────────────────────────────────
