@@ -112,6 +112,14 @@ class ClassroomRepository:
             )
         return student_id
 
+    def list_teachers(self) -> list[dict]:
+        with self.database.connect() as connection:
+            rows = connection.execute(
+                "SELECT id, display_name FROM teachers "
+                "WHERE archived_at IS NULL ORDER BY display_name COLLATE NOCASE"
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     def list_classes(self) -> list[dict]:
         with self.database.connect() as connection:
             rows = connection.execute(
