@@ -7,13 +7,14 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from constants import APP_VERSION
+from ui.resources import resource_path
 
 
 class UpdateDialog(QDialog):
     def __init__(self, update_info: dict, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Mise à jour disponible")
-        self.setWindowIcon(QIcon("icon.png"))
+        self.setWindowIcon(QIcon(resource_path("icon.png")))
         self.setMinimumWidth(480)
         self._url = update_info.get("url", "")
         self._build_ui(update_info)
