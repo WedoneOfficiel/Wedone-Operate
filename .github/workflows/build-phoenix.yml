@@ -75,6 +75,8 @@ jobs:
           iconutil -c icns Phoenix.iconset -o phoenix.icns
       - name: Build application
         run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --icon phoenix.icns --collect-all PySide6 --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
+      - name: Remove unused Qt Assistant bundle
+        run: rm -rf "dist/Wedone Operate Phoenix.app/Contents/Frameworks/PySide6/Assistant__dot__app"
       - name: Sign and verify application bundle
         run: |
           codesign --force --deep --sign - --options runtime --timestamp=none "dist/Wedone Operate Phoenix.app"
