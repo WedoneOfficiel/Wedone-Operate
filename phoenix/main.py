@@ -25,7 +25,7 @@ from datetime import datetime
 
 def main(argv: list[str] | None = None) -> int:
     try:
-        from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot
+        from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot, QCoreApplication, qInstallMessageHandler
         from PySide6.QtGui import QGuiApplication, QIcon, QImageReader
         from PySide6.QtQuick import QQuickImageProvider
         from PySide6.QtQml import QQmlApplicationEngine
@@ -506,6 +506,22 @@ def main(argv: list[str] | None = None) -> int:
     bridge = AppBridge(database)
 
     engine = QQmlApplicationEngine()
+    # Keep the bridge owned by the engine for the entire QML lifetime. This
+    # avoids a packaged-runtime wrapper being released while QML still binds it.
+    bridge.setParent(engine)
+    qt_qml_errors: list[str] = []
+
+    def qt_message_handler(mode, context, message):
+        lowered = str(message).lower()
+        if any(marker in lowered for marker in (
+            "typeerror:", "referenceerror:", "failed to load",
+            "is not installed", "no such file or directory",
+        )):
+            qt_qml_errors.append(str(message))
+
+    if smoke_test:
+        qInstallMessageHandler(qt_message_handler)
+
     if icon_path.is_file():
         engine.addImageProvider("branding", BrandingImageProvider())
     engine.rootContext().setContextProperty("appBridge", bridge)
@@ -514,6 +530,15 @@ def main(argv: list[str] | None = None) -> int:
     if not engine.rootObjects():
         return 2
     if smoke_test:
+        QCoreApplication.processEvents()
+        if engine.rootContext().contextProperty("appBridge") is None:
+            print("Smoke test failed: appBridge is not available in the QML root context.")
+            return 3
+        if qt_qml_errors:
+            print("Smoke test failed: QML runtime reported errors:")
+            for message in qt_qml_errors:
+                print(f"  {message}")
+            return 4
         return 0
     return app.exec()
 
