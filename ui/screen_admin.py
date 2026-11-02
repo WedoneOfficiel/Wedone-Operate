@@ -428,30 +428,82 @@ class EditGroupLevelDialog(QDialog):
 
 class AddStudentDialog(QDialog):
     def __init__(self, parent=None):
-        super().__init__(parent); self.setWindowTitle("Ajouter un élève")
-        self.setWindowIcon(QIcon("icon.png")); self.setMinimumWidth(320)
-        l = QVBoxLayout(self); l.setSpacing(10); l.setContentsMargins(22,20,22,20)
-        l.addWidget(QLabel("Prénom"))
-        self._prenom = QLineEdit(); self._prenom.setPlaceholderText("ex. Lucas"); l.addWidget(self._prenom)
-        l.addWidget(QLabel("Nom"))
-        self._nom = QLineEdit(); self._nom.setPlaceholderText("ex. Bernard"); l.addWidget(self._nom)
-        l.addWidget(QLabel("Groupe"))
-        self._group = QComboBox(); self._group.addItem("— Sans groupe —", userData=None)
-        owner_id = None if session.current.is_admin() else session.current.user_id
-        for g in db.get_groups(owner_id=owner_id):
-            self._group.addItem(f"{g['name']} ({g.get('level','')})", userData=g["id"])
-        l.addWidget(self._group)
-        self._err = QLabel(""); self._err.setObjectName("error"); self._err.hide(); l.addWidget(self._err)
-        btns = QHBoxLayout()
-        cancel = QPushButton("Annuler"); cancel.setProperty("class","secondary"); cancel.clicked.connect(self.reject)
-        ok = QPushButton("Créer"); ok.clicked.connect(self._ok)
-        btns.addWidget(cancel); btns.addWidget(ok); l.addLayout(btns)
+        super().__init__(parent)
+        self.setWindowTitle("Ajouter un élève")
+        self.setWindowIcon(QIcon("icon.png"))
+        self.setMinimumWidth(360)
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+        layout.setContentsMargins(22, 20, 22, 20)
+
+        layout.addWidget(QLabel("Prénom"))
+        self._prenom = QLineEdit()
+        self._prenom.setPlaceholderText("ex. Lucas")
+        layout.addWidget(self._prenom)
+
+        layout.addWidget(QLabel("Nom"))
+        self._nom = QLineEdit()
+        self._nom.setPlaceholderText("ex. Bernard")
+        layout.addWidget(self._nom)
+
+        owner_id = session.current.user_id if session.current.is_teacher() else None
+        layout.addWidget(QLabel("Classe (facultatif)"))
+        self._class = QComboBox()
+        self._class.addItem("— Sans classe —", userData=None)
+        for cls in db.get_classes(owner_id=owner_id):
+            self._class.addItem(cls["name"], userData=cls["id"])
+        self._class.currentIndexChanged.connect(self._refresh_groups)
+        layout.addWidget(self._class)
+
+        layout.addWidget(QLabel("Groupe (facultatif)"))
+        self._group = QComboBox()
+        layout.addWidget(self._group)
+        self._refresh_groups()
+
+        self._err = QLabel("")
+        self._err.setObjectName("error")
+        self._err.hide()
+        layout.addWidget(self._err)
+
+        buttons = QHBoxLayout()
+        cancel = QPushButton("Annuler")
+        cancel.setProperty("class", "secondary")
+        cancel.clicked.connect(self.reject)
+        create = QPushButton("Créer l'élève")
+        create.clicked.connect(self._ok)
+        buttons.addWidget(cancel)
+        buttons.addWidget(create)
+        layout.addLayout(buttons)
+
+    def _refresh_groups(self):
+        owner_id = session.current.user_id if session.current.is_teacher() else None
+        class_id = self._class.currentData()
+        self._group.clear()
+        self._group.addItem("— Sans groupe —", userData=None)
+        for group in db.get_groups(owner_id=owner_id):
+            if class_id and group.get("class_id") != class_id:
+                continue
+            self._group.addItem(
+                f"{group['name']} ({group.get('level', '')})",
+                userData=group["id"]
+            )
+
     def _ok(self):
-        p, n = self._prenom.text().strip(), self._nom.text().strip()
-        if not p or not n: self._err.setText("Prénom et nom obligatoires."); self._err.show(); return
-        tid = session.current.user_id if session.current.is_teacher() else "admin"
-        if not db.add_student(p, n, tid, self._group.currentData()):
-            self._err.setText("Cet élève existe déjà."); self._err.show(); return
+        prenom, nom = self._prenom.text().strip(), self._nom.text().strip()
+        if not prenom or not nom:
+            self._err.setText("Prénom et nom obligatoires.")
+            self._err.show()
+            return
+        teacher_id = session.current.user_id if session.current.is_teacher() else "guest"
+        student = db.add_student(
+            prenom, nom, teacher_id,
+            group_id=self._group.currentData(),
+            class_id=self._class.currentData()
+        )
+        if not student:
+            self._err.setText("Un élève portant ce nom existe déjà ou le rattachement est invalide.")
+            self._err.show()
+            return
         self.accept()
 
 
