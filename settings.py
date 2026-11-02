@@ -70,7 +70,7 @@ def _default_settings() -> dict:
         "division_enabled":       True,
 
         # Épreuves — difficulté par défaut
-        "difficulty": "Moyen",
+        "difficulty": "CM2",
 
         # Chronomètre
         "timer_enabled": False,
