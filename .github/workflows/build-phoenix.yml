@@ -9,6 +9,7 @@ on:
       - "phoenix_entry.py"
       - "phoenix-macos.spec"
       - "requirements-phoenix.txt"
+      - "scripts/validate_phoenix_distribution.py"
       - ".github/workflows/build-phoenix.yml"
 
 permissions:
@@ -32,11 +33,24 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-phoenix.txt pyinstaller
+          python -c "import importlib.metadata as m; print('Qt packages:', [(d.metadata['Name'], d.version) for d in m.distributions() if d.metadata['Name'].lower().startswith('pyside6')])"
       - name: Prepare application icon
         shell: pwsh
         run: Copy-Item icon.png phoenix.ico
       - name: Build application
-        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --icon phoenix.ico --collect-all PySide6 --add-data "phoenix/ui/qml;phoenix/ui/qml" --add-data "icon.png;." phoenix_entry.py
+        shell: pwsh
+        run: |
+          $qml = python -c "import PySide6, pathlib; print(pathlib.Path(PySide6.__file__).parent / 'Qt' / 'qml')"
+          if (-not (Test-Path "$qml/QtQuick/Controls/qmldir")) { throw "Qt Quick Controls QML runtime is missing: $qml" }
+          pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --icon phoenix.ico --exclude-module PySide6.QtWebEngineCore --exclude-module PySide6.QtWebEngineQuick --exclude-module PySide6.QtWebEngineWidgets --add-data "$qml;PySide6/Qt/qml" --add-data "phoenix/ui/qml;phoenix/ui/qml" --add-data "icon.png;." phoenix_entry.py
+      - name: Validate packaged runtime
+        run: python scripts/validate_phoenix_distribution.py "dist/Wedone Operate Phoenix"
+      - name: Smoke-test packaged application
+        shell: pwsh
+        run: |
+          $env:QT_QPA_PLATFORM = "offscreen"
+          & "dist/Wedone Operate Phoenix/Wedone Operate Phoenix.exe" --smoke-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package
         run: Compress-Archive -Path "dist/Wedone Operate Phoenix" -DestinationPath "Wedone-Operate-Phoenix-Windows-x64.zip"
       - uses: actions/upload-artifact@v4
@@ -58,6 +72,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-phoenix.txt pyinstaller
+          python -c "import importlib.metadata as m; print('Qt packages:', [(d.metadata['Name'], d.version) for d in m.distributions() if d.metadata['Name'].lower().startswith('pyside6')])"
       - name: Install icon tooling
         run: python -m pip install Pillow
       - name: Prepare macOS application icon
@@ -82,25 +97,7 @@ jobs:
           test -d "$app" || { echo "::error::PyInstaller did not produce the expected .app bundle"; exit 1; }
           test -f "$app/Contents/Info.plist" || { echo "::error::Info.plist is missing"; exit 1; }
           test -x "$app/Contents/MacOS/Wedone Operate Phoenix" || { echo "::error::Application executable is missing"; exit 1; }
-          python - <<'PY'
-          from pathlib import Path
-          frameworks = Path("dist/Wedone Operate Phoenix.app/Contents/Frameworks")
-          forbidden = []
-          if frameworks.exists():
-              for path in frameworks.rglob("*"):
-                  relative = str(path.relative_to(frameworks)).lower()
-                  if "qtwebengine" in relative or path.name.lower() in {
-                      "assistant.app", "designer.app", "linguist.app",
-                      "assistant__dot__app", "designer__dot__app", "linguist__dot__app",
-                  }:
-                      forbidden.append(path)
-          if forbidden:
-              print("::error::Unused Qt WebEngine or Qt desktop tooling was included:")
-              for path in forbidden:
-                  print(path)
-              raise SystemExit(1)
-          print("No unused Qt WebEngine or standalone Qt desktop tools found.")
-          PY
+          python scripts/validate_phoenix_distribution.py "$app"
           codesign --verify --deep --strict --verbose=2 "$app"
       - name: Smoke-test packaged macOS application
         run: |
@@ -131,12 +128,23 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-phoenix.txt pyinstaller
+          python -c "import importlib.metadata as m; print('Qt packages:', [(d.metadata['Name'], d.version) for d in m.distributions() if d.metadata['Name'].lower().startswith('pyside6')])"
       - name: Prepare application icon
         run: cp icon.png phoenix.ico
       - name: Build application
-        run: pyinstaller --noconfirm --clean --windowed --name "wedone-operate-phoenix" --icon phoenix.ico --collect-all PySide6 --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
+        shell: bash
+        run: |
+          QML_DIR="$(python -c 'import PySide6, pathlib; print(pathlib.Path(PySide6.__file__).parent / "Qt" / "qml")')"
+          test -f "$QML_DIR/QtQuick/Controls/qmldir"
+          pyinstaller --noconfirm --clean --windowed --name "wedone-operate-phoenix" --exclude-module PySide6.QtWebEngineCore --exclude-module PySide6.QtWebEngineQuick --exclude-module PySide6.QtWebEngineWidgets --add-data "$QML_DIR:PySide6/Qt/qml" --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
+      - name: Validate packaged runtime
+        run: python scripts/validate_phoenix_distribution.py dist/wedone-operate-phoenix
+      - name: Smoke-test packaged application
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: dist/wedone-operate-phoenix/wedone-operate-phoenix --smoke-test
       - name: Package
-        run: cd dist && zip -r ../Wedone-Operate-Phoenix-Linux-x64.zip wedone-operate-phoenix
+        run: cd dist && zip -qr ../Wedone-Operate-Phoenix-Linux-x64.zip wedone-operate-phoenix
       - uses: actions/upload-artifact@v4
         with:
           name: Wedone-Operate-Phoenix-Linux-x64

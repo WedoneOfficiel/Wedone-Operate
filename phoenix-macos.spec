@@ -1,11 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""Minimal macOS bundle recipe for Phoenix.
+"""Lean macOS arm64 bundle for the Phoenix Qt Quick application.
 
-Do not use collect_all("PySide6") here: it pulls every optional Qt module,
-including QtWebEngine, and adds several minutes to COLLECT/signing. Phoenix
-imports only QtCore, QtGui, QtQml and QtQuick. PyInstaller's normal PySide6
-hooks collect the matching Qt frameworks/plugins; this recipe adds the QML
-runtime tree as data while explicitly omitting QtWebEngine.
+Phoenix depends on PySide6 Essentials, not the PySide6 meta-package/Addons.
+The runtime QML tree is copied as data; unused WebEngine entries are filtered
+again after Analysis as a defensive guard against future hook regressions.
 """
 
 from pathlib import Path
@@ -16,16 +14,10 @@ ROOT = Path(SPECPATH).resolve()
 APP_NAME = "Wedone Operate Phoenix"
 ICON = str(ROOT / "phoenix.icns")
 
-# Qt Quick Controls/Layouts/Dialogs are QML modules, not Python modules.
-# Keep the installed QML runtime tree (including its module plugins and
-# qmldir metadata), but do not ship the unused WebEngine QML modules.
 qml_datas = collect_data_files(
     "PySide6",
     includes=["Qt/qml/**"],
-    excludes=[
-        "Qt/qml/QtWebEngine/**",
-        "Qt/qml/QtWebEngine",
-    ],
+    excludes=["Qt/qml/QtWebEngine/**", "Qt/qml/QtWebEngine"],
 )
 
 datas = qml_datas + [
@@ -49,6 +41,16 @@ a = Analysis(
         "PySide6.scripts",
     ],
     noarchive=False,
+)
+
+# PyInstaller's Qt hooks can collect optional framework binaries even when
+# the application never imports them. Filter the final TOCs, not just the
+# source QML directory, so no hook can reintroduce QtWebEngine into the app.
+a.binaries = type(a.binaries)(
+    entry for entry in a.binaries if "qtwebengine" not in entry[0].lower()
+)
+a.datas = type(a.datas)(
+    entry for entry in a.datas if "qtwebengine" not in entry[0].lower()
 )
 
 pyz = PYZ(a.pure)
