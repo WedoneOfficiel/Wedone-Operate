@@ -27,7 +27,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
       - name: Build executable
-        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.png --add-data "icon.png;." main.py
+        run: python -m pip install pillow
+          python -c "from PIL import Image; Image.open('icon.png').save('icon.ico')"
+          pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.ico --add-data "icon.png;." main.py
       - name: Package
         run: Compress-Archive -Path "dist/Wedone Operate" -DestinationPath "Wedone-Operate-Windows-x64.zip"
       - uses: actions/upload-artifact@v4
@@ -50,7 +52,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
       - name: Build application
-        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.png --add-data "icon.png:." main.py
+        run: sips -s format icns icon.png --out icon.icns
+          pyinstaller --noconfirm --clean --windowed --name "Wedone Operate" --icon icon.icns --add-data "icon.png:." main.py
       - name: Package
         run: ditto -c -k --sequesterRsrc --keepParent "dist/Wedone Operate.app" "Wedone-Operate-macOS-arm64.zip"
       - uses: actions/upload-artifact@v4
@@ -77,7 +80,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
       - name: Build application bundle
-        run: pyinstaller --noconfirm --clean --windowed --name wedone-operate --icon icon.png --add-data "icon.png:." main.py
+        run: pyinstaller --noconfirm --clean --windowed --name wedone-operate --add-data "icon.png:." main.py
       - name: Build RPM
         shell: bash
         run: |
