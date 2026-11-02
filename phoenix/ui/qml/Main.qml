@@ -98,10 +98,11 @@ ApplicationWindow {
         id: control
         property color fillColor: "#1769D2"
         property color hoverColor: "#0F56B5"
+        property color textColor: "white"
         implicitHeight: 52
         contentItem: Text {
             text: control.text
-            color: "white"
+            color: control.textColor
             font.pixelSize: 15
             font.weight: Font.DemiBold
             horizontalAlignment: Text.AlignHCenter
@@ -449,6 +450,7 @@ ApplicationWindow {
                     text: "Retour à l'espace classe"
                     fillColor: "#E8F0FC"
                     hoverColor: "#D8E6FA"
+                    textColor: "#1769D2"
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: {
                         root.classroomArea = ""
