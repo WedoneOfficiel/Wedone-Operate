@@ -114,7 +114,12 @@ class LoginScreen(QWidget):
         l.addWidget(self.teacher_err)
         btn = QPushButton("Se connecter"); btn.setFixedHeight(40)
         btn.clicked.connect(self._login_teacher)
-        l.addWidget(btn); l.addStretch()
+        l.addWidget(btn)
+        create_btn = QPushButton("＋ Créer un profil professeur")
+        create_btn.setProperty("class", "secondary")
+        create_btn.clicked.connect(self._create_teacher)
+        l.addWidget(create_btn)
+        l.addStretch()
         return w
 
     def _build_student_panel(self):
@@ -347,6 +352,14 @@ class LoginScreen(QWidget):
         self.teacher_combo.clear()
         for t in db.get_teachers():
             self.teacher_combo.addItem(f"{t['prenom']} {t['nom']}", userData=t)
+
+    def _create_teacher(self):
+        # Reuse the existing validated profile-creation dialog.
+        from ui.screen_admin import AddTeacherDialog
+        dialog = AddTeacherDialog(self)
+        if dialog.exec():
+            self._refresh_teacher_combo()
+            self.teacher_combo.setCurrentIndex(self.teacher_combo.count() - 1)
 
     # ── Authentification ──────────────────────────────────────────────
 
