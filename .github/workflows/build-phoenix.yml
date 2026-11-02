@@ -31,8 +31,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-phoenix.txt pyinstaller
+      - name: Prepare application icon
+        shell: pwsh
+        run: Copy-Item icon.png phoenix.ico
       - name: Build application
-        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --collect-all PySide6 --add-data "phoenix/ui/qml;phoenix/ui/qml" phoenix_entry.py
+        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --icon phoenix.ico --collect-all PySide6 --add-data "phoenix/ui/qml;phoenix/ui/qml" --add-data "icon.png;." phoenix_entry.py
       - name: Package
         run: Compress-Archive -Path "dist/Wedone Operate Phoenix" -DestinationPath "Wedone-Operate-Phoenix-Windows-x64.zip"
       - uses: actions/upload-artifact@v4
@@ -54,8 +57,30 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-phoenix.txt pyinstaller
+      - name: Install icon tooling
+        run: python -m pip install Pillow
+      - name: Prepare macOS application icon
+        run: |
+          cp icon.png phoenix.ico
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          source = Image.open("icon.png").convert("RGBA")
+          iconset = Path("Phoenix.iconset")
+          iconset.mkdir(exist_ok=True)
+          for size in (16, 32, 64, 128, 256, 512):
+              image = source.resize((size, size), Image.Resampling.LANCZOS)
+              image.save(iconset / f"icon_{size}x{size}.png")
+              if size <= 256:
+                  image.save(iconset / f"icon_{size}x{size}@2x.png")
+          PY
+          iconutil -c icns Phoenix.iconset -o phoenix.icns
       - name: Build application
-        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --collect-all PySide6 --add-data "phoenix/ui/qml:phoenix/ui/qml" phoenix_entry.py
+        run: pyinstaller --noconfirm --clean --windowed --name "Wedone Operate Phoenix" --icon phoenix.icns --collect-all PySide6 --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
+      - name: Sign and verify application bundle
+        run: |
+          codesign --force --deep --sign - --options runtime --timestamp=none "dist/Wedone Operate Phoenix.app"
+          codesign --verify --deep --strict --verbose=2 "dist/Wedone Operate Phoenix.app"
       - name: Package
         run: ditto -c -k --sequesterRsrc --keepParent "dist/Wedone Operate Phoenix.app" "Wedone-Operate-Phoenix-macOS-arm64.zip"
       - uses: actions/upload-artifact@v4
@@ -81,8 +106,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-phoenix.txt pyinstaller
+      - name: Prepare application icon
+        run: cp icon.png phoenix.ico
       - name: Build application
-        run: pyinstaller --noconfirm --clean --windowed --name "wedone-operate-phoenix" --collect-all PySide6 --add-data "phoenix/ui/qml:phoenix/ui/qml" phoenix_entry.py
+        run: pyinstaller --noconfirm --clean --windowed --name "wedone-operate-phoenix" --icon phoenix.ico --collect-all PySide6 --add-data "phoenix/ui/qml:phoenix/ui/qml" --add-data "icon.png:." phoenix_entry.py
       - name: Package
         run: cd dist && zip -r ../Wedone-Operate-Phoenix-Linux-x64.zip wedone-operate-phoenix
       - uses: actions/upload-artifact@v4
