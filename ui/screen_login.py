@@ -267,7 +267,11 @@ class LoginScreen(QWidget):
 
     def _on_ungrouped_selected(self, class_id: str):
         self._selected_group = None
-        self._refresh_profile_cards(class_id=class_id)
+        students = [
+            student for student in db.get_students(class_id=class_id)
+            if not student.get("group_id")
+        ]
+        self._refresh_profile_cards(students=students)
         self._go_step(2, f"{self._selected_class['name']}  ›  Élèves sans groupe  —  Qui êtes-vous ?")
 
     # ── Refresh cards ─────────────────────────────────────────────────
