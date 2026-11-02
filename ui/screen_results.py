@@ -4,10 +4,11 @@
 import math
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QFrame, QScrollArea
+    QPushButton, QFrame, QScrollArea, QApplication
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QPropertyAnimation, QEasingCurve
 from PyQt6.QtGui import QPainter, QColor, QPen, QFont
+from ui.palette import LIGHT, DARK
 import database as db
 
 
@@ -43,8 +44,11 @@ class CircleScore(QWidget):
         margin = 16
         rect_size = min(w, h) - 2 * margin
 
+        theme = QApplication.instance().property("wedone_theme") or "light"
+        palette = DARK if theme == "dark" else LIGHT
+
         # Arc de fond
-        pen_bg = QPen(QColor("#E8ECF4"), 12, Qt.PenStyle.SolidLine,
+        pen_bg = QPen(QColor(palette["surface_hover"]), 12, Qt.PenStyle.SolidLine,
                       Qt.PenCapStyle.RoundCap)
         painter.setPen(pen_bg)
         painter.drawArc(margin, margin, rect_size, rect_size, 0, 360 * 16)
@@ -52,11 +56,11 @@ class CircleScore(QWidget):
         # Arc de progression
         pct = self._anim_value
         if pct >= 80:
-            color = QColor("#2EBD6E")
+            color = QColor(palette["success"])
         elif pct >= 50:
-            color = QColor("#F0A030")
+            color = QColor(palette["warning"])
         else:
-            color = QColor("#E05555")
+            color = QColor(palette["error"])
 
         pen_fg = QPen(color, 12, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap)
         painter.setPen(pen_fg)
@@ -64,7 +68,7 @@ class CircleScore(QWidget):
         painter.drawArc(margin, margin, rect_size, rect_size, 90 * 16, -span)
 
         # Texte central
-        painter.setPen(QColor("#1A1D23"))
+        painter.setPen(QColor(palette["text"]))
         font = QFont()
         font.setPointSize(22)
         font.setBold(True)
@@ -203,13 +207,13 @@ class ResultsScreen(QWidget):
 
             if d.get("timed_out"):
                 status = QLabel("⏱ Temps écoulé")
-                status.setStyleSheet("color: #E07B00;")
+                status.setProperty("class", "warning")
             elif d["correct"]:
                 status = QLabel("✔ Correct")
-                status.setStyleSheet("color: #2EBD6E;")
+                status.setProperty("class", "success")
             else:
                 status = QLabel(f"✘ Répondu : {d.get('given', '—')}")
-                status.setStyleSheet("color: #E05555;")
+                status.setProperty("class", "error")
 
             row.addWidget(num)
             row.addWidget(question)
