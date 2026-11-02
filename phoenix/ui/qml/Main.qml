@@ -124,7 +124,7 @@ ApplicationWindow {
         color: "#FFFFFF"
         border.width: 1
         border.color: "#E3EAF4"
-        implicitWidth: 340
+        implicitWidth: 320
         implicitHeight: 260
 
         ColumnLayout {
