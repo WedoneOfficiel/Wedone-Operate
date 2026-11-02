@@ -71,9 +71,11 @@ class PracticeRepositoryTests(unittest.TestCase):
                 session_id, "cp.addition_20", "2 + 2 = ?", 4, "4"
             )
 
-    def test_classroom_session_requires_real_student(self):
-        with self.assertRaises(ValueError):
-            self.repository.start_session("classroom", 5, {})
+    def test_classroom_allows_quick_practice_without_profile(self):
+        session_id = self.repository.start_session("classroom", 5, {})
+        saved = self.repository.get_session(session_id)
+        self.assertEqual(saved["mode"], "classroom")
+        self.assertIsNone(saved["student_id"])
 
     def test_invalid_session_parameters_are_rejected(self):
         with self.assertRaises(ValueError):
