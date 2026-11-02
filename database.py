@@ -395,28 +395,44 @@ def get_scores(student_id):
     return list(reversed(_load(SCORES_FILE, {}).get(student_id, [])))
 
 def get_group_scores(group_id):
-    students = get_students(group_id=group_id)
-    all_sc = _load(SCORES_FILE, {})
-    return {s["id"]: list(reversed(all_sc.get(s["id"], []))) for s in students}
+    return get_students_scores([student["id"] for student in get_students(group_id=group_id)])
+
+
+def get_students_scores(student_ids):
+    all_scores = _load(SCORES_FILE, {})
+    return {
+        student_id: list(reversed(all_scores.get(student_id, [])))
+        for student_id in student_ids
+    }
 
 def get_all_scores(): return _load(SCORES_FILE, {})
 
 def export_group_csv(group_id):
-    students = get_students(group_id=group_id)
-    all_sc   = _load(SCORES_FILE, {})
-    lines = ["Prénom,Nom,Date,Difficulté,Score,Total,Pourcentage,Chronométré,Durée(s)"]
-    for s in students:
-        for sc in all_sc.get(s["id"], []):
-            lines.append(
-                f"{s['prenom']},{s['nom']},{sc.get('date','')},{sc.get('difficulty','')},"
-                f"{sc.get('correct','')},{sc.get('total','')},{sc.get('percent','')},"
-                f"{'oui' if sc.get('timer_enabled') else 'non'},{sc.get('elapsed_seconds','')}"
-            )
-    return "\n".join(lines)
+    return export_students_csv(get_students(group_id=group_id))
 
-# ══════════════════════════════════════════════════════════════════════
-# RECOMMANDATIONS AUTOMATIQUES
-# ══════════════════════════════════════════════════════════════════════
+
+def export_class_csv(class_id):
+    return export_students_csv(get_students(class_id=class_id))
+
+
+def export_students_csv(students):
+    all_scores = _load(SCORES_FILE, {})
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(["Prénom", "Nom", "Date", "Niveau", "Score", "Total",
+                     "Pourcentage", "Chronométré", "Durée(s)"])
+    for student in students:
+        for score in all_scores.get(student["id"], []):
+            writer.writerow([
+                student.get("prenom", ""), student.get("nom", ""),
+                score.get("date", ""), score.get("difficulty", ""),
+                score.get("correct", ""), score.get("total", ""),
+                score.get("percent", ""),
+                "oui" if score.get("timer_enabled") else "non",
+                score.get("elapsed_seconds", "")
+            ])
+    return output.getvalue()
+
 
 def recommend_config_for_student(student_id: str) -> dict:
     """Suggest a cautious next session from recent, question-level evidence."""
