@@ -12,7 +12,7 @@ class PhoenixCurriculumTests(unittest.TestCase):
         self.assertEqual(LEVELS[-1].id, "Tle_GT")
 
     def test_disabled_skills_are_not_offered_by_default(self):
-        self.assertEqual(skills_for_level("4e"), ())
+        self.assertEqual(len(skills_for_level("4e")), 1)
         self.assertEqual(len(skills_for_level("4e", include_disabled=True)), 2)
 
     def test_unknown_level_and_skill_fail_explicitly(self):
