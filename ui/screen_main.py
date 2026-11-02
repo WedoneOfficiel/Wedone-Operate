@@ -45,12 +45,13 @@ class MainScreen(QWidget):
 
         # Bandeau modèle assigné par le prof
         self.template_banner = QFrame()
+        self.template_banner.setObjectName("templateBanner")
         self.template_banner.setStyleSheet(
-            "QFrame{background:#EBF4FC;border:1px solid #A8D0F0;border-radius:8px;}"
+            "QFrame#templateBanner{background:rgba(8,121,201,0.09);border:1px solid rgba(8,121,201,0.25);border-radius:14px;}"
         )
         tb_l = QHBoxLayout(self.template_banner); tb_l.setContentsMargins(12,8,12,8)
         self.template_lbl = QLabel("")
-        self.template_lbl.setStyleSheet("color:#0558A0;font-size:13px;background:transparent;border:none;")
+        self.template_lbl.setStyleSheet("font-size:13px;background:transparent;border:none;")
         tb_l.addWidget(self.template_lbl); tb_l.addStretch()
         self.template_banner.hide()
         root.addWidget(self.template_banner)
@@ -93,7 +94,7 @@ class MainScreen(QWidget):
         sep2 = QFrame(); sep2.setFrameShape(QFrame.Shape.HLine); root.addWidget(sep2)
 
         self.start_btn = QPushButton("▶  Commencer la session")
-        self.start_btn.setFixedHeight(46)
+        self.start_btn.setFixedHeight(48)
         self.start_btn.setStyleSheet("font-size: 16px;")
         self.start_btn.clicked.connect(self._on_start)
         root.addWidget(self.start_btn)
