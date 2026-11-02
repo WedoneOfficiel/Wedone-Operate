@@ -3,7 +3,7 @@
 import unittest
 
 from phoenix.domain.curriculum import LEVELS, get_skill, skills_for_level
-from phoenix.domain.questions import check_answer, generate_question, generate_session
+from phoenix.domain.questions import Question, check_answer, generate_question, generate_session
 
 
 class PhoenixCurriculumTests(unittest.TestCase):
@@ -53,6 +53,11 @@ class PhoenixQuestionTests(unittest.TestCase):
                 self.assertEqual(question.answer, expected)
                 if question.operation == "division":
                     self.assertEqual(a % b, 0)
+
+    def test_commutative_questions_share_a_duplicate_signature(self):
+        first = Question("x", "2 + 3 = ?", 5, (2, 3), "addition")
+        second = Question("x", "3 + 2 = ?", 5, (3, 2), "addition")
+        self.assertEqual(first.signature, second.signature)
 
     def test_session_is_seeded_and_avoids_duplicates(self):
         first = generate_session("ce1.addition_100", 12, difficulty=3, seed=9)
