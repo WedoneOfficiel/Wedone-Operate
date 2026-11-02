@@ -68,6 +68,9 @@ def main(argv: list[str] | None = None) -> int:
             self._classroom_revision = 0
             self._ui_scale = float(database.get_setting("ui_scale", 1.0))
             self._high_contrast = bool(database.get_setting("high_contrast", False))
+            self._theme_mode = str(database.get_setting("theme_mode", "system"))
+            if self._theme_mode not in ("system", "light", "dark"):
+                self._theme_mode = "system"
             self._reduce_motion = bool(database.get_setting("reduce_motion", False))
             self._data_message = ""
 
@@ -150,6 +153,14 @@ def main(argv: list[str] | None = None) -> int:
         def highContrast(self) -> bool:
             return self._high_contrast
 
+        @Property(str, notify=settingsChanged)
+        def themeMode(self) -> str:
+            return self._theme_mode
+
+        @Property(bool, notify=settingsChanged)
+        def systemDark(self) -> bool:
+            return system_prefers_dark()
+
         @Property(bool, notify=settingsChanged)
         def reduceMotion(self) -> bool:
             return self._reduce_motion
@@ -181,8 +192,17 @@ def main(argv: list[str] | None = None) -> int:
         @Slot(bool)
         def setHighContrast(self, enabled: bool) -> None:
             self._high_contrast = bool(enabled)
-            apply_application_palette(self._high_contrast)
             self._database.set_setting("high_contrast", self._high_contrast)
+            apply_application_palette(self._theme_mode, self._high_contrast)
+            self.settingsChanged.emit()
+
+        @Slot(str)
+        def setThemeMode(self, mode: str) -> None:
+            if mode not in ("system", "light", "dark"):
+                return
+            self._theme_mode = mode
+            self._database.set_setting("theme_mode", mode)
+            apply_application_palette(self._theme_mode, self._high_contrast)
             self.settingsChanged.emit()
 
         @Slot(bool)
@@ -637,14 +657,22 @@ def main(argv: list[str] | None = None) -> int:
 
     app = QGuiApplication(qt_args)
 
-    def apply_application_palette(high_contrast: bool) -> None:
+    def system_prefers_dark() -> bool:
+        try:
+            from PySide6.QtCore import Qt
+            return app.styleHints().colorScheme == Qt.ColorScheme.Dark
+        except (AttributeError, TypeError):
+            return app.palette().color(QPalette.ColorRole.Window).lightness() < 128
+
+    def apply_application_palette(theme_mode: str, high_contrast: bool = False) -> None:
+        dark = system_prefers_dark() if theme_mode == "system" else theme_mode == "dark"
         palette = app.palette()
-        if high_contrast:
+        if not dark:
             values = {
-                QPalette.ColorRole.Window: "#FFFFFF",
+                QPalette.ColorRole.Window: "#FFFFFF" if high_contrast else "#F5F8FC",
                 QPalette.ColorRole.WindowText: "#172A45",
-                QPalette.ColorRole.Base: "#FFFFFF",
-                QPalette.ColorRole.AlternateBase: "#F4F7FC",
+                QPalette.ColorRole.Base: "#FFFFFF" if high_contrast else "#FFFFFF",
+                QPalette.ColorRole.AlternateBase: "#F1F5FA",
                 QPalette.ColorRole.ToolTipBase: "#FFFFFF",
                 QPalette.ColorRole.ToolTipText: "#172A45",
                 QPalette.ColorRole.Text: "#172A45",
@@ -700,8 +728,18 @@ def main(argv: list[str] | None = None) -> int:
 
     database = Database(get_database_path())
     database.initialize()
-    apply_application_palette(bool(database.get_setting("high_contrast", False)))
     bridge = AppBridge(database)
+    apply_application_palette(bridge.themeMode, bridge.highContrast)
+
+    def on_system_color_scheme_changed(*_args):
+        if bridge.themeMode == "system":
+            apply_application_palette("system", bridge.highContrast)
+            bridge.settingsChanged.emit()
+
+    try:
+        app.styleHints().colorSchemeChanged.connect(on_system_color_scheme_changed)
+    except (AttributeError, TypeError):
+        pass
 
     engine = QQmlApplicationEngine()
     # Keep the bridge owned by the engine for the entire QML lifetime. This
