@@ -1,17 +1,21 @@
-"""Wedone visual tokens adapted from the Wedone Web Apps / SetScrobble design system.
+"""Wedone design tokens for the native Wedone Operate application.
 
-The product accent remains Wedone blue; app-specific pink from SetScrobble is
-intentionally not reused. Qt uses translucent surfaces rather than CSS blur.
+The source references use glassmorphism, soft gradients and generous radii.
+Qt Widgets cannot reproduce CSS backdrop-filter; the native theme therefore
+uses layered opaque/translucent surfaces, restrained blue gradients and borders.
+The SetScrobble pink is intentionally not part of this product palette.
 """
 
 LIGHT = {
-    "bg": "#F7F8FC",
-    "bg_secondary": "#EEF2F9",
+    "bg": "#F7F5FC",
+    "bg_secondary": "#F0EEF8",
     "surface": "#FFFFFF",
-    "surface_hover": "#F7FAFF",
+    "surface_glass": "rgba(255, 255, 255, 0.88)",
+    "surface_hover": "#F5F8FD",
+    "surface_active": "#EAF3FC",
     "input": "#FFFFFF",
-    "border": "#E4E8F1",
-    "border_hover": "#C8D5E8",
+    "border": "#E7E5EF",
+    "border_hover": "#C9D8E9",
     "primary": "#0879C9",
     "primary_alt": "#2998E5",
     "primary_hover": "#066DB6",
@@ -35,7 +39,9 @@ DARK = {
     "bg": "#151A26",
     "bg_secondary": "#1B2231",
     "surface": "#202A3B",
+    "surface_glass": "rgba(32, 42, 59, 0.96)",
     "surface_hover": "#29364A",
+    "surface_active": "#203B56",
     "input": "#1B2535",
     "border": "#354157",
     "border_hover": "#50617D",
