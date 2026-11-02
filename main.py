@@ -88,7 +88,7 @@ class WedoneOperateApp(QMainWindow):
 
     def _on_logged_in(self):
         self._settings = cfg.load()
-        if session.current.is_student():
+        if session.current.is_student() or session.current.is_guest():
             self.s_main.refresh()
             self._goto(IDX_MAIN)
         else:
