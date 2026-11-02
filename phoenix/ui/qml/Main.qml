@@ -14,9 +14,6 @@ ApplicationWindow {
     color: root.colors.bg
 
     property real uiScale: appBridge.uiScale
-    property bool darkTheme: !appBridge.highContrast
-                             && (appBridge.themeMode === "dark"
-                                 || (appBridge.themeMode === "system" && appBridge.systemDark))
     property var progressSummary: JSON.parse(appBridge.progressJson)
     property string settingsReturnPage: "home"
     property string currentMode: appBridge.mode
