@@ -47,38 +47,69 @@ class ClassroomRepository:
             if cursor.rowcount != 1:
                 raise ValueError("Profil professeur introuvable.")
 
-    def create_class(self, name: str, school_year: str | None = None) -> str:
+    def create_class(
+        self, name: str, school_year: str | None = None, owner_teacher_id: str | None = None
+    ) -> str:
         label = name.strip()
         if not label:
             raise ValueError("Le nom de la classe est obligatoire.")
         class_id = str(uuid4())
         with self.database.transaction() as connection:
+            if owner_teacher_id is not None:
+                teacher = connection.execute(
+                    "SELECT 1 FROM teachers WHERE id=? AND archived_at IS NULL",
+                    (owner_teacher_id,),
+                ).fetchone()
+                if teacher is None:
+                    raise ValueError("Profil professeur introuvable.")
             connection.execute(
-                "INSERT INTO classes(id, name, school_year) VALUES (?, ?, ?)",
-                (class_id, label, school_year),
+                "INSERT INTO classes(id, name, school_year, owner_teacher_id) VALUES (?, ?, ?, ?)",
+                (class_id, label, school_year, owner_teacher_id),
             )
         return class_id
 
-    def update_class(self, class_id: str, name: str, school_year: str | None = None) -> None:
+    def claim_unowned_classes(self, teacher_id: str) -> int:
+        """Attach legacy classes to the first teacher who signs in after migration."""
+        with self.database.transaction() as connection:
+            teacher = connection.execute(
+                "SELECT 1 FROM teachers WHERE id=? AND archived_at IS NULL", (teacher_id,)
+            ).fetchone()
+            if teacher is None:
+                raise ValueError("Profil professeur introuvable.")
+            cursor = connection.execute(
+                "UPDATE classes SET owner_teacher_id=? WHERE owner_teacher_id IS NULL",
+                (teacher_id,),
+            )
+            return cursor.rowcount
+
+    def update_class(
+        self, class_id: str, name: str, school_year: str | None = None,
+        teacher_id: str | None = None,
+    ) -> None:
         label = name.strip()
         if not label:
             raise ValueError("Le nom de la classe est obligatoire.")
         with self.database.transaction() as connection:
             cursor = connection.execute(
-                "UPDATE classes SET name=?, school_year=? WHERE id=? AND archived_at IS NULL",
-                (label, school_year, class_id),
+                "UPDATE classes SET name=?, school_year=? WHERE id=? AND archived_at IS NULL "
+                "AND (? IS NULL OR owner_teacher_id=?)",
+                (label, school_year, class_id, teacher_id, teacher_id),
             )
             if cursor.rowcount != 1:
                 raise ValueError("Classe introuvable.")
 
-    def create_group(self, class_id: str, name: str) -> str:
+    def create_group(
+        self, class_id: str, name: str, teacher_id: str | None = None
+    ) -> str:
         label = name.strip()
         if not label:
             raise ValueError("Le nom du groupe est obligatoire.")
         group_id = str(uuid4())
         with self.database.transaction() as connection:
             exists = connection.execute(
-                "SELECT 1 FROM classes WHERE id=? AND archived_at IS NULL", (class_id,)
+                "SELECT 1 FROM classes WHERE id=? AND archived_at IS NULL "
+                "AND (? IS NULL OR owner_teacher_id=?)",
+                (class_id, teacher_id, teacher_id),
             ).fetchone()
             if exists is None:
                 raise ValueError("Classe introuvable.")
@@ -88,14 +119,19 @@ class ClassroomRepository:
             )
         return group_id
 
-    def create_student(self, class_id: str, display_name: str, group_id: str | None = None) -> str:
+    def create_student(
+        self, class_id: str, display_name: str, group_id: str | None = None,
+        teacher_id: str | None = None,
+    ) -> str:
         name = display_name.strip()
         if not name:
             raise ValueError("Le nom de l'élève est obligatoire.")
         student_id = str(uuid4())
         with self.database.transaction() as connection:
             class_row = connection.execute(
-                "SELECT 1 FROM classes WHERE id=? AND archived_at IS NULL", (class_id,)
+                "SELECT 1 FROM classes WHERE id=? AND archived_at IS NULL "
+                "AND (? IS NULL OR owner_teacher_id=?)",
+                (class_id, teacher_id, teacher_id),
             ).fetchone()
             if class_row is None:
                 raise ValueError("Classe introuvable.")
@@ -120,45 +156,86 @@ class ClassroomRepository:
             ).fetchall()
         return [dict(row) for row in rows]
 
-    def list_classes(self) -> list[dict]:
-        with self.database.connect() as connection:
-            rows = connection.execute(
-                "SELECT id, name, school_year, created_at FROM classes "
-                "WHERE archived_at IS NULL ORDER BY name COLLATE NOCASE"
-            ).fetchall()
-        return [dict(row) for row in rows]
-
-    def list_groups(self, class_id: str) -> list[dict]:
-        with self.database.connect() as connection:
-            rows = connection.execute(
-                "SELECT id, class_id, name FROM groups "
-                "WHERE class_id=? AND archived_at IS NULL ORDER BY name COLLATE NOCASE",
-                (class_id,),
-            ).fetchall()
-        return [dict(row) for row in rows]
-
-    def list_students(self, class_id: str, group_id: str | None = None) -> list[dict]:
-        query = (
-            "SELECT id, class_id, group_id, display_name, created_at FROM students "
-            "WHERE class_id=? AND archived_at IS NULL"
-        )
-        parameters: tuple = (class_id,)
-        if group_id is not None:
-            query += " AND group_id=?"
-            parameters += (group_id,)
-        query += " ORDER BY display_name COLLATE NOCASE"
+    def list_classes(self, teacher_id: str | None = None) -> list[dict]:
+        query = "SELECT id, name, school_year, created_at FROM classes WHERE archived_at IS NULL"
+        parameters: tuple = ()
+        if teacher_id is not None:
+            query += " AND owner_teacher_id=?"
+            parameters = (teacher_id,)
+        query += " ORDER BY name COLLATE NOCASE"
         with self.database.connect() as connection:
             rows = connection.execute(query, parameters).fetchall()
         return [dict(row) for row in rows]
 
-    def archive_student(self, student_id: str) -> None:
-        self._archive("students", student_id)
+    def list_groups(
+        self, class_id: str, teacher_id: str | None = None
+    ) -> list[dict]:
+        with self.database.connect() as connection:
+            rows = connection.execute(
+                "SELECT g.id, g.class_id, g.name FROM groups g "
+                "JOIN classes c ON c.id=g.class_id "
+                "WHERE g.class_id=? AND g.archived_at IS NULL AND c.archived_at IS NULL "
+                "AND (? IS NULL OR c.owner_teacher_id=?) "
+                "ORDER BY g.name COLLATE NOCASE",
+                (class_id, teacher_id, teacher_id),
+            ).fetchall()
+        return [dict(row) for row in rows]
 
-    def archive_group(self, group_id: str) -> None:
-        self._archive("groups", group_id)
+    def list_students(
+        self, class_id: str, group_id: str | None = None,
+        teacher_id: str | None = None,
+    ) -> list[dict]:
+        query = (
+            "SELECT s.id, s.class_id, s.group_id, s.display_name, s.created_at "
+            "FROM students s JOIN classes c ON c.id=s.class_id "
+            "WHERE s.class_id=? AND s.archived_at IS NULL AND c.archived_at IS NULL "
+            "AND (? IS NULL OR c.owner_teacher_id=?)"
+        )
+        parameters: tuple = (class_id, teacher_id, teacher_id)
+        if group_id is not None:
+            query += " AND s.group_id=?"
+            parameters += (group_id,)
+        query += " ORDER BY s.display_name COLLATE NOCASE"
+        with self.database.connect() as connection:
+            rows = connection.execute(query, parameters).fetchall()
+        return [dict(row) for row in rows]
 
-    def archive_class(self, class_id: str) -> None:
-        self._archive("classes", class_id)
+    def archive_student(self, student_id: str, teacher_id: str | None = None) -> None:
+        self._archive_related("students", student_id, teacher_id)
+
+    def archive_group(self, group_id: str, teacher_id: str | None = None) -> None:
+        self._archive_related("groups", group_id, teacher_id)
+
+    def archive_class(self, class_id: str, teacher_id: str | None = None) -> None:
+        if teacher_id is None:
+            self._archive("classes", class_id)
+            return
+        with self.database.transaction() as connection:
+            cursor = connection.execute(
+                "UPDATE classes SET archived_at=? WHERE id=? AND archived_at IS NULL "
+                "AND owner_teacher_id=?",
+                (datetime.now(timezone.utc).isoformat(), class_id, teacher_id),
+            )
+            if cursor.rowcount != 1:
+                raise ValueError("Classe introuvable dans votre espace professeur.")
+
+    def _archive_related(
+        self, table: str, record_id: str, teacher_id: str | None
+    ) -> None:
+        if teacher_id is None:
+            self._archive(table, record_id)
+            return
+        if table not in {"students", "groups"}:
+            raise ValueError("Type d'archive invalide.")
+        archived_at = datetime.now(timezone.utc).isoformat()
+        with self.database.transaction() as connection:
+            cursor = connection.execute(
+                f"UPDATE {table} SET archived_at=? WHERE id=? AND archived_at IS NULL "
+                "AND class_id IN (SELECT id FROM classes WHERE owner_teacher_id=?)",
+                (archived_at, record_id, teacher_id),
+            )
+            if cursor.rowcount != 1:
+                raise ValueError("Élément introuvable dans votre espace professeur.")
 
     def archive_teacher(self, teacher_id: str) -> None:
         self._archive("teachers", teacher_id)

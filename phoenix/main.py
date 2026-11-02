@@ -25,8 +25,8 @@ from datetime import datetime
 
 def main(argv: list[str] | None = None) -> int:
     try:
-        from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot, QCoreApplication, qInstallMessageHandler
-        from PySide6.QtGui import QGuiApplication, QIcon, QImageReader
+        from PySide6.QtCore import QObject, Property, QUrl, Signal, Slot, QCoreApplication, QTimer, qInstallMessageHandler
+        from PySide6.QtGui import QGuiApplication, QIcon, QImageReader, QPalette, QColor
         from PySide6.QtQuick import QQuickImageProvider
         from PySide6.QtQml import QQmlApplicationEngine
     except ImportError as exc:
@@ -117,6 +117,13 @@ def main(argv: list[str] | None = None) -> int:
 
         @Property(str, notify=classroomChanged)
         def classesJson(self) -> str:
+            return json.dumps(
+                self._classroom.list_classes(self._teacher_id),
+                ensure_ascii=False,
+            )
+
+        @Property(str, notify=classroomChanged)
+        def allClassesJson(self) -> str:
             return json.dumps(self._classroom.list_classes(), ensure_ascii=False)
 
         @Property(str, notify=classroomChanged)
@@ -162,6 +169,7 @@ def main(argv: list[str] | None = None) -> int:
         @Slot(bool)
         def setHighContrast(self, enabled: bool) -> None:
             self._high_contrast = bool(enabled)
+            apply_application_palette(self._high_contrast)
             self._database.set_setting("high_contrast", self._high_contrast)
             self.settingsChanged.emit()
 
@@ -265,17 +273,33 @@ def main(argv: list[str] | None = None) -> int:
         def groupsForClass(self, class_id: str):
             return self._classroom.list_groups(class_id) if class_id else []
 
+        @Slot(str, result="QVariantList")
+        def teacherGroupsForClass(self, class_id: str):
+            return (
+                self._classroom.list_groups(class_id, self._teacher_id)
+                if class_id and self._teacher_id else []
+            )
+
         @Slot(str, str, result="QVariantList")
         def studentsForClass(self, class_id: str, group_id: str):
             if not class_id:
                 return []
             return self._classroom.list_students(class_id, group_id or None)
 
+        @Slot(str, str, result="QVariantList")
+        def teacherStudentsForClass(self, class_id: str, group_id: str):
+            if not class_id or not self._teacher_id:
+                return []
+            return self._classroom.list_students(
+                class_id, group_id or None, self._teacher_id
+            )
+
         @Slot(str, str)
         def createTeacher(self, display_name: str, password: str) -> None:
             try:
                 self._teacher_id = self._classroom.create_teacher(display_name, password)
-                self._classroom_message = "Profil professeur créé."
+                self._classroom.claim_unowned_classes(self._teacher_id)
+                self._classroom_message = "Profil professeur créé. Vous êtes connecté."
             except Exception as exc:
                 self._classroom_message = str(exc)
             self._emit_classroom_changed()
@@ -284,6 +308,7 @@ def main(argv: list[str] | None = None) -> int:
         def loginTeacher(self, teacher_id: str, password: str) -> None:
             if self._classroom.authenticate_teacher(teacher_id, password):
                 self._teacher_id = teacher_id
+                self._classroom.claim_unowned_classes(teacher_id)
                 self._classroom_message = "Connexion réussie."
             else:
                 self._classroom_message = "Mot de passe incorrect."
@@ -301,7 +326,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
             else:
                 try:
-                    self._classroom.create_class(name, school_year or None)
+                    self._classroom.create_class(name, school_year or None, self._teacher_id)
                     self._classroom_message = "Classe créée."
                 except Exception as exc:
                     self._classroom_message = str(exc)
@@ -313,7 +338,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
             else:
                 try:
-                    self._classroom.create_group(class_id, name)
+                    self._classroom.create_group(class_id, name, self._teacher_id)
                     self._classroom_message = "Groupe créé."
                 except Exception as exc:
                     self._classroom_message = str(exc)
@@ -325,7 +350,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
             else:
                 try:
-                    self._classroom.create_student(class_id, display_name, group_id or None)
+                    self._classroom.create_student(class_id, display_name, group_id or None, self._teacher_id)
                     self._classroom_message = "Élève ajouté."
                 except Exception as exc:
                     self._classroom_message = str(exc)
@@ -337,7 +362,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
             else:
                 try:
-                    self._classroom.archive_student(student_id)
+                    self._classroom.archive_student(student_id, self._teacher_id)
                     if self._active_student_id == student_id:
                         self._active_student_id = None
                         self.progressChanged.emit()
@@ -352,7 +377,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
             else:
                 try:
-                    self._classroom.archive_group(group_id)
+                    self._classroom.archive_group(group_id, self._teacher_id)
                     self._classroom_message = "Groupe archivé."
                 except Exception as exc:
                     self._classroom_message = str(exc)
@@ -364,7 +389,7 @@ def main(argv: list[str] | None = None) -> int:
                 self._classroom_message = "Connectez-vous à votre espace professeur."
             else:
                 try:
-                    self._classroom.archive_class(class_id)
+                    self._classroom.archive_class(class_id, self._teacher_id)
                     self._active_student_id = None
                     self._classroom_message = "Classe archivée. Les résultats restent conservés."
                     self.progressChanged.emit()
@@ -474,6 +499,42 @@ def main(argv: list[str] | None = None) -> int:
             self.progressChanged.emit()
 
     app = QGuiApplication(qt_args)
+
+    def apply_application_palette(high_contrast: bool) -> None:
+        palette = app.palette()
+        if high_contrast:
+            values = {
+                QPalette.ColorRole.Window: "#FFFFFF",
+                QPalette.ColorRole.WindowText: "#172A45",
+                QPalette.ColorRole.Base: "#FFFFFF",
+                QPalette.ColorRole.AlternateBase: "#F4F7FC",
+                QPalette.ColorRole.ToolTipBase: "#FFFFFF",
+                QPalette.ColorRole.ToolTipText: "#172A45",
+                QPalette.ColorRole.Text: "#172A45",
+                QPalette.ColorRole.Button: "#EAF2FF",
+                QPalette.ColorRole.ButtonText: "#172A45",
+                QPalette.ColorRole.Highlight: "#1769D2",
+                QPalette.ColorRole.HighlightedText: "#FFFFFF",
+            }
+        else:
+            values = {
+                QPalette.ColorRole.Window: "#101827",
+                QPalette.ColorRole.WindowText: "#F1F5FB",
+                QPalette.ColorRole.Base: "#172235",
+                QPalette.ColorRole.AlternateBase: "#1B2739",
+                QPalette.ColorRole.ToolTipBase: "#1B2739",
+                QPalette.ColorRole.ToolTipText: "#F1F5FB",
+                QPalette.ColorRole.Text: "#F1F5FB",
+                QPalette.ColorRole.Button: "#203B61",
+                QPalette.ColorRole.ButtonText: "#F1F5FB",
+                QPalette.ColorRole.Highlight: "#5796FF",
+                QPalette.ColorRole.HighlightedText: "#FFFFFF",
+            }
+        for role, value in values.items():
+            palette.setColor(role, QColor(value))
+        app.setPalette(palette)
+
+    apply_application_palette(bool(database.get_setting("high_contrast", False)))
     app.setApplicationName("Wedone Operate Phoenix")
     app.setOrganizationName("WedoneOfficiel")
 
@@ -539,7 +600,14 @@ def main(argv: list[str] | None = None) -> int:
             for message in qt_qml_errors:
                 print(f"  {message}")
             return 4
-        return 0
+        QTimer.singleShot(750, app.quit)
+        exit_code = app.exec()
+        if qt_qml_errors:
+            print("Smoke test failed: QML runtime reported errors:")
+            for message in qt_qml_errors:
+                print(f"  {message}")
+            return 4
+        return exit_code
     return app.exec()
 
 

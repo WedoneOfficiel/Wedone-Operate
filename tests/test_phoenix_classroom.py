@@ -73,6 +73,38 @@ class ClassroomRepositoryTests(unittest.TestCase):
             ).fetchone()
         self.assertIsNotNone(archived_class["archived_at"])
 
+    def test_teacher_classes_are_scoped_and_protected(self):
+        first_teacher = self.repository.create_teacher("Professeur A", "MotDePasse123!")
+        second_teacher = self.repository.create_teacher("Professeur B", "MotDePasse456!")
+        first_class = self.repository.create_class("CM1 A", owner_teacher_id=first_teacher)
+        second_class = self.repository.create_class("CM2 B", owner_teacher_id=second_teacher)
+
+        self.assertEqual(
+            [item["id"] for item in self.repository.list_classes(first_teacher)],
+            [first_class],
+        )
+        self.assertEqual(
+            [item["id"] for item in self.repository.list_classes(second_teacher)],
+            [second_class],
+        )
+        with self.assertRaises(ValueError):
+            self.repository.create_group(second_class, "Groupe interdit", first_teacher)
+        with self.assertRaises(ValueError):
+            self.repository.create_student(
+                second_class, "Élève interdit", teacher_id=first_teacher
+            )
+        with self.assertRaises(ValueError):
+            self.repository.archive_class(second_class, first_teacher)
+
+    def test_legacy_classes_are_claimed_by_first_teacher(self):
+        legacy_class = self.repository.create_class("Classe historique")
+        teacher_id = self.repository.create_teacher("Professeur", "MotDePasse123!")
+        self.assertEqual(self.repository.claim_unowned_classes(teacher_id), 1)
+        self.assertEqual(
+            [item["id"] for item in self.repository.list_classes(teacher_id)],
+            [legacy_class],
+        )
+
     def test_teacher_profile_can_be_edited(self):
         teacher_id = self.repository.create_teacher("Professeur A", "MotDePasse123!")
         self.assertTrue(self.repository.authenticate_teacher(teacher_id, "MotDePasse123!"))

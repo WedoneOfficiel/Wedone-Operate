@@ -11,7 +11,7 @@ ApplicationWindow {
     minimumHeight: 560
     visible: true
     title: "Wedone Operate"
-    color: appBridge.highContrast ? "#FFFFFF" : "#F4F7FC"
+    color: appBridge.highContrast ? "root.colors.surface" : "root.colors.bg"
 
     property real uiScale: appBridge.uiScale
     property var progressSummary: JSON.parse(appBridge.progressJson)
@@ -19,10 +19,25 @@ ApplicationWindow {
     property string currentMode: appBridge.mode
     property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
+    property var colors: appBridge.highContrast ? ({
+        bg: "#FFFFFF", surface: "#FFFFFF", panel: "#FFFFFF", border: "#E3EAF4",
+        text: "#172A45", muted: "#66768E", textSecondary: "#33445D",
+        accent: "#1769D2", accentHover: "#0F56B5", accentSoft: "#EAF2FF",
+        accentHoverSoft: "#D8E6FA", glow: "#E7F0FF", glowSecondary: "#E9F5FF",
+        success: "#16804A", warning: "#B45309",
+        dangerSurface: "#FCEEEE", dangerHover: "#F8DADA", danger: "#A12C2C"
+    }) : ({
+        bg: "#101827", surface: "#1B2739", panel: "#E61B2739", border: "#2A3A50",
+        text: "#F1F5FB", muted: "#A6B4C9", textSecondary: "#C7D2E3",
+        accent: "#5796FF", accentHover: "#357DE0", accentSoft: "#203B61",
+        accentHoverSoft: "#2A466B", glow: "#1A3153", glowSecondary: "#162F47",
+        success: "#4EC89A", warning: "#F0B35E",
+        dangerSurface: "#442B3B", dangerHover: "#583144", danger: "#F49AAA"
+    })
 
     Rectangle {
         anchors.fill: parent
-        color: appBridge.highContrast ? "#FFFFFF" : "#F4F7FC"
+        color: appBridge.highContrast ? "root.colors.surface" : "root.colors.bg"
 
         Rectangle {
             width: 500
@@ -30,7 +45,7 @@ ApplicationWindow {
             radius: 250
             x: parent.width - 250
             y: -220
-            color: "#E7F0FF"
+            color: "root.colors.glow"
             opacity: 0.8
         }
         Rectangle {
@@ -39,13 +54,13 @@ ApplicationWindow {
             radius: 180
             x: -190
             y: parent.height - 210
-            color: "#E9F5FF"
+            color: "root.colors.glowSecondary"
             opacity: 0.8
         }
     }
 
     header: ToolBar {
-        background: Rectangle { color: "#FFFFFF"; border.color: "#E7ECF4" }
+        background: Rectangle { color: "root.colors.surface"; border.color: "root.colors.border" }
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 28
@@ -65,13 +80,13 @@ ApplicationWindow {
             }
             Label {
                 text: "wedone"
-                color: "#15243A"
+                color: "root.colors.text"
                 font.pixelSize: 19
                 font.weight: Font.DemiBold
             }
             Label {
                 text: "OPERATE"
-                color: "#71819A"
+                color: "root.colors.muted"
                 font.pixelSize: 10
                 font.weight: Font.Bold
                 Layout.leftMargin: -7
@@ -81,7 +96,7 @@ ApplicationWindow {
             Label {
                 visible: root.currentMode !== ""
                 text: root.currentMode === "individual" ? "Espace individuel" : "Espace classe"
-                color: "#64748B"
+                color: "root.colors.muted"
                 font.pixelSize: 13
             }
         }
@@ -98,8 +113,8 @@ ApplicationWindow {
 
     component PrimaryButton: Button {
         id: control
-        property color fillColor: "#1769D2"
-        property color hoverColor: "#0F56B5"
+        property color fillColor: "root.colors.accent"
+        property color hoverColor: "root.colors.accentHover"
         property color textColor: "white"
         implicitHeight: 52
         contentItem: Text {
@@ -116,6 +131,29 @@ ApplicationWindow {
         }
     }
 
+    component NavButton: Button {
+        id: navControl
+        implicitHeight: 44
+        contentItem: Text {
+            anchors.fill: parent
+            anchors.leftMargin: 14
+            text: navControl.text
+            color: navControl.hovered ? root.colors.text : root.colors.muted
+            font.pixelSize: 13
+            font.weight: Font.DemiBold
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+        background: Rectangle {
+            radius: 12
+            color: navControl.down ? root.colors.accentSoft
+                  : navControl.hovered ? root.colors.accentSoft : "transparent"
+            border.width: navControl.hovered ? 1 : 0
+            border.color: root.colors.border
+        }
+    }
+
     component ModeCard: Rectangle {
         id: card
         property string heading
@@ -124,9 +162,9 @@ ApplicationWindow {
         property string actionMode
         signal chosen(string mode)
         radius: 22
-        color: "#FFFFFF"
+        color: "root.colors.surface"
         border.width: 1
-        border.color: "#E3EAF4"
+        border.color: "root.colors.border"
         implicitWidth: 320
         implicitHeight: 260
 
@@ -138,24 +176,24 @@ ApplicationWindow {
                 width: 54
                 height: 54
                 radius: 16
-                color: "#EAF2FF"
+                color: "root.colors.accentSoft"
                 Text {
                     anchors.centerIn: parent
                     text: card.symbol
-                    color: "#1769D2"
+                    color: "root.colors.accent"
                     font.pixelSize: 25
                     font.weight: Font.DemiBold
                 }
             }
             Label {
                 text: card.heading
-                color: "#172A45"
+                color: "root.colors.text"
                 font.pixelSize: 22
                 font.weight: Font.DemiBold
             }
             Label {
                 text: card.subtitle
-                color: "#66768E"
+                color: "root.colors.muted"
                 font.pixelSize: 14
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
@@ -169,10 +207,56 @@ ApplicationWindow {
         }
     }
 
+    Rectangle {
+        id: navigationPanel
+        visible: root.page !== "welcome"
+        x: 18
+        y: 42
+        width: 194
+        height: parent.height - 84
+        radius: 20
+        color: root.colors.panel
+        border.color: root.colors.border
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 8
+            Label {
+                text: "ESPACE DE TRAVAIL"
+                color: root.colors.muted
+                font.pixelSize: 10
+                font.weight: Font.Bold
+                Layout.leftMargin: 10
+                Layout.bottomMargin: 6
+            }
+            NavButton { text: "Vue d'ensemble"; Layout.fillWidth: true; onClicked: root.page = "home" }
+            NavButton {
+                visible: root.currentMode === "classroom"
+                text: "Espace professeur"
+                Layout.fillWidth: true
+                onClicked: { root.classroomArea = "teacher"; root.page = "area" }
+            }
+            NavButton {
+                visible: root.currentMode === "classroom"
+                text: "Espace élève"
+                Layout.fillWidth: true
+                onClicked: { root.classroomArea = "student"; root.page = "area" }
+            }
+            NavButton { text: "Entraînement"; Layout.fillWidth: true; onClicked: root.page = "practice" }
+            NavButton {
+                text: "Paramètres"
+                Layout.fillWidth: true
+                onClicked: { root.settingsReturnPage = root.page; root.page = "settings" }
+            }
+            Item { Layout.fillHeight: true }
+            NavButton { text: "Changer de mode"; Layout.fillWidth: true; onClicked: appBridge.returnToModeChoice() }
+        }
+    }
+
     StackLayout {
-        x: 42 / root.uiScale
+        x: (root.page === "welcome" ? 42 : 230) / root.uiScale
         y: 42 / root.uiScale
-        width: (parent.width - 84) / root.uiScale
+        width: (parent.width - (root.page === "welcome" ? 84 : 272)) / root.uiScale
         height: (parent.height - 84) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
@@ -186,14 +270,14 @@ ApplicationWindow {
 
                 Label {
                     text: "Bienvenue."
-                    color: "#172A45"
+                    color: "root.colors.text"
                     font.pixelSize: 38
                     font.weight: Font.Bold
                     Layout.alignment: Qt.AlignHCenter
                 }
                 Label {
                     text: "Comment souhaitez-vous utiliser Wedone Operate ?"
-                    color: "#66768E"
+                    color: "root.colors.muted"
                     font.pixelSize: 17
                     Layout.alignment: Qt.AlignHCenter
                 }
@@ -234,7 +318,7 @@ ApplicationWindow {
 
                 Label {
                     text: root.currentMode === "individual" ? "Votre espace de pratique" : "Espace classe"
-                    color: "#172A45"
+                    color: "root.colors.text"
                     font.pixelSize: 34
                     font.weight: Font.Bold
                     Layout.alignment: Qt.AlignHCenter
@@ -243,7 +327,7 @@ ApplicationWindow {
                 Label {
                     visible: root.currentMode === "individual"
                     text: "L'espace individuel est sélectionné."
-                    color: "#66768E"
+                    color: "root.colors.muted"
                     font.pixelSize: 16
                     Layout.alignment: Qt.AlignHCenter
                 }
@@ -263,21 +347,21 @@ ApplicationWindow {
                             width: 150
                             height: 88
                             radius: 16
-                            color: "#FFFFFF"
-                            border.color: "#E3EAF4"
+                            color: "root.colors.surface"
+                            border.color: "root.colors.border"
                             ColumnLayout {
                                 anchors.centerIn: parent
                                 spacing: 4
                                 Label {
                                     text: modelData.value
-                                    color: "#1769D2"
+                                    color: "root.colors.accent"
                                     font.pixelSize: 23
                                     font.weight: Font.Bold
                                     Layout.alignment: Qt.AlignHCenter
                                 }
                                 Label {
                                     text: modelData.label
-                                    color: "#66768E"
+                                    color: "root.colors.muted"
                                     font.pixelSize: 12
                                     Layout.alignment: Qt.AlignHCenter
                                 }
@@ -309,26 +393,26 @@ ApplicationWindow {
                             width: 300
                             height: 190
                             radius: 20
-                            color: "#FFFFFF"
-                            border.color: "#E3EAF4"
+                            color: "root.colors.surface"
+                            border.color: "root.colors.border"
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.margins: 22
                                 spacing: 10
                                 Label {
                                     text: modelData.icon
-                                    color: "#1769D2"
+                                    color: "root.colors.accent"
                                     font.pixelSize: 26
                                 }
                                 Label {
                                     text: modelData.title
-                                    color: "#172A45"
+                                    color: "root.colors.text"
                                     font.pixelSize: 20
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
                                     text: modelData.detail
-                                    color: "#66768E"
+                                    color: "root.colors.muted"
                                     font.pixelSize: 13
                                     wrapMode: Text.WordWrap
                                     Layout.fillWidth: true
@@ -351,7 +435,7 @@ ApplicationWindow {
                 Label {
                     visible: root.page === "area"
                     text: root.classroomArea === "student" ? "Espace élève" : "Espace professeur"
-                    color: "#172A45"
+                    color: "root.colors.text"
                     font.pixelSize: 28
                     font.weight: Font.DemiBold
                     Layout.alignment: Qt.AlignHCenter
@@ -361,17 +445,17 @@ ApplicationWindow {
                     visible: root.page === "area" && root.classroomArea === "student"
                     Layout.fillWidth: true
                     spacing: 12
-                    Label { text: "Classe"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
+                    Label { text: "Classe"; color: "root.colors.textSecondary"; font.pixelSize: 14; font.weight: Font.DemiBold }
                     ComboBox {
                         id: studentClassSelect
                         Layout.fillWidth: true
                         implicitHeight: 46
                         textRole: "name"
                         valueRole: "id"
-                        model: JSON.parse(appBridge.classesJson)
+                        model: JSON.parse(appBridge.allClassesJson)
                         onActivated: appBridge.selectStudent("")
                     }
-                    Label { text: "Groupe (facultatif)"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
+                    Label { text: "Groupe (facultatif)"; color: "root.colors.textSecondary"; font.pixelSize: 14; font.weight: Font.DemiBold }
                     ComboBox {
                         id: studentGroupSelect
                         Layout.fillWidth: true
@@ -381,7 +465,7 @@ ApplicationWindow {
                         model: { appBridge.classroomRevision; return [{ name: "Tous les groupes", id: "" }].concat(appBridge.groupsForClass(studentClassSelect.currentValue || "")) }
                         onActivated: appBridge.selectStudent("")
                     }
-                    Label { text: "Élève"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
+                    Label { text: "Élève"; color: "root.colors.textSecondary"; font.pixelSize: 14; font.weight: Font.DemiBold }
                     ComboBox {
                         id: studentProfileSelect
                         Layout.fillWidth: true
@@ -395,7 +479,7 @@ ApplicationWindow {
                     Label {
                         visible: !!studentProfileSelect.currentValue
                         text: root.progressSummary.sessions === 0 ? "Pas encore de résultat pour cet élève." : "Séances : " + root.progressSummary.sessions + " · Réponses : " + root.progressSummary.answered + " · Réussite : " + (root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%")
-                        color: "#66768E"
+                        color: "root.colors.muted"
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
@@ -424,7 +508,7 @@ ApplicationWindow {
                     visible: root.page === "area" && root.classroomArea === "teacher" && !appBridge.teacherAuthenticated
                     Layout.fillWidth: true
                     spacing: 10
-                    Label { text: "Se connecter"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold }
+                    Label { text: "Se connecter"; color: "root.colors.text"; font.pixelSize: 20; font.weight: Font.DemiBold }
                     ComboBox {
                         id: teacherSelect
                         Layout.fillWidth: true
@@ -447,7 +531,7 @@ ApplicationWindow {
                         enabled: !!teacherSelect.currentValue
                         onClicked: appBridge.loginTeacher(teacherSelect.currentValue, teacherLoginPassword.text)
                     }
-                    Label { text: "Créer un profil professeur"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    Label { text: "Créer un profil professeur"; color: "root.colors.text"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
                     TextField { id: newTeacherName; Layout.fillWidth: true; implicitHeight: 46; placeholderText: "Votre nom" }
                     TextField {
                         id: newTeacherPassword
@@ -466,7 +550,7 @@ ApplicationWindow {
                     Label {
                         visible: appBridge.classroomMessage !== ""
                         text: appBridge.classroomMessage
-                        color: appBridge.teacherAuthenticated ? "#16804A" : "#B45309"
+                        color: appBridge.teacherAuthenticated ? "root.colors.success" : "root.colors.warning"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
@@ -477,7 +561,7 @@ ApplicationWindow {
                     visible: root.page === "area" && root.classroomArea === "teacher" && appBridge.teacherAuthenticated
                     Layout.fillWidth: true
                     spacing: 10
-                    Label { text: "Mes classes"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold }
+                    Label { text: "Mes classes"; color: "root.colors.text"; font.pixelSize: 20; font.weight: Font.DemiBold }
                     TextField { id: newClassName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom de la classe (ex. CM1 A)" }
                     TextField { id: newClassYear; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Année scolaire (facultatif)"; onAccepted: appBridge.createClass(newClassName.text, text) }
                     PrimaryButton {
@@ -485,7 +569,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         onClicked: appBridge.createClass(newClassName.text, newClassYear.text)
                     }
-                    Label { text: "Ajouter un élève"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    Label { text: "Ajouter un élève"; color: "root.colors.text"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
                     ComboBox {
                         id: teacherClassSelect
                         Layout.fillWidth: true
@@ -507,7 +591,7 @@ ApplicationWindow {
                         implicitHeight: 44
                         textRole: "name"
                         valueRole: "id"
-                        model: { appBridge.classroomRevision; return [{ name: "Aucun groupe", id: "" }].concat(appBridge.groupsForClass(teacherClassSelect.currentValue || "")) }
+                        model: { appBridge.classroomRevision; return [{ name: "Aucun groupe", id: "" }].concat(appBridge.teacherGroupsForClass(teacherClassSelect.currentValue || "")) }
                     }
                     TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, teacherGroupSelect.currentValue || "") }
                     PrimaryButton {
@@ -516,7 +600,7 @@ ApplicationWindow {
                         enabled: !!teacherClassSelect.currentValue
                         onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, teacherGroupSelect.currentValue || "")
                     }
-                    Label { text: "Archiver des éléments"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 16 }
+                    Label { text: "Archiver des éléments"; color: "root.colors.text"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 16 }
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
@@ -524,9 +608,9 @@ ApplicationWindow {
                             text: "Archiver la classe"
                             Layout.fillWidth: true
                             enabled: !!teacherClassSelect.currentValue
-                            fillColor: "#FCEEEE"
-                            hoverColor: "#F8DADA"
-                            textColor: "#A12C2C"
+                            fillColor: "root.colors.dangerSurface"
+                            hoverColor: "root.colors.dangerHover"
+                            textColor: "root.colors.danger"
                             onClicked: {
                                 archiveConfirmation.archiveKind = "class"
                                 archiveConfirmation.archiveId = teacherClassSelect.currentValue
@@ -537,9 +621,9 @@ ApplicationWindow {
                             text: "Archiver le groupe"
                             Layout.fillWidth: true
                             enabled: !!teacherGroupSelect.currentValue
-                            fillColor: "#FCEEEE"
-                            hoverColor: "#F8DADA"
-                            textColor: "#A12C2C"
+                            fillColor: "root.colors.dangerSurface"
+                            hoverColor: "root.colors.dangerHover"
+                            textColor: "root.colors.danger"
                             onClicked: {
                                 archiveConfirmation.archiveKind = "group"
                                 archiveConfirmation.archiveId = teacherGroupSelect.currentValue
@@ -553,22 +637,22 @@ ApplicationWindow {
                         implicitHeight: 44
                         textRole: "display_name"
                         valueRole: "id"
-                        model: { appBridge.classroomRevision; return appBridge.studentsForClass(teacherClassSelect.currentValue || "", teacherGroupSelect.currentValue || "") }
+                        model: { appBridge.classroomRevision; return appBridge.teacherStudentsForClass(teacherClassSelect.currentValue || "", teacherGroupSelect.currentValue || "") }
                     }
                     PrimaryButton {
                         text: "Archiver l'élève sélectionné"
                         Layout.fillWidth: true
                         enabled: !!teacherStudentSelect.currentValue
-                        fillColor: "#FCEEEE"
-                        hoverColor: "#F8DADA"
-                        textColor: "#A12C2C"
+                        fillColor: "root.colors.dangerSurface"
+                        hoverColor: "root.colors.dangerHover"
+                        textColor: "root.colors.danger"
                         onClicked: {
                             archiveConfirmation.archiveKind = "student"
                             archiveConfirmation.archiveId = teacherStudentSelect.currentValue
                             archiveConfirmation.open()
                         }
                     }
-                    Label { text: "Modifier mon profil"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    Label { text: "Modifier mon profil"; color: "root.colors.text"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
                     TextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché"; onAccepted: appBridge.updateTeacherProfile(text) }
                     PrimaryButton {
                         text: "Enregistrer le profil"
@@ -581,7 +665,7 @@ ApplicationWindow {
                 Label {
                     visible: root.page === "area" && appBridge.classroomMessage !== ""
                     text: appBridge.classroomMessage
-                    color: "#1769D2"
+                    color: "root.colors.accent"
                     font.pixelSize: 13
                     Layout.alignment: Qt.AlignHCenter
                 }
@@ -589,9 +673,9 @@ ApplicationWindow {
                 PrimaryButton {
                     visible: root.page === "area"
                     text: "Retour à l'espace classe"
-                    fillColor: "#E8F0FC"
-                    hoverColor: "#D8E6FA"
-                    textColor: "#1769D2"
+                    fillColor: "root.colors.accentSoft"
+                    hoverColor: "root.colors.accentHoverSoft"
+                    textColor: "root.colors.accent"
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: {
                         root.classroomArea = ""
@@ -602,9 +686,9 @@ ApplicationWindow {
                 PrimaryButton {
                     visible: root.page === "home"
                     text: "Paramètres"
-                    fillColor: "#E8F0FC"
-                    hoverColor: "#D8E6FA"
-                    textColor: "#1769D2"
+                    fillColor: "root.colors.accentSoft"
+                    hoverColor: "root.colors.accentHoverSoft"
+                    textColor: "root.colors.accent"
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: {
                         root.settingsReturnPage = root.page
@@ -632,7 +716,7 @@ ApplicationWindow {
                 Label {
                     visible: appBridge.questionTotal === 0
                     text: "Nouvel entraînement"
-                    color: "#172A45"
+                    color: "root.colors.text"
                     font.pixelSize: 32
                     font.weight: Font.Bold
                     Layout.alignment: Qt.AlignHCenter
@@ -660,7 +744,7 @@ ApplicationWindow {
                 Label {
                     visible: appBridge.questionTotal === 0 && appBridge.feedback !== ""
                     text: appBridge.feedback
-                    color: "#B45309"
+                    color: "root.colors.warning"
                     font.pixelSize: 14
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
@@ -670,7 +754,7 @@ ApplicationWindow {
                     visible: appBridge.questionTotal === 0
                     Layout.fillWidth: true
                     spacing: 12
-                    Label { text: "Compétence"; color: "#33445D"; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    Label { text: "Compétence"; color: "root.colors.textSecondary"; font.pixelSize: 15; font.weight: Font.DemiBold }
                     ComboBox {
                         id: skillSelect
                         Layout.fillWidth: true
@@ -690,7 +774,7 @@ ApplicationWindow {
                             { label: "4e · Multiplication de nombres relatifs", value: "college.signed_multiplication" }
                         ]
                     }
-                    Label { text: "Nombre de questions"; color: "#33445D"; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    Label { text: "Nombre de questions"; color: "root.colors.textSecondary"; font.pixelSize: 15; font.weight: Font.DemiBold }
                     SpinBox {
                         id: countSelect
                         from: 5
@@ -699,7 +783,7 @@ ApplicationWindow {
                         editable: true
                         implicitHeight: 48
                     }
-                    Label { text: "Difficulté"; color: "#33445D"; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    Label { text: "Difficulté"; color: "root.colors.textSecondary"; font.pixelSize: 15; font.weight: Font.DemiBold }
                     ComboBox {
                         id: difficultySelect
                         Layout.fillWidth: true
@@ -728,7 +812,7 @@ ApplicationWindow {
                     spacing: 18
                     Label {
                         text: "Question " + appBridge.questionNumber + " / " + appBridge.questionTotal
-                        color: "#66768E"
+                        color: "root.colors.muted"
                         font.pixelSize: 15
                         Layout.alignment: Qt.AlignHCenter
                     }
@@ -736,17 +820,17 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         height: 8
                         radius: 4
-                        color: "#E3EAF4"
+                        color: "root.colors.border"
                         Rectangle {
                             width: parent.width * appBridge.questionNumber / Math.max(1, appBridge.questionTotal)
                             height: parent.height
                             radius: 4
-                            color: "#1769D2"
+                            color: "root.colors.accent"
                         }
                     }
                     Label {
                         text: appBridge.questionPrompt
-                        color: "#172A45"
+                        color: "root.colors.text"
                         font.pixelSize: 42
                         font.weight: Font.Bold
                         Layout.alignment: Qt.AlignHCenter
@@ -765,7 +849,7 @@ ApplicationWindow {
                     Label {
                         visible: appBridge.answerSubmitted
                         text: appBridge.feedback
-                        color: appBridge.feedback === "Bonne réponse !" ? "#16804A" : "#B45309"
+                        color: appBridge.feedback === "Bonne réponse !" ? "root.colors.success" : "root.colors.warning"
                         font.pixelSize: 16
                         Layout.alignment: Qt.AlignHCenter
                     }
@@ -792,14 +876,14 @@ ApplicationWindow {
                     spacing: 16
                     Label {
                         text: "Séance terminée"
-                        color: "#172A45"
+                        color: "root.colors.text"
                         font.pixelSize: 32
                         font.weight: Font.Bold
                         Layout.alignment: Qt.AlignHCenter
                     }
                     Label {
                         text: appBridge.scoreText
-                        color: "#1769D2"
+                        color: "root.colors.accent"
                         font.pixelSize: 23
                         font.weight: Font.DemiBold
                         Layout.alignment: Qt.AlignHCenter
@@ -838,13 +922,13 @@ ApplicationWindow {
 
                     Label {
                     text: "Paramètres"
-                    color: "#172A45"
+                    color: "root.colors.text"
                     font.pixelSize: 32
                     font.weight: Font.Bold
                     Layout.alignment: Qt.AlignHCenter
                 }
-                Label { text: "Accessibilité"; color: "#1769D2"; font.pixelSize: 18; font.weight: Font.DemiBold }
-                Label { text: "Taille de l'interface · " + Math.round(appBridge.uiScale * 100) + "%"; color: "#33445D"; font.pixelSize: 15 }
+                Label { text: "Accessibilité"; color: "root.colors.accent"; font.pixelSize: 18; font.weight: Font.DemiBold }
+                Label { text: "Taille de l'interface · " + Math.round(appBridge.uiScale * 100) + "%"; color: "root.colors.textSecondary"; font.pixelSize: 15 }
                 Slider {
                     id: scaleSlider
                     Layout.fillWidth: true
@@ -864,7 +948,7 @@ ApplicationWindow {
                     checked: appBridge.reduceMotion
                     onToggled: appBridge.setReduceMotion(checked)
                 }
-                Label { text: "Données"; color: "#1769D2"; font.pixelSize: 18; font.weight: Font.DemiBold; Layout.topMargin: 8 }
+                Label { text: "Données"; color: "root.colors.accent"; font.pixelSize: 18; font.weight: Font.DemiBold; Layout.topMargin: 8 }
                 GridLayout {
                     columns: 2
                     columnSpacing: 12
@@ -899,7 +983,7 @@ ApplicationWindow {
                 Label {
                     visible: appBridge.dataMessage !== ""
                     text: appBridge.dataMessage
-                    color: "#1769D2"
+                    color: "root.colors.accent"
                     font.pixelSize: 12
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
