@@ -96,7 +96,7 @@ class DashboardScreen(QWidget):
         alert_title.setStyleSheet("font-size: 16px; font-weight: bold;")
         self.content_layout.addWidget(alert_title)
 
-        alert_subtitle = QLabel("Élèves avec une moyenne < 50 % sur leurs 3 dernières sessions")
+        alert_subtitle = QLabel("Élèves avec moins de 50 % de réussite sur au moins 2 sessions récentes")
         alert_subtitle.setObjectName("subtitle")
         self.content_layout.addWidget(alert_subtitle)
 
