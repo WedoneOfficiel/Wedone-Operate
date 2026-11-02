@@ -23,8 +23,8 @@ class ProgressRepository:
         with self.database.connect() as connection:
             totals = connection.execute(
                 f"""SELECT COUNT(DISTINCT s.id) AS sessions,
-                           SUM(CASE WHEN s.status='completed' THEN 1 ELSE 0 END) AS completed,
-                           SUM(CASE WHEN s.status='abandoned' THEN 1 ELSE 0 END) AS abandoned,
+                           COUNT(DISTINCT CASE WHEN s.status='completed' THEN s.id END) AS completed,
+                           COUNT(DISTINCT CASE WHEN s.status='abandoned' THEN s.id END) AS abandoned,
                            COUNT(a.id) AS answered,
                            COALESCE(SUM(a.is_correct), 0) AS correct,
                            COALESCE(SUM(a.elapsed_ms), 0) AS elapsed_ms
