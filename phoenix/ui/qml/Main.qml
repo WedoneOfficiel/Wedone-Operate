@@ -304,6 +304,146 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                 }
 
+                ColumnLayout {
+                    visible: root.page === "area" && root.classroomArea === "student"
+                    Layout.fillWidth: true
+                    spacing: 12
+                    Label { text: "Classe"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
+                    ComboBox {
+                        id: studentClassSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 46
+                        textRole: "name"
+                        valueRole: "id"
+                        model: JSON.parse(appBridge.classesJson)
+                    }
+                    Label { text: "Groupe (facultatif)"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
+                    ComboBox {
+                        id: studentGroupSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 46
+                        textRole: "name"
+                        valueRole: "id"
+                        model: [{ name: "Tous les groupes", id: "" }].concat(appBridge.groupsForClass(studentClassSelect.currentValue || ""))
+                    }
+                    Label { text: "Élève"; color: "#33445D"; font.pixelSize: 14; font.weight: Font.DemiBold }
+                    ComboBox {
+                        id: studentProfileSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 46
+                        textRole: "display_name"
+                        valueRole: "id"
+                        model: appBridge.studentsForClass(studentClassSelect.currentValue || "", studentGroupSelect.currentValue || "")
+                    }
+                    PrimaryButton {
+                        text: "Continuer"
+                        Layout.fillWidth: true
+                        enabled: !!studentProfileSelect.currentValue
+                        onClicked: {
+                            appBridge.selectStudent(studentProfileSelect.currentValue)
+                            root.page = "practice"
+                        }
+                    }
+                    Button {
+                        text: "S'entraîner sans profil"
+                        flat: true
+                        Layout.alignment: Qt.AlignHCenter
+                        onClicked: {
+                            appBridge.selectStudent("")
+                            root.page = "practice"
+                        }
+                    }
+                }
+
+                ColumnLayout {
+                    visible: root.page === "area" && root.classroomArea === "teacher" && !appBridge.teacherAuthenticated
+                    Layout.fillWidth: true
+                    spacing: 10
+                    Label { text: "Se connecter"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold }
+                    ComboBox {
+                        id: teacherSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 46
+                        textRole: "display_name"
+                        valueRole: "id"
+                        model: JSON.parse(appBridge.teachersJson)
+                    }
+                    TextField {
+                        id: teacherLoginPassword
+                        Layout.fillWidth: true
+                        implicitHeight: 46
+                        placeholderText: "Mot de passe professeur"
+                        echoMode: TextInput.Password
+                        onAccepted: appBridge.loginTeacher(teacherSelect.currentValue || "", text)
+                    }
+                    PrimaryButton {
+                        text: "Se connecter"
+                        Layout.fillWidth: true
+                        enabled: !!teacherSelect.currentValue
+                        onClicked: appBridge.loginTeacher(teacherSelect.currentValue, teacherLoginPassword.text)
+                    }
+                    Label { text: "Créer un profil professeur"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    TextField { id: newTeacherName; Layout.fillWidth: true; implicitHeight: 46; placeholderText: "Votre nom" }
+                    TextField {
+                        id: newTeacherPassword
+                        Layout.fillWidth: true
+                        implicitHeight: 46
+                        placeholderText: "Mot de passe (8 caractères minimum)"
+                        echoMode: TextInput.Password
+                    }
+                    PrimaryButton {
+                        text: "Créer mon profil"
+                        Layout.fillWidth: true
+                        onClicked: appBridge.createTeacher(newTeacherName.text, newTeacherPassword.text)
+                    }
+                }
+
+                ColumnLayout {
+                    visible: root.page === "area" && root.classroomArea === "teacher" && appBridge.teacherAuthenticated
+                    Layout.fillWidth: true
+                    spacing: 10
+                    Label { text: "Mes classes"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold }
+                    TextField { id: newClassName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom de la classe (ex. CM1 A)" }
+                    TextField { id: newClassYear; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Année scolaire (facultatif)" }
+                    PrimaryButton {
+                        text: "Créer la classe"
+                        Layout.fillWidth: true
+                        onClicked: appBridge.createClass(newClassName.text, newClassYear.text)
+                    }
+                    Label { text: "Ajouter un élève"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    ComboBox {
+                        id: teacherClassSelect
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        textRole: "name"
+                        valueRole: "id"
+                        model: JSON.parse(appBridge.classesJson)
+                    }
+                    TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève" }
+                    PrimaryButton {
+                        text: "Ajouter l'élève"
+                        Layout.fillWidth: true
+                        enabled: !!teacherClassSelect.currentValue
+                        onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, "")
+                    }
+                    Label { text: "Modifier mon profil"; color: "#172A45"; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    TextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché" }
+                    PrimaryButton {
+                        text: "Enregistrer le profil"
+                        Layout.fillWidth: true
+                        onClicked: appBridge.updateTeacherProfile(teacherDisplayName.text)
+                    }
+                    Button { text: "Se déconnecter"; flat: true; Layout.alignment: Qt.AlignHCenter; onClicked: appBridge.logoutTeacher() }
+                }
+
+                Label {
+                    visible: root.page === "area" && appBridge.classroomMessage !== ""
+                    text: appBridge.classroomMessage
+                    color: "#1769D2"
+                    font.pixelSize: 13
+                    Layout.alignment: Qt.AlignHCenter
+                }
+
                 PrimaryButton {
                     visible: root.page === "area"
                     text: "Retour à l'espace classe"
@@ -317,6 +457,7 @@ ApplicationWindow {
                 }
 
                 PrimaryButton {
+                    visible: root.page !== "area"
                     text: "Changer de mode"
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: 12
