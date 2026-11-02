@@ -623,6 +623,25 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                 }
 
+                RowLayout {
+                    visible: appBridge.questionTotal === 0 && root.currentMode === "individual"
+                    Layout.alignment: Qt.AlignHCenter
+                    spacing: 10
+                    Button {
+                        text: "Paramètres"
+                        flat: true
+                        onClicked: {
+                            root.settingsReturnPage = "practice"
+                            root.page = "settings"
+                        }
+                    }
+                    Button {
+                        text: "Changer de mode"
+                        flat: true
+                        onClicked: appBridge.returnToModeChoice()
+                    }
+                }
+
                 Label {
                     visible: appBridge.questionTotal === 0 && appBridge.feedback !== ""
                     text: appBridge.feedback
