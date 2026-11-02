@@ -68,11 +68,9 @@ jobs:
           source = Image.open("icon.png").convert("RGBA")
           iconset = Path("Phoenix.iconset")
           iconset.mkdir(exist_ok=True)
-          for size in (16, 32, 64, 128, 256, 512):
-              image = source.resize((size, size), Image.Resampling.LANCZOS)
-              image.save(iconset / f"icon_{size}x{size}.png")
-              if size <= 256:
-                  image.save(iconset / f"icon_{size}x{size}@2x.png")
+          for size in (16, 32, 128, 256, 512):
+              source.resize((size, size), Image.Resampling.LANCZOS).save(iconset / f"icon_{size}x{size}.png")
+              source.resize((size * 2, size * 2), Image.Resampling.LANCZOS).save(iconset / f"icon_{size}x{size}@2x.png")
           PY
           iconutil -c icns Phoenix.iconset -o phoenix.icns
       - name: Build application
