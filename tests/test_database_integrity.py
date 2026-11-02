@@ -81,6 +81,46 @@ class DatabaseIntegrityTests(unittest.TestCase):
         self.assertEqual("guest", db.get_templates(owner_id="guest")[0]["owner_id"])
         self.assertEqual(1, len(db.get_scores(student["id"])))
 
+    def test_editing_group_updates_members_level_and_class(self):
+        cls_a = db.add_class("CM1 A", "teacher-a")
+        cls_b = db.add_class("CM2 B", "teacher-a")
+        group = db.add_group("Groupe A", "teacher-a", level="CM1", class_id=cls_a["id"])
+        student = db.add_student("Mina", "Petit", "teacher-a", group_id=group["id"])
+        self.assertTrue(db.update_group(group["id"], name="Groupe avancé", level="CM2", class_id=cls_b["id"]))
+        updated = db.get_student(student["id"])
+        self.assertEqual("Groupe avancé", db.get_group(group["id"])["name"])
+        self.assertEqual("CM2", db.get_student_level(student["id"]))
+        self.assertEqual(cls_b["id"], updated["class_id"])
+
+    def test_editing_student_preserves_score_history(self):
+        cls = db.add_class("CM2 A", "teacher-a")
+        student = db.add_student("Léa", "Martin", "teacher-a", class_id=cls["id"])
+        db.save_score(student["id"], "CM2", 10, 8, False, ["addition"])
+        self.assertTrue(db.update_student(student["id"], "Lea", "Durand", cls["id"], None))
+        self.assertEqual("Lea", db.get_student(student["id"])["prenom"])
+        self.assertEqual(1, len(db.get_scores(student["id"])))
+
+    def test_editing_template_renames_by_id_without_duplicate(self):
+        db.save_template("Révisions", "teacher-a", {"operations": ["addition"]})
+        template = db.get_templates(owner_id="teacher-a")[0]
+        self.assertTrue(db.update_template(template["id"], "Entraînement", {"operations": ["division"]}))
+        templates = db.get_templates(owner_id="teacher-a")
+        self.assertEqual(1, len(templates))
+        self.assertEqual("Entraînement", templates[0]["name"])
+        self.assertEqual(["division"], templates[0]["config"]["operations"])
+
+    def test_editing_class_updates_ungrouped_student_level(self):
+        cls = db.add_class("CM1 A", "teacher-a", level="CM1")
+        student = db.add_student("Inès", "Petit", "teacher-a", class_id=cls["id"])
+        self.assertTrue(db.update_class(cls["id"], "CM2 A", "CM2"))
+        self.assertEqual("CM2", db.get_student_level(student["id"]))
+
+    def test_editing_teacher_can_change_identity_and_password(self):
+        teacher = db.add_teacher("Ada", "Lovelace", "ancien-secret")
+        self.assertTrue(db.update_teacher(teacher["id"], "Ada", "Byron", "nouveau-secret"))
+        self.assertEqual("Byron", db.get_teacher(teacher["id"])["nom"])
+        self.assertTrue(db.check_teacher_password(teacher["id"], "nouveau-secret"))
+
     def test_csv_export_quotes_commas_and_accents(self):
         student = db.add_student("Éloïse, Anne", 'O"Neil', "teacher-a")
         group = db.add_group("Groupe, A", "teacher-a")
