@@ -311,6 +311,14 @@ def remove_class(class_id):
             if not student.get("group_id") and removed:
                 student["level"] = removed.get("level", "CM2")
     _save_users(users)
+    templates = _load(TEMPLATES_FILE, [])
+    changed = False
+    for template in templates:
+        if template.get("class_id") == class_id:
+            template["class_id"] = None
+            changed = True
+    if changed:
+        _save(TEMPLATES_FILE, templates)
 
 # ══════════════════════════════════════════════════════════════════════
 # GROUPES (avec niveau scolaire + classe)
@@ -376,6 +384,14 @@ def update_group(gid, **kwargs):
             changed = True
     if changed:
         _save_users(users)
+    templates = _load(TEMPLATES_FILE, [])
+    template_changed = False
+    for template in templates:
+        if template.get("group_id") == gid:
+            template["class_id"] = class_id
+            template_changed = True
+    if template_changed:
+        _save(TEMPLATES_FILE, templates)
     return True
 
 def remove_group(gid):
@@ -396,6 +412,7 @@ def remove_group(gid):
     for template in templates:
         if template.get("group_id") == gid:
             template["group_id"] = None
+            template["class_id"] = removed.get("class_id") if removed else None
     _save(TEMPLATES_FILE, templates)
 
 def get_group_level(gid):
@@ -587,12 +604,14 @@ def get_student_level(sid):
 # MODÈLES DE SESSION
 # ══════════════════════════════════════════════════════════════════════
 
-def get_templates(owner_id=None, group_id=None):
+def get_templates(owner_id=None, group_id=None, class_id=None):
     templates = _load(TEMPLATES_FILE, [])
     if owner_id is not None:
         templates = [t for t in templates if t.get("owner_id") == owner_id]
     if group_id is not None:
         templates = [t for t in templates if t.get("group_id") == group_id]
+    if class_id is not None:
+        templates = [t for t in templates if t.get("class_id") == class_id and not t.get("group_id")]
     return sorted(templates, key=lambda t: t.get("name", "").casefold())
 
 def get_template(tid):
@@ -600,26 +619,40 @@ def get_template(tid):
         if t["id"] == tid: return t
     return None
 
-def save_template(name, owner_id, config, group_id=None):
-    """Crée ou met à jour un modèle de session."""
+def save_template(name, owner_id, config, group_id=None, class_id=None):
+    """Create/update a reusable assignment for a class or a specific group."""
+    name = name.strip()
+    if not name or owner_id is None:
+        return False
+    group = get_group(group_id) if group_id else None
+    if group_id and (not group or group.get("owner_id") != owner_id):
+        return False
+    if group and group.get("class_id"):
+        if class_id and class_id != group["class_id"]:
+            return False
+        class_id = group["class_id"]
+    if class_id:
+        cls = get_class(class_id)
+        if not cls or cls.get("owner_id") != owner_id:
+            return False
     ts = _load(TEMPLATES_FILE, [])
     existing = next((t for t in ts if t["owner_id"] == owner_id
-                     and t["name"].lower() == name.strip().lower()), None)
+                     and t["name"].casefold() == name.casefold()), None)
     now = datetime.now().isoformat(timespec="seconds")
     if existing:
-        existing["config"] = config
-        existing["group_id"] = group_id
-        existing["updated_at"] = now
+        existing.update({"config": config, "group_id": group_id,
+                         "class_id": class_id, "updated_at": now})
     else:
         ts.append({
-            "id": _uid("tm"), "name": name.strip(), "owner_id": owner_id,
-            "group_id": group_id, "config": config,
+            "id": _uid("tm"), "name": name, "owner_id": owner_id,
+            "group_id": group_id, "class_id": class_id, "config": config,
             "created_at": now, "updated_at": now
         })
     _save(TEMPLATES_FILE, ts)
+    return True
 
-def update_template(tid, name, config, group_id=None):
-    """Edit an existing template by stable ID (renaming does not create duplicates)."""
+def update_template(tid, name, config, group_id=None, class_id=None):
+    """Edit a template by stable ID without creating duplicates."""
     name = name.strip()
     if not name:
         return False
@@ -630,14 +663,20 @@ def update_template(tid, name, config, group_id=None):
     if any(item["id"] != tid and item.get("owner_id") == target.get("owner_id")
            and item.get("name", "").casefold() == name.casefold() for item in templates):
         return False
-    if group_id:
-        group = get_group(group_id)
-        if not group or group.get("owner_id") != target.get("owner_id"):
+    group = get_group(group_id) if group_id else None
+    if group_id and (not group or group.get("owner_id") != target.get("owner_id")):
+        return False
+    if group and group.get("class_id"):
+        if class_id and class_id != group["class_id"]:
             return False
-    target["name"] = name
-    target["config"] = config
-    target["group_id"] = group_id
-    target["updated_at"] = datetime.now().isoformat(timespec="seconds")
+        class_id = group["class_id"]
+    if class_id:
+        cls = get_class(class_id)
+        if not cls or cls.get("owner_id") != target.get("owner_id"):
+            return False
+    target.update({"name": name, "config": config, "group_id": group_id,
+                   "class_id": class_id,
+                   "updated_at": datetime.now().isoformat(timespec="seconds")})
     _save(TEMPLATES_FILE, templates)
     return True
 
@@ -646,16 +685,42 @@ def remove_template(tid):
     ts = _load(TEMPLATES_FILE, [])
     ts = [t for t in ts if t["id"] != tid]; _save(TEMPLATES_FILE, ts)
 
-def get_group_default_template(group_id):
-    """Return the most recently updated template assigned to this group."""
-    if not group_id:
-        return None
-    templates = get_templates(group_id=group_id)
+def _latest_template(templates):
     return max(
         templates,
         key=lambda template: template.get("updated_at", template.get("created_at", "")),
         default=None
     )
+
+
+def get_class_default_template(class_id):
+    """Return the most recent class-wide assignment (used when no group override exists)."""
+    if not class_id:
+        return None
+    return _latest_template(get_templates(class_id=class_id))
+
+
+def get_group_default_template(group_id):
+    """Prefer a group-specific assignment, then fall back to its class assignment."""
+    if not group_id:
+        return None
+    specific = _latest_template(get_templates(group_id=group_id))
+    if specific:
+        return specific
+    group = get_group(group_id)
+    return get_class_default_template(group.get("class_id")) if group else None
+
+
+def get_student_default_template(student_id):
+    """Resolve the most specific assignment for a student: group first, then class."""
+    student = get_student(student_id)
+    if not student:
+        return None
+    if student.get("group_id"):
+        specific = _latest_template(get_templates(group_id=student["group_id"]))
+        if specific:
+            return specific
+    return get_class_default_template(student.get("class_id"))
 
 # ══════════════════════════════════════════════════════════════════════
 # SCORES
