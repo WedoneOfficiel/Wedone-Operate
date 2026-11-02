@@ -364,7 +364,7 @@ class LoginScreen(QWidget):
                 initiales=initiales,
                 label=s["prenom"],
                 sublabel=s["nom"],
-                color="#2998E5",
+                color="primary",
                 size=(100, 95),
                 on_click=lambda _, st=s: self._login_student(st)
             )
