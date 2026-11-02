@@ -28,7 +28,7 @@ class DashboardScreen(QWidget):
         # ── Barre du haut ──────────────────────────────────────────────
         topbar = QFrame()
         topbar.setFixedHeight(58)
-        topbar.setStyleSheet("border-bottom: 1px solid rgba(128,128,128,0.12);")
+        topbar.setProperty("class", "app-header")
         tl = QHBoxLayout(topbar); tl.setContentsMargins(28, 0, 28, 0)
 
         self.title_lbl = QLabel("Tableau de bord")
@@ -104,7 +104,8 @@ class DashboardScreen(QWidget):
 
         if not all_alerts:
             ok_lbl = QLabel("✓  Aucun signal de difficulté détecté pour le moment.")
-            ok_lbl.setStyleSheet("color:#269B70;font-size:14px;padding:12px 0;")
+            ok_lbl.setObjectName("success")
+            ok_lbl.setStyleSheet("font-size:14px;padding:12px 0;")
             self.content_layout.addWidget(ok_lbl)
         else:
             for alert in all_alerts:
@@ -146,8 +147,8 @@ class DashboardScreen(QWidget):
         badge = QLabel(f"{s['prenom'][0]}{s['nom'][0]}".upper())
         badge.setFixedSize(36, 36)
         badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        badge.setStyleSheet("background:#E24B5F;color:white;border-radius:18px;"
-                            "font-size:13px;font-weight:bold;")
+        badge.setProperty("class", "avatar-danger")
+        badge.setStyleSheet("font-size:13px;font-weight:bold;")
         l.addWidget(badge)
 
         info = QVBoxLayout(); info.setSpacing(2)
@@ -165,7 +166,8 @@ class DashboardScreen(QWidget):
 
         rec = alert["recommended"]
         rec_lbl = QLabel(f"💡 {rec['reason']}")
-        rec_lbl.setStyleSheet("font-size: 12px; color: #B87516;")
+        rec_lbl.setObjectName("warning")
+        rec_lbl.setStyleSheet("font-size: 12px;")
         rec_lbl.setWordWrap(True)
         rec_lbl.setMaximumWidth(280)
         l.addWidget(rec_lbl)
@@ -195,9 +197,9 @@ class DashboardScreen(QWidget):
         l.addWidget(nb_lbl)
 
         if avg is not None:
-            color = "#1C8A4E" if avg >= 70 else ("#E07B00" if avg >= 50 else "#C0392B")
             avg_lbl = QLabel(f"Moy. {avg:.0f} %")
-            avg_lbl.setStyleSheet(f"font-weight: bold; color: {color};")
+            avg_lbl.setProperty("class", "success" if avg >= 70 else ("warning" if avg >= 50 else "error"))
+            avg_lbl.setStyleSheet("font-weight: bold;")
             l.addWidget(avg_lbl)
 
         l.addStretch()
