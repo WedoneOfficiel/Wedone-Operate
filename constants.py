@@ -105,60 +105,8 @@ TIMER_SECONDS = {
     "Facile": 40, "Moyen": 25, "Difficile": 12,
 }
 
-# ── Identité visuelle Wedone — palettes clair / sombre ────────────────
-# Palette inspirée du portail Wedone : lavande, rose et surfaces vitrées.
-LIGHT = {
-    "bg": "#F7F5FC",
-    "bg_secondary": "#F0ECF8",
-    "surface": "#FFFFFF",
-    "surface_hover": "#FAF7FD",
-    "input": "#FFFFFF",
-    "border": "#E8E1F0",
-    "border_hover": "#D5C5E8",
-    "primary": "#8B5BC7",
-    "primary_alt": "#B16BD1",
-    "primary_hover": "#7545B0",
-    "primary_pressed": "#633A99",
-    "primary_text": "#FFFFFF",
-    "accent_soft": "#F0E8FB",
-    "accent_ink": "#68449A",
-    "accent_border": "#DCC9F1",
-    "text": "#29243B",
-    "text_secondary": "#79748C",
-    "text_muted": "#AAA5B8",
-    "success": "#269B70",
-    "error": "#D94B62",
-    "error_hover": "#BC354D",
-    "warning": "#D58A27",
-    "disabled": "#E5E0EA",
-    "scroll": "#D8D0E2",
-}
-DARK = {
-    "bg": "#15131D",
-    "bg_secondary": "#211D2B",
-    "surface": "#211E2C",
-    "surface_hover": "#2B2638",
-    "input": "#1B1825",
-    "border": "#393246",
-    "border_hover": "#5A4A70",
-    "primary": "#A77AD8",
-    "primary_alt": "#C18AE0",
-    "primary_hover": "#BD91E8",
-    "primary_pressed": "#8F62C4",
-    "primary_text": "#FFFFFF",
-    "accent_soft": "#382B4B",
-    "accent_ink": "#E0C8FA",
-    "accent_border": "#604879",
-    "text": "#F1EDF8",
-    "text_secondary": "#B1A9C1",
-    "text_muted": "#81798F",
-    "success": "#55C99A",
-    "error": "#F0788B",
-    "error_hover": "#E45E75",
-    "warning": "#E8B45C",
-    "disabled": "#40394B",
-    "scroll": "#51475F",
-}
+# ── Identité visuelle Wedone ─────────────────────────────────────────
+from ui.palette import LIGHT, DARK
 
 # ── Fichiers ──────────────────────────────────────────────────────────
 SETTINGS_FILE  = "settings.json"
