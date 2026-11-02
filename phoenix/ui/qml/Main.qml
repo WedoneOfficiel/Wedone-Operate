@@ -593,6 +593,14 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     spacing: 10
                     Label { text: "Mes classes"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold }
+                    Label {
+                        visible: appBridge.classroomMessage !== ""
+                        text: appBridge.classroomMessage
+                        color: root.colors.accent
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
                     TextField { id: newClassName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom de la classe (ex. CM1 A)" }
                     TextField { id: newClassYear; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Année scolaire (facultatif)"; onAccepted: appBridge.createClass(newClassName.text, text) }
                     PrimaryButton {
@@ -600,7 +608,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         onClicked: appBridge.createClass(newClassName.text, newClassYear.text)
                     }
-                    Label { text: "Ajouter un élève"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    Label { text: "Gérer la classe sélectionnée"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
                     ComboBox {
                         id: teacherClassSelect
                         Layout.fillWidth: true
@@ -608,6 +616,31 @@ ApplicationWindow {
                         textRole: "name"
                         valueRole: "id"
                         model: JSON.parse(appBridge.classesJson)
+                        onActivated: {
+                            editClassName.text = currentText
+                            editClassYear.text = currentIndex >= 0 ? (model[currentIndex].school_year || "") : ""
+                            appBridge.selectStudent("")
+                        }
+                    }
+                    TextField {
+                        id: editClassName
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        placeholderText: "Renommer la classe"
+                    }
+                    TextField {
+                        id: editClassYear
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        placeholderText: "Année scolaire"
+                    }
+                    PrimaryButton {
+                        text: "Enregistrer la classe"
+                        Layout.fillWidth: true
+                        enabled: !!teacherClassSelect.currentValue && editClassName.text.trim().length > 0
+                        onClicked: appBridge.updateClass(
+                            teacherClassSelect.currentValue, editClassName.text, editClassYear.text
+                        )
                     }
                     TextField { id: newGroupName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nom du groupe (facultatif)" }
                     PrimaryButton {
@@ -623,6 +656,22 @@ ApplicationWindow {
                         textRole: "name"
                         valueRole: "id"
                         model: { appBridge.classroomRevision; return [{ name: "Aucun groupe", id: "" }].concat(appBridge.teacherGroupsForClass(teacherClassSelect.currentValue || "")) }
+                        onActivated: {
+                            editGroupName.text = currentText
+                            appBridge.selectStudent("")
+                        }
+                    }
+                    TextField {
+                        id: editGroupName
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        placeholderText: "Renommer le groupe sélectionné"
+                    }
+                    PrimaryButton {
+                        text: "Enregistrer le groupe"
+                        Layout.fillWidth: true
+                        enabled: !!teacherGroupSelect.currentValue && editGroupName.text.trim().length > 0
+                        onClicked: appBridge.updateGroup(teacherGroupSelect.currentValue, editGroupName.text)
                     }
                     TextField { id: newStudentName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Prénom ou nom affiché de l'élève"; onAccepted: if (teacherClassSelect.currentValue) appBridge.createStudent(teacherClassSelect.currentValue, text, teacherGroupSelect.currentValue || "") }
                     PrimaryButton {
@@ -728,6 +777,79 @@ ApplicationWindow {
                         textRole: "display_name"
                         valueRole: "id"
                         model: { appBridge.classroomRevision; return appBridge.teacherStudentsForClass(teacherClassSelect.currentValue || "", teacherGroupSelect.currentValue || "") }
+                        onActivated: {
+                            editStudentName.text = currentText
+                            appBridge.selectStudent("")
+                        }
+                    }
+                    TextField {
+                        id: editStudentName
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        placeholderText: "Renommer l'élève sélectionné"
+                    }
+                    PrimaryButton {
+                        text: "Enregistrer l'élève"
+                        Layout.fillWidth: true
+                        enabled: !!teacherStudentSelect.currentValue && editStudentName.text.trim().length > 0
+                        onClicked: appBridge.updateStudent(teacherStudentSelect.currentValue, editStudentName.text)
+                    }
+                    PrimaryButton {
+                        text: "Afficher la progression de l'élève"
+                        Layout.fillWidth: true
+                        enabled: !!teacherStudentSelect.currentValue
+                        fillColor: root.colors.accentSoft
+                        hoverColor: root.colors.accentHoverSoft
+                        textColor: root.colors.accent
+                        onClicked: appBridge.selectStudent(teacherStudentSelect.currentValue)
+                    }
+                    ColumnLayout {
+                        visible: !!teacherStudentSelect.currentValue
+                        Layout.fillWidth: true
+                        spacing: 8
+                        Label {
+                            text: root.progressSummary.sessions === 0
+                                  ? "Aucun résultat enregistré pour cet élève."
+                                  : "Séances : " + root.progressSummary.sessions
+                                    + " · Réponses : " + root.progressSummary.answered
+                                    + " · Réussite : "
+                                    + (root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%")
+                            color: root.colors.muted
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            visible: root.progressSummary.skills.length > 0
+                            text: "Résultats par compétence"
+                            color: root.colors.text
+                            font.pixelSize: 14
+                            font.weight: Font.DemiBold
+                        }
+                        Repeater {
+                            model: root.progressSummary.skills
+                            delegate: RowLayout {
+                                required property var modelData
+                                Layout.fillWidth: true
+                                Label {
+                                    text: modelData.skill_id
+                                    color: root.colors.textSecondary
+                                    font.pixelSize: 12
+                                    Layout.fillWidth: true
+                                }
+                                Label {
+                                    text: modelData.correct + "/" + modelData.answered
+                                    color: root.colors.muted
+                                    font.pixelSize: 12
+                                }
+                                Label {
+                                    text: modelData.accuracy + "%"
+                                    color: root.colors.accent
+                                    font.pixelSize: 12
+                                    font.weight: Font.DemiBold
+                                }
+                            }
+                        }
                     }
                     PrimaryButton {
                         text: "Archiver l'élève sélectionné"
