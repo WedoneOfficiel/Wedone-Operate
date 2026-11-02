@@ -133,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 self._teacher_id = self._classroom.create_teacher(display_name, password)
                 self._classroom_message = "Profil professeur créé."
-            except (ValueError, Exception) as exc:
+            except Exception as exc:
                 self._classroom_message = str(exc)
             self.classroomChanged.emit()
 
@@ -211,13 +211,20 @@ def main(argv: list[str] | None = None) -> int:
                 self._feedback = "Choisissez d'abord un mode d'utilisation."
                 self.practiceChanged.emit()
                 return
-            questions = generate_session(skill_id, count, difficulty, avoid_duplicates=True)
-            session_id = self._practice.start_session(
-                self._mode,
-                len(questions),
-                {"skill_id": skill_id, "difficulty": difficulty},
-                student_id=self._active_student_id if self._mode == "classroom" else None,
-            )
+            try:
+                questions = generate_session(skill_id, count, difficulty, avoid_duplicates=True)
+                session_id = self._practice.start_session(
+                    self._mode,
+                    len(questions),
+                    {"skill_id": skill_id, "difficulty": difficulty},
+                    student_id=self._active_student_id if self._mode == "classroom" else None,
+                )
+            except Exception as exc:
+                self._questions = ()
+                self._session_id = None
+                self._feedback = str(exc)
+                self.practiceChanged.emit()
+                return
             self._questions = questions
             self._session_id = session_id
             self._question_index = 0
