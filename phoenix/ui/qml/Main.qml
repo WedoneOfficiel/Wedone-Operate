@@ -690,12 +690,15 @@ ApplicationWindow {
         }
 
         Item {
-            ColumnLayout {
-                anchors.centerIn: parent
-                width: Math.min(parent.width, 660)
-                spacing: 16
+            ScrollView {
+                anchors.fill: parent
+                contentWidth: availableWidth
+                ColumnLayout {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: Math.min(parent.width, 660)
+                    spacing: 16
 
-                Label {
+                    Label {
                     text: "Paramètres"
                     color: "#172A45"
                     font.pixelSize: 32
@@ -767,6 +770,7 @@ ApplicationWindow {
                     text: "Retour"
                     Layout.fillWidth: true
                     onClicked: root.page = root.settingsReturnPage
+                }
                 }
             }
         }
