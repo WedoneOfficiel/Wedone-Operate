@@ -248,18 +248,19 @@ def add_class(name, owner_id, level="CM2"):
 def remove_class(class_id):
     """Remove a class while preserving students and their score history."""
     classes = _load(CLASSES_FILE, [])
-    classes = [c for c in classes if c["id"] != class_id]
-    _save(CLASSES_FILE, classes)
-    # Groups and students remain usable as unassigned records.
-    gs = _load(GROUPS_FILE, [])
-    for g in gs:
-        if g.get("class_id") == class_id:
-            g["class_id"] = None
-    _save(GROUPS_FILE, gs)
+    removed = next((cls for cls in classes if cls["id"] == class_id), None)
+    _save(CLASSES_FILE, [cls for cls in classes if cls["id"] != class_id])
+    groups = _load(GROUPS_FILE, [])
+    for group in groups:
+        if group.get("class_id") == class_id:
+            group["class_id"] = None
+    _save(GROUPS_FILE, groups)
     users = _load_users()
     for student in users["students"]:
         if student.get("class_id") == class_id:
             student["class_id"] = None
+            if not student.get("group_id") and removed:
+                student["level"] = removed.get("level", "CM2")
     _save_users(users)
 
 # ══════════════════════════════════════════════════════════════════════
@@ -309,8 +310,10 @@ def remove_group(gid):
     for student in users["students"]:
         if student.get("group_id") == gid:
             student["group_id"] = None
-            if removed and removed.get("class_id"):
-                student["class_id"] = removed["class_id"]
+            if removed:
+                student["level"] = removed.get("level", "CM2")
+                if removed.get("class_id"):
+                    student["class_id"] = removed["class_id"]
     _save_users(users)
     # Detach reusable templates rather than leaving dangling group references.
     templates = _load(TEMPLATES_FILE, [])
