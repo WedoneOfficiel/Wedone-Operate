@@ -292,7 +292,6 @@ class LoginScreen(QWidget):
         card.setFixedSize(*size)
         card.setCursor(Qt.CursorShape.PointingHandCursor)
         card.setProperty("class", "student-card")
-        card.setStyleSheet("font-size:12px;")
         inner = QVBoxLayout(card)
         inner.setContentsMargins(4, 8, 4, 6); inner.setSpacing(3)
 
