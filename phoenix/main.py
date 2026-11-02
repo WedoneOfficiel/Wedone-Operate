@@ -669,19 +669,17 @@ def main(argv: list[str] | None = None) -> int:
             return app.palette().color(QPalette.ColorRole.Window).lightness() < 128
 
     def apply_application_palette(theme_mode: str, high_contrast: bool = False) -> None:
-        dark = False if high_contrast else (
-            system_prefers_dark() if theme_mode == "system" else theme_mode == "dark"
-        )
+        dark = system_prefers_dark() if theme_mode == "system" else theme_mode == "dark"
         palette = app.palette()
         if not dark:
             values = {
                 QPalette.ColorRole.Window: "#FFFFFF" if high_contrast else "#F5F8FC",
-                QPalette.ColorRole.WindowText: "#172A45",
+                QPalette.ColorRole.WindowText: "#0D1B2A" if high_contrast else "#202B3A",
                 QPalette.ColorRole.Base: "#FFFFFF" if high_contrast else "#FFFFFF",
                 QPalette.ColorRole.AlternateBase: "#F1F5FA",
                 QPalette.ColorRole.ToolTipBase: "#FFFFFF",
                 QPalette.ColorRole.ToolTipText: "#172A45",
-                QPalette.ColorRole.Text: "#172A45",
+                QPalette.ColorRole.Text: "#0D1B2A" if high_contrast else "#202B3A",
                 QPalette.ColorRole.Button: "#EAF2FF",
                 QPalette.ColorRole.ButtonText: "#172A45",
                 QPalette.ColorRole.Highlight: "#1769D2",
@@ -689,13 +687,13 @@ def main(argv: list[str] | None = None) -> int:
             }
         else:
             values = {
-                QPalette.ColorRole.Window: "#101827",
-                QPalette.ColorRole.WindowText: "#F1F5FB",
-                QPalette.ColorRole.Base: "#172235",
+                QPalette.ColorRole.Window: "#090F18" if high_contrast else "#151B26",
+                QPalette.ColorRole.WindowText: "#FFFFFF" if high_contrast else "#F2F6FC",
+                QPalette.ColorRole.Base: "#0C1420" if high_contrast else "#182333",
                 QPalette.ColorRole.AlternateBase: "#1B2739",
                 QPalette.ColorRole.ToolTipBase: "#1B2739",
                 QPalette.ColorRole.ToolTipText: "#F1F5FB",
-                QPalette.ColorRole.Text: "#F1F5FB",
+                QPalette.ColorRole.Text: "#FFFFFF" if high_contrast else "#F2F6FC",
                 QPalette.ColorRole.Button: "#203B61",
                 QPalette.ColorRole.ButtonText: "#F1F5FB",
                 QPalette.ColorRole.Highlight: "#5796FF",
