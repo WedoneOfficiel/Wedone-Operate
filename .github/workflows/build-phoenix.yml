@@ -84,20 +84,27 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           frameworks = Path("dist/Wedone Operate Phoenix.app/Contents/Frameworks")
-          offenders = [
-              path for path in frameworks.rglob("*")
-              if path.is_dir() and (
-                  path.name.endswith(".app") or path.name.endswith("__dot__app")
-              )
-          ]
-          if offenders:
-              print("::error::A standalone Qt helper app was unexpectedly included in the runtime bundle")
-              for path in offenders:
+          forbidden = []
+          if frameworks.exists():
+              for path in frameworks.rglob("*"):
+                  relative = str(path.relative_to(frameworks)).lower()
+                  if "qtwebengine" in relative or path.name.lower() in {
+                      "assistant.app", "designer.app", "linguist.app",
+                      "assistant__dot__app", "designer__dot__app", "linguist__dot__app",
+                  }:
+                      forbidden.append(path)
+          if forbidden:
+              print("::error::Unused Qt WebEngine or Qt desktop tooling was included:")
+              for path in forbidden:
                   print(path)
               raise SystemExit(1)
-          print("No standalone Qt helper app bundles found.")
+          print("No unused Qt WebEngine or standalone Qt desktop tools found.")
           PY
           codesign --verify --deep --strict --verbose=2 "$app"
+      - name: Smoke-test packaged macOS application
+        run: |
+          app="dist/Wedone Operate Phoenix.app"
+          QT_QPA_PLATFORM=offscreen "$app/Contents/MacOS/Wedone Operate Phoenix" --smoke-test
       - name: Package
         run: ditto -c -k --sequesterRsrc --keepParent "dist/Wedone Operate Phoenix.app" "Wedone-Operate-Phoenix-macOS-arm64.zip"
       - uses: actions/upload-artifact@v4
