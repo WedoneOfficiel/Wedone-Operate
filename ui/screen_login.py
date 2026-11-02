@@ -298,7 +298,7 @@ class LoginScreen(QWidget):
                 initiales=cls["name"][:2].upper(),
                 label=cls["name"],
                 sublabel=f"{cls.get('level', 'CM2')}  ·  {nb} groupe{'s' if nb != 1 else ''}",
-                color="#0879C9",
+                color="primary",
                 size=(110, 100),
                 on_click=lambda _, c=cls: self._on_class_selected(c)
             )
@@ -308,7 +308,7 @@ class LoginScreen(QWidget):
                 initiales="…",
                 label="Sans classe",
                 sublabel=f"{len(unassigned)} élève{'s' if len(unassigned) > 1 else ''}",
-                color="#79748C",
+                color="muted",
                 size=(110, 100),
                 on_click=lambda _: self._on_unassigned_selected()
             )
@@ -333,7 +333,7 @@ class LoginScreen(QWidget):
                 initiales="•",
                 label="Élèves sans groupe",
                 sublabel=f"{len(ungrouped)} élève{'s' if len(ungrouped) > 1 else ''}",
-                color="#2998E5",
+                color="primary",
                 size=(130, 100),
                 on_click=lambda _, cid=class_id: self._on_ungrouped_selected(cid)
             )
@@ -345,7 +345,7 @@ class LoginScreen(QWidget):
                 initiales=grp["name"][:2].upper(),
                 label=grp["name"],
                 sublabel=level,
-                color="#269B70",
+                color="success",
                 size=(110, 100),
                 on_click=lambda _, g=grp: self._on_group_selected(g)
             )
@@ -381,8 +381,8 @@ class LoginScreen(QWidget):
         badge = QLabel(initiales)
         badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
         badge.setFixedSize(38, 38)
-        badge.setStyleSheet(f"background:{color};color:white;border-radius:19px;"
-                            "font-size:13px;font-weight:bold;")
+        badge.setProperty("class", f"avatar-{color}")
+        badge.setStyleSheet("font-size:13px;font-weight:bold;")
         br = QHBoxLayout(); br.setAlignment(Qt.AlignmentFlag.AlignCenter); br.addWidget(badge)
 
         lbl = QLabel(label)
