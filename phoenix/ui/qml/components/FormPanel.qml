@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 
 Rectangle {
     id: panel
@@ -11,11 +12,32 @@ Rectangle {
     default property alias content: body.data
 
     radius: 18
+    layer.enabled: true
+    layer.effect: MultiEffect {
+        shadowEnabled: true
+        shadowColor: panel.palette.shadow || "#26000000"
+        shadowBlur: 0.34
+        shadowOpacity: 0.18
+        shadowVerticalOffset: 5
+    }
+    gradient: Gradient {
+        GradientStop { position: 0.0; color: panel.palette.glassTop || "#F8FFFFFF" }
+        GradientStop { position: 1.0; color: panel.palette.glassBottom || (panel.palette.panel || "#E8FFFFFF") }
+    }
     color: palette.panel || palette.surface || "#FFFFFF"
     border.width: 1
     border.color: palette.border || "#E1E8F0"
     implicitWidth: 320
     implicitHeight: body.implicitHeight + 40
+
+    Rectangle {
+        anchors.fill: parent
+        radius: panel.radius
+        color: "transparent"
+        border.width: 1
+        border.color: panel.palette.glassHighlight || "#55FFFFFF"
+        opacity: 0.52
+    }
 
     ColumnLayout {
         id: body

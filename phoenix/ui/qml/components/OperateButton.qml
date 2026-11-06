@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 
 Button {
     id: control
@@ -29,6 +30,18 @@ Button {
 
     background: Rectangle {
         radius: control.controlRadius
+        layer.enabled: control.kind === "primary" && control.enabled
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: control.palette.shadow || "#33000000"
+            shadowBlur: 0.28
+            shadowOpacity: control.hovered ? 0.26 : 0.16
+            shadowVerticalOffset: control.hovered ? 4 : 2
+        }
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: control.kind === "primary" ? Qt.lighter(control.fillColor, 1.12) : "transparent" }
+            GradientStop { position: 1.0; color: control.kind === "primary" ? control.fillColor : "transparent" }
+        }
         color: {
             if (!control.enabled) return control.palette.surfaceAlt || "#F7FAFD"
             if (control.kind === "primary") return control.down || control.hovered ? control.hoverColor : control.fillColor

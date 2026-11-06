@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import QtQuick.Effects
 import "theme" as Theme
 import "components" as Components
 
@@ -44,6 +45,10 @@ ApplicationWindow {
             onAccent: p.onAccent,
             glow: p.accentSoft,
             glowSecondary: p.surfaceAlt,
+            shadow: p.shadow,
+            glassTop: p.glassTop,
+            glassBottom: p.glassBottom,
+            glassHighlight: p.glassHighlight,
             success: p.success,
             warning: p.warning,
             dangerSurface: p.surfaceAlt,
@@ -54,7 +59,11 @@ ApplicationWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: root.colors.bg
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: root.darkTheme ? "#111D2C" : "#F8FBFF" }
+            GradientStop { position: 0.52; color: root.colors.bg }
+            GradientStop { position: 1.0; color: root.darkTheme ? "#0B1420" : "#EAF1F9" }
+        }
 
         Rectangle {
             width: 500
@@ -62,8 +71,11 @@ ApplicationWindow {
             radius: 250
             x: parent.width - 250
             y: -220
-            color: root.colors.glow
-            opacity: 0.8
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: root.darkTheme ? "#554A9FE0" : "#668CCDF5" }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+            opacity: 0.48
         }
         Rectangle {
             width: 360
@@ -71,8 +83,11 @@ ApplicationWindow {
             radius: 180
             x: -190
             y: parent.height - 210
-            color: root.colors.glowSecondary
-            opacity: 0.8
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: root.darkTheme ? "#333C7DB8" : "#5576A9D8" }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+            opacity: 0.34
         }
     }
 
@@ -85,9 +100,20 @@ ApplicationWindow {
             y: 8
             width: parent.width - 40
             height: 56
-            radius: 17
-            color: root.colors.panel
-            border.color: root.colors.border
+            radius: 19
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: root.colors.shadow
+                shadowBlur: 0.38
+                shadowOpacity: 0.2
+                shadowVerticalOffset: 5
+            }
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: root.colors.glassTop }
+                GradientStop { position: 1.0; color: root.colors.panel }
+            }
+            border.color: root.colors.glassHighlight
             border.width: 1
             RowLayout {
                 anchors.fill: parent
@@ -429,6 +455,18 @@ ApplicationWindow {
         property string actionMode
         signal chosen(string mode)
         radius: 18
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: root.colors.shadow
+            shadowBlur: hover.hovered ? 0.42 : 0.28
+            shadowOpacity: hover.hovered ? 0.22 : 0.13
+            shadowVerticalOffset: hover.hovered ? 7 : 4
+        }
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: root.colors.glassTop }
+            GradientStop { position: 1.0; color: hover.hovered ? root.colors.surfaceHover : root.colors.surface }
+        }
         color: hover.hovered ? root.colors.surfaceHover : root.colors.surface
         border.width: hover.hovered ? 1.5 : 1
         border.color: hover.hovered ? root.colors.accent : root.colors.border
@@ -487,8 +525,20 @@ ApplicationWindow {
         width: 248
         height: parent.height - 28
         radius: 19
-        color: root.colors.panel
-        border.color: root.colors.border
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: root.colors.shadow
+            shadowBlur: 0.46
+            shadowOpacity: 0.2
+            shadowVerticalOffset: 7
+        }
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: root.colors.glassTop }
+            GradientStop { position: 1.0; color: root.colors.panel }
+        }
+        border.color: root.colors.glassHighlight
+        border.width: 1
         ColumnLayout {
             anchors.fill: parent
             anchors.leftMargin: 11

@@ -43,7 +43,10 @@ QtObject {
                 success: "#4CC99A",
                 warning: "#F0BF69",
                 danger: "#F08A9A",
-                shadow: "#55000000"
+                shadow: "#88000000",
+                glassTop: "#3AFFFFFF",
+                glassBottom: "#10111D2B",
+                glassHighlight: "#55FFFFFF"
             }
         }
         return {
@@ -61,7 +64,10 @@ QtObject {
             success: "#16845D",
             warning: "#99600D",
             danger: "#B73550",
-            shadow: "#180D2940"
+            shadow: "#260D2940",
+            glassTop: "#F8FFFFFF",
+            glassBottom: "#B8EAF2FA",
+            glassHighlight: "#FFFFFFFF"
         }
     }
 }
