@@ -9,8 +9,8 @@ ApplicationWindow {
     id: root
     width: 1240
     height: 820
-    minimumWidth: 820
-    minimumHeight: 620
+    minimumWidth: 980
+    minimumHeight: 680
     visible: true
     title: "Wedone Operate"
     color: root.colors.bg
@@ -449,9 +449,9 @@ ApplicationWindow {
         visible: root.page !== "welcome"
         x: 20
         y: 16
-        width: 252
+        width: 264
         height: parent.height - 32
-        radius: 22
+        radius: 24
         color: root.colors.panel
         border.color: root.colors.border
         ColumnLayout {
@@ -547,9 +547,9 @@ ApplicationWindow {
     }
 
     StackLayout {
-        x: (root.page === "welcome" ? 28 : 290) / root.uiScale
+        x: (root.page === "welcome" ? 32 : 300) / root.uiScale
         y: 16 / root.uiScale
-        width: (parent.width - (root.page === "welcome" ? 56 : 310)) / root.uiScale
+        width: (parent.width - (root.page === "welcome" ? 64 : 320)) / root.uiScale
         height: (parent.height - 32) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
@@ -603,7 +603,7 @@ ApplicationWindow {
                 contentWidth: availableWidth
 
                 ColumnLayout {
-                    width: Math.min(parent.width, 1120)
+                    width: Math.min(parent.width, 1240)
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     anchors.topMargin: 18
@@ -639,25 +639,30 @@ ApplicationWindow {
                         delegate: Rectangle {
                             required property var modelData
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 104
-                            radius: 18
+                            Layout.preferredHeight: 116
+                            radius: 20
                             color: root.colors.panel
                             border.color: root.colors.border
                             ColumnLayout {
-                                anchors.centerIn: parent
-                                spacing: 4
+                                anchors.fill: parent
+                                anchors.leftMargin: 22
+                                anchors.rightMargin: 18
+                                anchors.topMargin: 18
+                                anchors.bottomMargin: 18
+                                spacing: 7
                                 Label {
                                     text: modelData.value
                                     color: root.colors.accent
                                     font.pixelSize: 23
                                     font.weight: Font.Bold
-                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.alignment: Qt.AlignLeft
+                                    font.family: "Manrope"
                                 }
                                 Label {
                                     text: modelData.label
                                     color: root.colors.muted
                                     font.pixelSize: 12
-                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.alignment: Qt.AlignLeft
                                 }
                             }
                         }
@@ -739,10 +744,13 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignHCenter
                 }
 
-                ColumnLayout {
+                Components.FormPanel {
+                    title: "Accéder à son espace élève"
+                    subtitle: "Choisissez votre classe, votre groupe et votre profil pour retrouver vos exercices."
+                    palette: root.colors
                     visible: root.page === "area" && root.classroomArea === "student"
                     Layout.fillWidth: true
-                    spacing: 12
+                    Layout.alignment: Qt.AlignTop
                     Label { text: "Classe"; color: root.colors.textSecondary; font.pixelSize: 14; font.weight: Font.DemiBold }
                     AppComboBox {
                         id: studentClassSelect
@@ -829,10 +837,13 @@ ApplicationWindow {
                     }
                 }
 
-                ColumnLayout {
+                Components.FormPanel {
+                    title: "Espace professeur"
+                    subtitle: "Connectez-vous ou créez un profil pour gérer vos classes et les entraînements."
+                    palette: root.colors
                     visible: root.page === "area" && root.classroomArea === "teacher" && !appBridge.teacherAuthenticated
                     Layout.fillWidth: true
-                    spacing: 10
+                    Layout.alignment: Qt.AlignTop
                     Label { text: "Se connecter"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold }
                     AppComboBox {
                         id: teacherSelect
@@ -896,10 +907,18 @@ ApplicationWindow {
                     }
                 }
 
-                ColumnLayout {
+                GridLayout {
                     visible: root.page === "area" && root.classroomArea === "teacher" && appBridge.teacherAuthenticated
                     Layout.fillWidth: true
-                    spacing: 10
+                    columns: width >= 900 ? 2 : 1
+                    columnSpacing: 18
+                    rowSpacing: 18
+                    Components.FormPanel {
+                        title: "Mes classes"
+                        subtitle: "Créez une classe et organisez votre année scolaire."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                     Label { text: "Mes classes"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold }
                     Label {
                         visible: appBridge.classroomMessage !== ""
@@ -916,6 +935,13 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         onClicked: appBridge.createClass(newClassName.text, newClassYear.text)
                     }
+                    }
+                    Components.FormPanel {
+                        title: "Classes et groupes"
+                        subtitle: "Sélectionnez une classe pour modifier ses informations et structurer les groupes."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                     Label { text: "Gérer la classe sélectionnée"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
                     AppComboBox {
                         id: teacherClassSelect
@@ -997,6 +1023,13 @@ ApplicationWindow {
                         enabled: !!teacherClassSelect.currentValue
                         onClicked: appBridge.createStudent(teacherClassSelect.currentValue, newStudentName.text, teacherGroupSelect.currentValue || "")
                     }
+                    }
+                    Components.FormPanel {
+                        title: "Exercices"
+                        subtitle: "Préparez un entraînement et attribuez-le à la classe sélectionnée."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                     Label { text: "Assigner un exercice"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 18 }
                     AppTextField {
                         id: newExerciseName
@@ -1056,6 +1089,13 @@ ApplicationWindow {
                         textColor: root.colors.danger
                         onClicked: appBridge.archiveExercisePlan(teacherPlanSelect.currentValue)
                     }
+                    }
+                    Components.FormPanel {
+                        title: "Élèves et suivi"
+                        subtitle: "Gérez les profils, consultez les progrès et archivez les éléments terminés."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                     Label { text: "Archiver des éléments"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 16 }
                     RowLayout {
                         Layout.fillWidth: true
@@ -1191,6 +1231,7 @@ ApplicationWindow {
                     QuietButton { text: "Se déconnecter"; flat: true; Layout.alignment: Qt.AlignHCenter; onClicked: appBridge.logoutTeacher() }
                 }
 
+                    }
                 Label {
                     visible: root.page === "area" && appBridge.classroomMessage !== ""
                     text: appBridge.classroomMessage
@@ -1242,7 +1283,7 @@ ApplicationWindow {
                 clip: true
                 contentWidth: availableWidth
                 ColumnLayout {
-                    width: Math.min(parent.width, 820)
+                    width: Math.min(parent.width, 920)
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     anchors.topMargin: 24
@@ -1286,6 +1327,12 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
 
+                    Components.FormPanel {
+                        title: "Votre séance"
+                        subtitle: "Choisissez le contenu et le niveau de votre entraînement."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                 GridLayout {
                     visible: appBridge.questionTotal === 0
                     Layout.fillWidth: true
@@ -1354,10 +1401,14 @@ ApplicationWindow {
                     }
                 }
 
-                ColumnLayout {
+                    }
+                Components.FormPanel {
+                    title: "À vous de jouer"
+                    subtitle: "Répondez à chaque question et suivez votre progression."
+                    palette: root.colors
                     visible: appBridge.questionTotal > 0 && !appBridge.practiceFinished
                     Layout.fillWidth: true
-                    spacing: 18
+                    Layout.alignment: Qt.AlignTop
                     Label {
                         text: "Question " + appBridge.questionNumber + " / " + appBridge.questionTotal
                         color: root.colors.muted
@@ -1418,10 +1469,13 @@ ApplicationWindow {
                     }
                 }
 
-                ColumnLayout {
+                Components.FormPanel {
+                    title: "Séance terminée"
+                    subtitle: "Voici le récapitulatif de votre entraînement."
+                    palette: root.colors
                     visible: appBridge.practiceFinished
                     Layout.fillWidth: true
-                    spacing: 16
+                    Layout.alignment: Qt.AlignTop
                     Label {
                         text: "Séance terminée"
                         color: root.colors.text
@@ -1468,7 +1522,7 @@ ApplicationWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     anchors.topMargin: 24
-                    width: Math.min(parent.width, 900)
+                    width: Math.min(parent.width, 1040)
                     spacing: 18
 
                     Label {
@@ -1479,6 +1533,12 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignLeft
                     font.family: "Manrope"
                 }
+                    Components.FormPanel {
+                        title: "Apparence"
+                        subtitle: "Personnalisez l'apparence de Wedone Operate."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                 Label { text: "Apparence"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
                 AppComboBox {
                     id: themeModeSelect
@@ -1495,6 +1555,13 @@ ApplicationWindow {
                                   : appBridge.themeMode === "dark" ? 2 : 0
                     onActivated: appBridge.setThemeMode(currentValue)
                 }
+                    }
+                    Components.FormPanel {
+                        title: "Accessibilité"
+                        subtitle: "Adaptez l'interface à vos préférences de confort visuel."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                 Label { text: "Accessibilité"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
                 Label { text: "Taille de l'interface · " + Math.round(appBridge.uiScale * 100) + "%"; color: root.colors.textSecondary; font.pixelSize: 15 }
                 AppSlider {
@@ -1516,6 +1583,13 @@ ApplicationWindow {
                     checked: appBridge.reduceMotion
                     onToggled: appBridge.setReduceMotion(checked)
                 }
+                    }
+                    Components.FormPanel {
+                        title: "Données et sauvegardes"
+                        subtitle: "Importez, exportez et restaurez vos données en toute sécurité."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                 Label { text: "Données"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold; Layout.topMargin: 8 }
                 GridLayout {
                     columns: 2
@@ -1542,6 +1616,7 @@ ApplicationWindow {
                         onClicked: restoreDialog.open()
                     }
                 }
+                    }
                 QuietButton {
                     text: "Réinitialiser toutes les données"
                     flat: true
