@@ -5,7 +5,7 @@ TextField {
     id: field
     property var palette: ({})
     property int fieldRadius: 10
-    implicitHeight: 42
+    implicitHeight: 44
     leftPadding: 13
     rightPadding: 13
     font.family: "DM Sans"

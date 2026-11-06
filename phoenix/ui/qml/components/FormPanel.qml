@@ -9,25 +9,25 @@ Rectangle {
     property var palette: ({})
     default property alias content: body.data
 
-    radius: 16
+    radius: 18
     color: palette.panel || palette.surface || "#FFFFFF"
     border.width: 1
     border.color: palette.border || "#E1E8F0"
     implicitWidth: 320
-    implicitHeight: body.implicitHeight + 36
+    implicitHeight: body.implicitHeight + 40
 
     ColumnLayout {
         id: body
         anchors.fill: parent
-        anchors.margins: 18
-        spacing: 10
+        anchors.margins: 20
+        spacing: 11
 
         Label {
             visible: panel.title.length > 0
             text: panel.title
             color: panel.palette.text || "#172536"
             font.family: "Manrope"
-            font.pixelSize: 16
+            font.pixelSize: 17
             font.weight: Font.Bold
             Layout.fillWidth: true
             wrapMode: Text.WordWrap

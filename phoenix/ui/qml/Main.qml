@@ -172,11 +172,12 @@ ApplicationWindow {
 
     component AppTextField: Components.OperateTextField {
         palette: root.colors
+        implicitHeight: 44
     }
 
     component AppComboBox: ComboBox {
         id: combo
-        implicitHeight: 42
+        implicitHeight: 44
         font.family: "DM Sans"
         font.pixelSize: 13
         contentItem: AppText {
@@ -245,7 +246,7 @@ ApplicationWindow {
 
     component AppSpinBox: SpinBox {
         id: numberField
-        implicitHeight: 42
+        implicitHeight: 44
         font.family: "DM Sans"
         font.pixelSize: 13
         contentItem: TextInput {
@@ -682,6 +683,8 @@ ApplicationWindow {
                     font.pixelSize: 14
                     Layout.alignment: Qt.AlignLeft
                     Layout.bottomMargin: 2
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
                 }
 
                 RowLayout {
@@ -752,9 +755,13 @@ ApplicationWindow {
                             Layout.preferredWidth: 300
                             Layout.minimumWidth: 0
                             height: 190
-                            radius: 16
-                            color: root.colors.surface
-                            border.color: root.colors.border
+                            radius: 18
+                            color: hoverArea.hovered ? root.colors.surfaceHover : root.colors.surface
+                            border.width: hoverArea.hovered ? 1.5 : 1
+                            border.color: hoverArea.hovered ? root.colors.accent : root.colors.border
+                            Behavior on color { ColorAnimation { duration: 130 } }
+                            Behavior on border.color { ColorAnimation { duration: 130 } }
+                            HoverHandler { id: hoverArea }
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.margins: 22
@@ -840,13 +847,32 @@ ApplicationWindow {
                         onActivated: appBridge.selectStudent(currentValue)
                     }
 
-                    AppLabel {
+                    Rectangle {
                         visible: !!studentProfileSelect.currentValue
-                        text: root.progressSummary.sessions === 0 ? "Pas encore de résultat pour cet élève." : "Séances : " + root.progressSummary.sessions + " · Réponses : " + root.progressSummary.answered + " · Réussite : " + (root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%")
-                        color: root.colors.muted
-                        font.pixelSize: 12
-                        wrapMode: Text.WordWrap
                         Layout.fillWidth: true
+                        implicitHeight: studentSummary.implicitHeight + 22
+                        radius: 10
+                        color: root.colors.surfaceHover
+                        border.color: root.colors.border
+                        ColumnLayout {
+                            id: studentSummary
+                            anchors.fill: parent
+                            anchors.margins: 11
+                            spacing: 3
+                            AppLabel {
+                                text: "Votre progression"
+                                color: root.colors.text
+                                font.pixelSize: 12
+                                font.weight: Font.Bold
+                            }
+                            AppLabel {
+                                text: root.progressSummary.sessions === 0 ? "Pas encore de résultat pour cet élève." : root.progressSummary.sessions + " séances · " + root.progressSummary.answered + " réponses · " + (root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "% de réussite")
+                                color: root.colors.muted
+                                font.pixelSize: 12
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                            }
+                        }
                     }
                     AppLabel {
                         text: "Exercices proposés par le professeur"

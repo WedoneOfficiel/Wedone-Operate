@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: card
     property var palette: ({})
-    property int cardRadius: 16
+    property int cardRadius: 18
     property bool interactive: false
     property bool selected: false
     default property alias content: body.data
@@ -21,7 +21,7 @@ Rectangle {
     Item {
         id: body
         anchors.fill: parent
-        anchors.margins: 18
+        anchors.margins: 20
     }
 
     HoverHandler {
