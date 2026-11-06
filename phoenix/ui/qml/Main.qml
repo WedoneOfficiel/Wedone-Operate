@@ -1286,11 +1286,19 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
 
-                ColumnLayout {
+                GridLayout {
                     visible: appBridge.questionTotal === 0
                     Layout.fillWidth: true
-                    spacing: 12
-                    Label { text: "Compétence"; color: root.colors.textSecondary; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    columns: 2
+                    columnSpacing: 22
+                    rowSpacing: 12
+                    Label {
+                        text: "Compétence"
+                        color: root.colors.textSecondary
+                        font.pixelSize: 14
+                        font.weight: Font.DemiBold
+                        Layout.fillWidth: true
+                    }
                     AppComboBox {
                         id: skillSelect
                         Layout.fillWidth: true
@@ -1299,7 +1307,13 @@ ApplicationWindow {
                         valueRole: "id"
                         model: JSON.parse(appBridge.skillsJson)
                     }
-                    Label { text: "Nombre de questions"; color: root.colors.textSecondary; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    Label {
+                        text: "Nombre de questions"
+                        color: root.colors.textSecondary
+                        font.pixelSize: 14
+                        font.weight: Font.DemiBold
+                        Layout.fillWidth: true
+                    }
                     AppSpinBox {
                         id: countSelect
                         from: 5
@@ -1307,8 +1321,15 @@ ApplicationWindow {
                         value: 10
                         editable: true
                         implicitHeight: 48
+                        Layout.fillWidth: true
                     }
-                    Label { text: "Difficulté"; color: root.colors.textSecondary; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    Label {
+                        text: "Difficulté"
+                        color: root.colors.textSecondary
+                        font.pixelSize: 14
+                        font.weight: Font.DemiBold
+                        Layout.fillWidth: true
+                    }
                     AppComboBox {
                         id: difficultySelect
                         Layout.fillWidth: true
@@ -1326,7 +1347,9 @@ ApplicationWindow {
                     PrimaryButton {
                         text: "Lancer l'entraînement"
                         Layout.fillWidth: true
-                        Layout.topMargin: 8
+                        Layout.columnSpan: 2
+                        Layout.topMargin: 10
+                        implicitHeight: 52
                         onClicked: appBridge.startPractice(skillSelect.currentValue, countSelect.value, difficultySelect.currentValue)
                     }
                 }
