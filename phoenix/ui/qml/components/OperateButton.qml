@@ -5,15 +5,15 @@ Button {
     id: control
     property string kind: "primary" // primary, secondary, quiet, danger
     property var palette: ({})
-    property int controlRadius: 14
+    property int controlRadius: 11
     property color fillColor: palette.accent || "#167CC2"
     property color hoverColor: palette.accentHover || "#1168A5"
     property color textColor: kind === "primary" ? (palette.onAccent || "#FFFFFF") : (palette.text || "#172536")
-    implicitHeight: 48
-    leftPadding: 17
-    rightPadding: 17
+    implicitHeight: 42
+    leftPadding: 15
+    rightPadding: 15
     font.family: "DM Sans"
-    font.pixelSize: 14
+    font.pixelSize: 13
     font.weight: Font.DemiBold
 
     contentItem: Text {
