@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import "theme" as Theme
 
 ApplicationWindow {
     id: root
@@ -20,26 +21,33 @@ ApplicationWindow {
     property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
     property string themeMode: appBridge.themeMode
-    property bool darkTheme: themeMode === "dark" || (themeMode === "system" && appBridge.systemDark)
-    property var colors: darkTheme ? ({
-        bg: "#151B26", surface: "#202A39", panel: "#D91F2B3B", input: "#182333",
-        surfaceHover: "#2B394D", border: "#34445A", borderHover: "#526985",
-        text: "#F2F6FC", muted: "#A8B6C9", textSecondary: "#D0D9E6",
-        accent: "#3296D8", accentHover: "#247DBB", accentSoft: "#203D56",
-        accentHoverSoft: "#294B68", accentInk: "#B9E2FF",
-        glow: "#1D3B58", glowSecondary: "#1A344B",
-        success: "#48C69A", warning: "#F2BD69",
-        dangerSurface: "#492E3C", dangerHover: "#5C394B", danger: "#F29AAA"
-    }) : ({
-        bg: "#F5F8FC", surface: "#FFFFFF", panel: "#EFFFFFFF", input: "#FFFFFF",
-        surfaceHover: "#EDF3F9", border: "#DCE5EF", borderHover: "#B8CADC",
-        text: "#202B3A", muted: "#74849A", textSecondary: "#52647A",
-        accent: "#167CC2", accentHover: "#1168A5", accentSoft: "#E7F2FC",
-        accentHoverSoft: "#D7EAF9", accentInk: "#125F98",
-        glow: "#E5F1FC", glowSecondary: "#EAF3FA",
-        success: "#16845D", warning: "#A96B16",
-        dangerSurface: "#FCEDEF", dangerHover: "#F8DCE2", danger: "#B73550"
-    })
+    property bool darkTheme: themeMode === "dark" || (themeMode === "system" &    property var colors: {
+        var p = Theme.OperateTheme.palette(darkTheme, appBridge.highContrast)
+        return {
+            bg: p.background,
+            surface: p.surface,
+            panel: darkTheme ? "#E51A2635" : "#EFFFFFFF",
+            input: p.surface,
+            surfaceHover: p.surfaceAlt,
+            border: p.border,
+            borderHover: p.accent,
+            text: p.text,
+            muted: p.muted,
+            textSecondary: p.muted,
+            accent: p.accent,
+            accentHover: p.accentHover,
+            accentSoft: p.accentSoft,
+            accentHoverSoft: p.accentSoft,
+            accentInk: p.accent,
+            glow: p.accentSoft,
+            glowSecondary: p.surfaceAlt,
+            success: p.success,
+            warning: p.warning,
+            dangerSurface: p.surfaceAlt,
+            dangerHover: p.accentSoft,
+            danger: p.danger
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
