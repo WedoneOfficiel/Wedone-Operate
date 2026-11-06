@@ -1501,88 +1501,210 @@ ApplicationWindow {
                     }
                 Components.FormPanel {
                     title: "À vous de jouer"
-                    subtitle: "Répondez à chaque question et suivez votre progression."
+                    subtitle: "Concentrez-vous sur une question à la fois. Vous avancez à votre rythme."
                     palette: root.colors
                     visible: appBridge.questionTotal > 0 && !appBridge.practiceFinished
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
-                    AppLabel {
-                        text: "Question " + appBridge.questionNumber + " / " + appBridge.questionTotal
-                        color: root.colors.muted
-                        font.pixelSize: 15
-                        Layout.alignment: Qt.AlignHCenter
+                    spacing: 18
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+                        Rectangle {
+                            Layout.preferredWidth: 42
+                            Layout.preferredHeight: 42
+                            radius: 13
+                            color: root.colors.accentSoft
+                            AppLabel {
+                                anchors.centerIn: parent
+                                text: "✦"
+                                color: root.colors.accent
+                                font.pixelSize: 19
+                                font.weight: Font.Bold
+                            }
+                        }
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 2
+                            AppLabel {
+                                text: "Votre progression"
+                                color: root.colors.text
+                                font.pixelSize: 14
+                                font.weight: Font.DemiBold
+                            }
+                            AppLabel {
+                                text: "Question " + appBridge.questionNumber + " sur " + appBridge.questionTotal
+                                color: root.colors.muted
+                                font.pixelSize: 12
+                            }
+                        }
+                        Rectangle {
+                            Layout.preferredWidth: 62
+                            Layout.preferredHeight: 30
+                            radius: 15
+                            color: root.colors.surfaceHover
+                            AppLabel {
+                                anchors.centerIn: parent
+                                text: Math.round(appBridge.questionNumber / Math.max(1, appBridge.questionTotal) * 100) + "%"
+                                color: root.colors.accent
+                                font.pixelSize: 12
+                                font.weight: Font.Bold
+                            }
+                        }
                     }
+
                     Rectangle {
                         Layout.fillWidth: true
-                        height: 8
+                        height: 7
                         radius: 4
                         color: root.colors.border
+                        clip: true
                         Rectangle {
                             width: parent.width * appBridge.questionNumber / Math.max(1, appBridge.questionTotal)
                             height: parent.height
                             radius: 4
                             color: root.colors.accent
+                            Behavior on width { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
                         }
                     }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.topMargin: 2
+                        Layout.bottomMargin: 2
+                        implicitHeight: 174
+                        radius: 16
+                        color: root.colors.surfaceHover
+                        border.color: root.colors.border
+                        ColumnLayout {
+                            anchors.centerIn: parent
+                            spacing: 8
+                            AppLabel {
+                                text: "CALCULEZ"
+                                color: root.colors.muted
+                                font.pixelSize: 10
+                                font.weight: Font.Bold
+                                font.letterSpacing: 1.5
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                            AppLabel {
+                                text: appBridge.questionPrompt
+                                color: root.colors.text
+                                font.pixelSize: 46
+                                font.weight: Font.Bold
+                                font.family: "Manrope"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                        }
+                    }
+
                     AppLabel {
-                        text: appBridge.questionPrompt
-                        color: root.colors.text
-                        font.pixelSize: 42
-                        font.weight: Font.Bold
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.topMargin: 20
+                        text: "Votre réponse"
+                        color: root.colors.textSecondary
+                        font.pixelSize: 13
+                        font.weight: Font.DemiBold
                     }
                     AppTextField {
                         id: answerInput
                         Layout.fillWidth: true
-                        implicitHeight: 58
+                        implicitHeight: 60
                         enabled: !appBridge.answerSubmitted
-                        placeholderText: "Votre réponse"
+                        placeholderText: "Écrivez votre résultat…"
                         horizontalAlignment: TextInput.AlignHCenter
                         font.pixelSize: 23
                         onAccepted: if (!appBridge.answerSubmitted) appBridge.submitAnswer(text)
                     }
-                    AppLabel {
+                    Rectangle {
                         visible: appBridge.answerSubmitted
-                        text: appBridge.feedback
-                        color: appBridge.feedback === "Bonne réponse !" ? root.colors.success : root.colors.warning
-                        font.pixelSize: 16
-                        Layout.alignment: Qt.AlignHCenter
+                        Layout.fillWidth: true
+                        implicitHeight: feedbackLabel.implicitHeight + 24
+                        radius: 11
+                        color: appBridge.feedback === "Bonne réponse !" ? root.colors.accentSoft : root.colors.surfaceHover
+                        border.color: appBridge.feedback === "Bonne réponse !" ? root.colors.success : root.colors.warning
+                        AppLabel {
+                            id: feedbackLabel
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            text: appBridge.feedback
+                            color: appBridge.feedback === "Bonne réponse !" ? root.colors.success : root.colors.warning
+                            font.pixelSize: 14
+                            font.weight: Font.DemiBold
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                            wrapMode: Text.WordWrap
+                        }
                     }
                     PrimaryButton {
                         visible: !appBridge.answerSubmitted
-                        text: "Valider"
+                        text: "Vérifier ma réponse  →"
                         Layout.fillWidth: true
+                        implicitHeight: 50
                         onClicked: appBridge.submitAnswer(answerInput.text)
                     }
                     PrimaryButton {
                         visible: appBridge.answerSubmitted
-                        text: appBridge.questionNumber === appBridge.questionTotal ? "Voir le résultat" : "Question suivante"
+                        text: appBridge.questionNumber === appBridge.questionTotal ? "Terminer la séance  →" : "Continuer  →"
                         Layout.fillWidth: true
+                        implicitHeight: 50
                         onClicked: {
                             answerInput.text = ""
                             appBridge.nextQuestion()
                         }
                     }
+                    AppLabel {
+                        text: "Astuce : appuyez sur Entrée pour valider votre réponse."
+                        color: root.colors.muted
+                        font.pixelSize: 11
+                        Layout.alignment: Qt.AlignHCenter
+                    }
                 }
 
                 Components.FormPanel {
                     title: "Séance terminée"
-                    subtitle: "Voici le récapitulatif de votre entraînement."
+                    subtitle: "Bravo pour votre effort. Voici le récapitulatif de votre entraînement."
                     palette: root.colors
                     visible: appBridge.practiceFinished
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
-                    AppLabel {
-                        text: appBridge.scoreText
-                        color: root.colors.accent
-                        font.pixelSize: 23
-                        font.weight: Font.DemiBold
-                        Layout.alignment: Qt.AlignHCenter
+                    spacing: 18
+                    Rectangle {
+                        Layout.fillWidth: true
+                        implicitHeight: 170
+                        radius: 16
+                        color: root.colors.accentSoft
+                        border.color: root.colors.border
+                        ColumnLayout {
+                            anchors.centerIn: parent
+                            spacing: 9
+                            AppLabel {
+                                text: "SÉANCE ACCOMPLIE"
+                                color: root.colors.accent
+                                font.pixelSize: 10
+                                font.weight: Font.Bold
+                                font.letterSpacing: 1.4
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                            AppLabel {
+                                text: appBridge.scoreText
+                                color: root.colors.text
+                                font.pixelSize: 26
+                                font.weight: Font.Bold
+                                font.family: "Manrope"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                            AppLabel {
+                                text: "Chaque séance vous fait progresser."
+                                color: root.colors.textSecondary
+                                font.pixelSize: 12
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                        }
                     }
                     PrimaryButton {
                         text: root.currentMode === "classroom" ? "Retour à l'espace élève" : "Retour à l'espace individuel"
                         Layout.fillWidth: true
+                        implicitHeight: 50
                         onClicked: {
                             appBridge.abandonPractice()
                             root.page = root.currentMode === "classroom" ? "area" : "home"
