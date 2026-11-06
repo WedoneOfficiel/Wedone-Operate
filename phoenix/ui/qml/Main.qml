@@ -1093,8 +1093,8 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
-                        title: "Élèves et suivi"
-                        subtitle: "Gérez les profils, consultez les progrès et archivez les éléments terminés."
+                        title: "Archivage"
+                        subtitle: "Archivez une classe ou un groupe sans perdre l'historique associé."
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
@@ -1129,6 +1129,12 @@ ApplicationWindow {
                             }
                         }
                     }
+                    Components.FormPanel {
+                        title: "Élèves et suivi"
+                        subtitle: "Sélectionnez un élève pour modifier son profil et consulter ses résultats."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                     AppComboBox {
                         id: teacherStudentSelect
                         Layout.fillWidth: true
@@ -1223,7 +1229,13 @@ ApplicationWindow {
                             archiveConfirmation.open()
                         }
                     }
-                    Label { text: "Modifier mon profil"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+                    }
+                    Components.FormPanel {
+                        title: "Mon profil"
+                        subtitle: "Modifiez votre nom affiché ou fermez votre session."
+                        palette: root.colors
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                     AppTextField { id: teacherDisplayName; Layout.fillWidth: true; implicitHeight: 44; placeholderText: "Nouveau nom affiché"; onAccepted: appBridge.updateTeacherProfile(text) }
                     PrimaryButton {
                         text: "Enregistrer le profil"
@@ -1231,6 +1243,7 @@ ApplicationWindow {
                         onClicked: appBridge.updateTeacherProfile(teacherDisplayName.text)
                     }
                     QuietButton { text: "Se déconnecter"; flat: true; Layout.alignment: Qt.AlignHCenter; onClicked: appBridge.logoutTeacher() }
+                    }
                 }
 
                     }
