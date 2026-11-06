@@ -22,7 +22,8 @@ ApplicationWindow {
     property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
     property string themeMode: appBridge.themeMode
-    property bool darkTheme: themeMode === "dark" || (themeMode === "system" &    property var colors: {
+    property bool darkTheme: themeMode === "dark" || (themeMode === "system" && appBridge.systemDark)
+    property var colors: {
         var p = Theme.OperateTheme.palette(darkTheme, appBridge.highContrast)
         return {
             bg: p.background,
