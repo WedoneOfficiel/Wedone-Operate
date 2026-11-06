@@ -376,17 +376,20 @@ ApplicationWindow {
     component NavButton: Button {
         id: navControl
         property bool active: false
-        implicitHeight: 42
-        leftPadding: 12
-        rightPadding: 12
+        property string symbol: "•"
+        implicitHeight: 43
+        leftPadding: 11
+        rightPadding: 11
         contentItem: RowLayout {
             spacing: 11
-            Rectangle {
-                Layout.preferredWidth: 7
-                Layout.preferredHeight: 7
-                radius: 4
-                color: navControl.active ? root.colors.accent : root.colors.muted
-                opacity: navControl.active ? 1 : 0.55
+            AppText {
+                Layout.preferredWidth: 19
+                text: navControl.symbol
+                color: navControl.active ? root.colors.accent : (navControl.hovered ? root.colors.text : root.colors.muted)
+                font.pixelSize: 15
+                font.weight: navControl.active ? Font.Bold : Font.Medium
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
             AppText {
                 Layout.fillWidth: true
@@ -394,20 +397,28 @@ ApplicationWindow {
                 color: navControl.active ? root.colors.accentInk : (navControl.hovered ? root.colors.text : root.colors.muted)
                 font.family: "DM Sans"
                 font.pixelSize: 13
-                font.weight: navControl.active ? Font.Bold : Font.DemiBold
+                font.weight: navControl.active ? Font.Bold : Font.Medium
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
             }
+            Rectangle {
+                visible: navControl.active
+                Layout.preferredWidth: 5
+                Layout.preferredHeight: 5
+                radius: 3
+                color: root.colors.accent
+            }
         }
         background: Rectangle {
-            radius: 9
+            radius: 10
             color: navControl.active ? root.colors.accentSoft
                   : navControl.down || navControl.hovered ? root.colors.surfaceHover : "transparent"
-            border.width: navControl.active || navControl.hovered || navControl.activeFocus ? 1 : 0
+            border.width: navControl.active ? 1 : navControl.hovered || navControl.activeFocus ? 1 : 0
             border.color: navControl.active ? root.colors.accent : root.colors.border
+            Behavior on color { ColorAnimation { duration: 120 } }
+            Behavior on border.color { ColorAnimation { duration: 120 } }
         }
-        Behavior on opacity { NumberAnimation { duration: 120 } }
     }
 
     component ModeCard: Rectangle {
@@ -532,11 +543,21 @@ ApplicationWindow {
                     }
                 }
             }
-            Item { Layout.preferredHeight: 8 }
-            NavButton { text: "Vue d'ensemble"; active: root.page === "home"; Layout.fillWidth: true; onClicked: root.page = "home" }
+            Item { Layout.preferredHeight: 10 }
+            AppLabel {
+                text: "ESPACE DE TRAVAIL"
+                color: root.colors.muted
+                font.pixelSize: 9
+                font.weight: Font.Bold
+                font.letterSpacing: 1.1
+                Layout.leftMargin: 10
+                Layout.bottomMargin: 3
+            }
+            NavButton { text: "Vue d'ensemble"; symbol: "⌂"; active: root.page === "home"; Layout.fillWidth: true; onClicked: root.page = "home" }
             NavButton {
                 visible: root.currentMode === "classroom"
                 text: "Espace professeur"
+                symbol: "▤"
                 active: root.page === "area" && root.classroomArea === "teacher"
                 Layout.fillWidth: true
                 onClicked: { root.classroomArea = "teacher"; root.page = "area" }
@@ -544,13 +565,25 @@ ApplicationWindow {
             NavButton {
                 visible: root.currentMode === "classroom"
                 text: "Espace élève"
+                symbol: "◎"
                 active: root.page === "area" && root.classroomArea === "student"
                 Layout.fillWidth: true
                 onClicked: { root.classroomArea = "student"; root.page = "area" }
             }
-            NavButton { text: "Entraînement"; active: root.page === "practice"; Layout.fillWidth: true; onClicked: root.page = "practice" }
+            NavButton { text: "Entraînement"; symbol: "↗"; active: root.page === "practice"; Layout.fillWidth: true; onClicked: root.page = "practice" }
+            Item { Layout.preferredHeight: 7 }
+            AppLabel {
+                text: "PRÉFÉRENCES"
+                color: root.colors.muted
+                font.pixelSize: 9
+                font.weight: Font.Bold
+                font.letterSpacing: 1.1
+                Layout.leftMargin: 10
+                Layout.bottomMargin: 3
+            }
             NavButton {
                 text: "Paramètres"
+                symbol: "⚙"
                 active: root.page === "settings"
                 Layout.fillWidth: true
                 onClicked: { root.settingsReturnPage = root.page; root.page = "settings" }
@@ -563,7 +596,7 @@ ApplicationWindow {
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
             }
-            NavButton { text: "Changer de mode"; Layout.fillWidth: true; onClicked: appBridge.returnToModeChoice() }
+            NavButton { text: "Changer de mode"; symbol: "⇄"; Layout.fillWidth: true; onClicked: appBridge.returnToModeChoice() }
         }
     }
 
