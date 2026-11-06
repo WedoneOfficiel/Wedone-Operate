@@ -5,7 +5,7 @@ Button {
     id: control
     property string kind: "primary" // primary, secondary, quiet, danger
     property var palette: ({})
-    property int controlRadius: 11
+    property int controlRadius: 10
     property color fillColor: palette.accent || "#167CC2"
     property color hoverColor: palette.accentHover || "#1168A5"
     property color textColor: kind === "primary" ? (palette.onAccent || "#FFFFFF") : (palette.text || "#172536")
@@ -34,7 +34,9 @@ Button {
             if (control.kind === "secondary") return control.down || control.hovered ? (control.palette.accentSoft || "#E8F3FC") : (control.palette.surface || "#FFFFFF")
             return control.hovered ? (control.palette.surfaceAlt || "#F7FAFD") : "transparent"
         }
-        border.width: control.kind === "secondary" ? 1 : 0
-        border.color: control.palette.border || "#E1E8F0"
+        border.width: control.activeFocus ? 2 : control.kind === "secondary" ? 1 : 0
+        border.color: control.activeFocus ? (control.palette.accent || "#167CC2") : (control.palette.border || "#E1E8F0")
+        Behavior on color { ColorAnimation { duration: 110 } }
+        Behavior on border.color { ColorAnimation { duration: 110 } }
     }
 }
