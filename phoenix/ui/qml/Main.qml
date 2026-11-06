@@ -77,15 +77,15 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        implicitHeight: 88
+        implicitHeight: 92
         padding: 0
         background: Item {}
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             y: 12
-            width: parent.width - 40
-            height: 64
-            radius: 20
+            width: parent.width - 48
+            height: 66
+            radius: 22
             color: root.colors.panel
             border.color: root.colors.border
             border.width: 1
@@ -398,21 +398,23 @@ ApplicationWindow {
         property string symbol
         property string actionMode
         signal chosen(string mode)
-        radius: 22
-        color: root.colors.surface
-        border.width: 1
-        border.color: root.colors.border
-        implicitWidth: 320
-        implicitHeight: 260
+        radius: 24
+        color: hover.hovered ? root.colors.surfaceHover : root.colors.surface
+        border.width: hover.hovered ? 1.5 : 1
+        border.color: hover.hovered ? root.colors.accent : root.colors.border
+        implicitWidth: 340
+        implicitHeight: 286
+
+        HoverHandler { id: hover }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 26
-            spacing: 14
+            anchors.margins: 28
+            spacing: 16
             Rectangle {
-                width: 54
-                height: 54
-                radius: 16
+                width: 60
+                height: 60
+                radius: 18
                 color: root.colors.accentSoft
                 Text {
                     anchors.centerIn: parent
@@ -458,9 +460,9 @@ ApplicationWindow {
             anchors.fill: parent
             anchors.leftMargin: 12
             anchors.rightMargin: 12
-            anchors.topMargin: 18
-            anchors.bottomMargin: 14
-            spacing: 8
+            anchors.topMargin: 20
+            anchors.bottomMargin: 16
+            spacing: 9
             Label {
                 text: "VOTRE ESPACE"
                 color: root.colors.muted
@@ -612,7 +614,7 @@ ApplicationWindow {
                 Label {
                     text: root.currentMode === "individual" ? "Votre espace de pratique" : "Espace classe"
                     color: root.colors.text
-                    font.pixelSize: 34
+                    font.pixelSize: 36
                     font.weight: Font.Bold
                     Layout.alignment: Qt.AlignLeft
                     font.family: "Manrope"
@@ -636,13 +638,12 @@ ApplicationWindow {
                             { label: "Réponses", value: root.progressSummary.answered },
                             { label: "Réussite", value: root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%" }
                         ]
-                        delegate: Rectangle {
+                        delegate: Components.SurfaceCard {
                             required property var modelData
+                            palette: root.colors
+                            interactive: true
                             Layout.fillWidth: true
                             Layout.preferredHeight: 116
-                            radius: 20
-                            color: root.colors.panel
-                            border.color: root.colors.border
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.leftMargin: 22
@@ -741,7 +742,8 @@ ApplicationWindow {
                     color: root.colors.text
                     font.pixelSize: 28
                     font.weight: Font.DemiBold
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignLeft
+                    font.family: "Manrope"
                 }
 
                 Components.FormPanel {
@@ -919,7 +921,7 @@ ApplicationWindow {
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                    Label { text: "Mes classes"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold }
+
                     Label {
                         visible: appBridge.classroomMessage !== ""
                         text: appBridge.classroomMessage
@@ -942,7 +944,7 @@ ApplicationWindow {
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                    Label { text: "Gérer la classe sélectionnée"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 10 }
+
                     AppComboBox {
                         id: teacherClassSelect
                         Layout.fillWidth: true
@@ -1030,7 +1032,7 @@ ApplicationWindow {
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                    Label { text: "Assigner un exercice"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 18 }
+
                     AppTextField {
                         id: newExerciseName
                         Layout.fillWidth: true
@@ -1096,7 +1098,7 @@ ApplicationWindow {
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                    Label { text: "Archiver des éléments"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 16 }
+
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
@@ -1539,7 +1541,7 @@ ApplicationWindow {
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                Label { text: "Apparence"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
+
                 AppComboBox {
                     id: themeModeSelect
                     Layout.fillWidth: true
@@ -1562,7 +1564,7 @@ ApplicationWindow {
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                Label { text: "Accessibilité"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
+
                 Label { text: "Taille de l'interface · " + Math.round(appBridge.uiScale * 100) + "%"; color: root.colors.textSecondary; font.pixelSize: 15 }
                 AppSlider {
                     id: scaleSlider
@@ -1590,7 +1592,7 @@ ApplicationWindow {
                         palette: root.colors
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
-                Label { text: "Données"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold; Layout.topMargin: 8 }
+
                 GridLayout {
                     columns: 2
                     columnSpacing: 12
@@ -1683,6 +1685,13 @@ ApplicationWindow {
         modal: true
         standardButtons: Dialog.Yes | Dialog.No
         anchors.centerIn: parent
+        width: 440
+        padding: 22
+        background: Rectangle {
+            radius: 20
+            color: root.colors.surface
+            border.color: root.colors.border
+        }
         Label {
             text: "L'élément ne sera plus proposé dans les listes actives. Les résultats et l'historique associés seront conservés."
             wrapMode: Text.WordWrap
@@ -1700,6 +1709,13 @@ ApplicationWindow {
         modal: true
         standardButtons: Dialog.Yes | Dialog.No
         anchors.centerIn: parent
+        width: 480
+        padding: 24
+        background: Rectangle {
+            radius: 20
+            color: root.colors.surface
+            border.color: root.colors.border
+        }
         Label {
             text: "Toutes les classes, tous les profils, les réglages et l'historique Phoenix seront supprimés. Une sauvegarde de sécurité sera créée avant l'opération."
             wrapMode: Text.WordWrap
