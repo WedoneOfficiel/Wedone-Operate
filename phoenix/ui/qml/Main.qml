@@ -1237,10 +1237,16 @@ ApplicationWindow {
         }
 
         Item {
-            ColumnLayout {
-                anchors.centerIn: parent
-                width: Math.min(parent.width, 680)
-                spacing: 18
+            ScrollView {
+                anchors.fill: parent
+                clip: true
+                contentWidth: availableWidth
+                ColumnLayout {
+                    width: Math.min(parent.width, 820)
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 24
+                    spacing: 20
 
                 Label {
                     visible: appBridge.questionTotal === 0
@@ -1248,7 +1254,8 @@ ApplicationWindow {
                     color: root.colors.text
                     font.pixelSize: 32
                     font.weight: Font.Bold
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignLeft
+                    font.family: "Manrope"
                 }
 
                 RowLayout {
@@ -1427,6 +1434,7 @@ ApplicationWindow {
                     }
                 }
             }
+            }
         }
 
         Item {
@@ -1435,15 +1443,18 @@ ApplicationWindow {
                 contentWidth: availableWidth
                 ColumnLayout {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    width: Math.min(parent.width, 660)
-                    spacing: 16
+                    anchors.top: parent.top
+                    anchors.topMargin: 24
+                    width: Math.min(parent.width, 900)
+                    spacing: 18
 
                     Label {
                     text: "Paramètres"
                     color: root.colors.text
                     font.pixelSize: 32
                     font.weight: Font.Bold
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignLeft
+                    font.family: "Manrope"
                 }
                 Label { text: "Apparence"; color: root.colors.accent; font.pixelSize: 18; font.weight: Font.DemiBold }
                 AppComboBox {
