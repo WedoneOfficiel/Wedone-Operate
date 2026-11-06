@@ -851,10 +851,29 @@ ApplicationWindow {
                             Layout.minimumWidth: 0
                             height: 190
                             radius: 18
-                            color: hoverArea.hovered ? root.colors.surfaceHover : root.colors.surface
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                shadowEnabled: true
+                                shadowColor: root.colors.shadow
+                                shadowBlur: hoverArea.hovered ? 0.38 : 0.24
+                                shadowOpacity: hoverArea.hovered ? 0.20 : 0.12
+                                shadowVerticalOffset: hoverArea.hovered ? 6 : 3
+                            }
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: root.colors.glassTop }
+                                GradientStop { position: 1.0; color: hoverArea.hovered ? root.colors.surfaceHover : root.colors.panel }
+                            }
                             border.width: hoverArea.hovered ? 1.5 : 1
-                            border.color: hoverArea.hovered ? root.colors.accent : root.colors.border
-                            Behavior on color { ColorAnimation { duration: 130 } }
+                            border.color: hoverArea.hovered ? root.colors.accent : root.colors.glassHighlight
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: 1
+                                radius: parent.radius - 1
+                                color: "transparent"
+                                border.width: 1
+                                border.color: root.colors.border
+                                opacity: 0.52
+                            }
                             Behavior on border.color { ColorAnimation { duration: 130 } }
                             HoverHandler { id: hoverArea }
                             ColumnLayout {

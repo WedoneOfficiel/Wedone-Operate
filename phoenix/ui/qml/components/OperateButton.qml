@@ -39,20 +39,42 @@ Button {
             shadowVerticalOffset: control.hovered ? 4 : 2
         }
         gradient: Gradient {
-            GradientStop { position: 0.0; color: control.kind === "primary" ? Qt.lighter(control.fillColor, 1.12) : "transparent" }
-            GradientStop { position: 1.0; color: control.kind === "primary" ? control.fillColor : "transparent" }
+            GradientStop {
+                position: 0.0
+                color: {
+                    if (!control.enabled) return control.palette.surfaceAlt || "#F7FAFD"
+                    if (control.kind === "primary") return Qt.lighter(control.down || control.hovered ? control.hoverColor : control.fillColor, 1.12)
+                    if (control.kind === "danger") return control.down ? "#B33D57" : (control.hovered ? "#D75A73" : Qt.lighter(control.palette.danger || "#B73550", 1.12))
+                    if (control.kind === "secondary") return control.down || control.hovered ? (control.palette.accentSoft || "#E8F3FC") : (control.palette.glassTop || "#FFFFFF")
+                    return control.hovered ? (control.palette.surfaceAlt || "#F7FAFD") : "transparent"
+                }
+            }
+            GradientStop {
+                position: 1.0
+                color: {
+                    if (!control.enabled) return control.palette.surfaceAlt || "#F7FAFD"
+                    if (control.kind === "primary") return control.down || control.hovered ? control.hoverColor : control.fillColor
+                    if (control.kind === "danger") return control.down ? "#922B43" : (control.hovered ? "#C94560" : (control.palette.danger || "#B73550"))
+                    if (control.kind === "secondary") return control.down || control.hovered ? (control.palette.accentSoft || "#E8F3FC") : (control.palette.surface || "#FFFFFF")
+                    return control.hovered ? (control.palette.surfaceAlt || "#F7FAFD") : "transparent"
+                }
+            }
         }
-        color: {
-            if (!control.enabled) return control.palette.surfaceAlt || "#F7FAFD"
-            if (control.kind === "primary") return control.down || control.hovered ? control.hoverColor : control.fillColor
-            if (control.kind === "danger") return control.down ? "#922B43" : (control.hovered ? "#C94560" : (control.palette.danger || "#B73550"))
-            if (control.kind === "secondary") return control.down || control.hovered ? (control.palette.accentSoft || "#E8F3FC") : (control.palette.surface || "#FFFFFF")
-            return control.hovered ? (control.palette.surfaceAlt || "#F7FAFD") : "transparent"
+        border.width: control.activeFocus ? 2 : control.kind === "secondary" ? 1 : control.kind === "danger" ? 1 : 0
+        border.color: control.activeFocus ? (control.palette.accent || "#167CC2")
+                    : control.kind === "danger" ? Qt.darker(control.palette.danger || "#B73550", 1.12)
+                    : control.kind === "secondary" ? (control.palette.border || "#E1E8F0")
+                    : "transparent"
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: 1
+            radius: parent.radius - 1
+            color: "transparent"
+            border.width: control.kind === "primary" || control.kind === "danger" ? 1 : 0
+            border.color: "#55FFFFFF"
+            opacity: control.down ? 0.16 : control.hovered ? 0.52 : 0.34
         }
-        border.width: control.activeFocus ? 2 : control.kind === "secondary" ? 1 : 0
-        border.color: control.activeFocus ? (control.palette.accent || "#167CC2") : (control.palette.border || "#E1E8F0")
-        Behavior on color { ColorAnimation { duration: 110 } }
-        Behavior on border.color { ColorAnimation { duration: 110 } }
+        Behavior on border.color { ColorAnimation { duration: 120 } }
         Behavior on border.width { NumberAnimation { duration: 100 } }
     }
 }
