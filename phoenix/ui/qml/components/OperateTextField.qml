@@ -4,8 +4,8 @@ import QtQuick.Controls
 TextField {
     id: field
     property var palette: ({})
-    property int fieldRadius: 11
-    implicitHeight: 44
+    property int fieldRadius: 10
+    implicitHeight: 42
     leftPadding: 13
     rightPadding: 13
     font.family: "DM Sans"
