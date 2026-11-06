@@ -1708,18 +1708,42 @@ ApplicationWindow {
         property string archiveId: ""
         title: "Archiver cet élément ?"
         modal: true
-        standardButtons: Dialog.Yes | Dialog.No
         anchors.centerIn: parent
-        width: 440
+        width: Math.min(440, root.width - 40)
         padding: 22
+        spacing: 16
         background: Rectangle {
-            radius: 16
+            radius: 18
             color: root.colors.surface
             border.color: root.colors.border
+            border.width: 1
         }
         AppLabel {
+            width: archiveConfirmation.availableWidth
             text: "L'élément ne sera plus proposé dans les listes actives. Les résultats et l'historique associés seront conservés."
+            color: root.colors.textSecondary
             wrapMode: Text.WordWrap
+        }
+        footer: RowLayout {
+            width: archiveConfirmation.availableWidth
+            spacing: 9
+            QuietButton {
+                text: "Annuler"
+                Layout.preferredWidth: 112
+                onClicked: archiveConfirmation.reject()
+            }
+            PrimaryButton {
+                text: "Archiver"
+                Layout.preferredWidth: 120
+                onClicked: archiveConfirmation.accept()
+            }
+        }
+        enter: Transition {
+            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 140 }
+            NumberAnimation { property: "scale"; from: 0.97; to: 1; duration: 140; easing.type: Easing.OutCubic }
+        }
+        exit: Transition {
+            NumberAnimation { property: "opacity"; from: 1; to: 0; duration: 100 }
         }
         onAccepted: {
             if (archiveKind === "student") appBridge.archiveStudent(archiveId)
@@ -1732,18 +1756,43 @@ ApplicationWindow {
         id: resetConfirmation
         title: "Réinitialiser les données ?"
         modal: true
-        standardButtons: Dialog.Yes | Dialog.No
         anchors.centerIn: parent
-        width: 480
-        padding: 24
+        width: Math.min(480, root.width - 40)
+        padding: 22
+        spacing: 16
         background: Rectangle {
-            radius: 16
+            radius: 18
             color: root.colors.surface
-            border.color: root.colors.border
+            border.color: root.colors.danger
+            border.width: 1
         }
         AppLabel {
+            width: resetConfirmation.availableWidth
             text: "Toutes les classes, tous les profils, les réglages et l'historique Phoenix seront supprimés. Une sauvegarde de sécurité sera créée avant l'opération."
+            color: root.colors.textSecondary
             wrapMode: Text.WordWrap
+        }
+        footer: RowLayout {
+            width: resetConfirmation.availableWidth
+            spacing: 9
+            QuietButton {
+                text: "Annuler"
+                Layout.preferredWidth: 112
+                onClicked: resetConfirmation.reject()
+            }
+            PrimaryButton {
+                text: "Tout supprimer"
+                kind: "danger"
+                Layout.preferredWidth: 142
+                onClicked: resetConfirmation.accept()
+            }
+        }
+        enter: Transition {
+            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 140 }
+            NumberAnimation { property: "scale"; from: 0.97; to: 1; duration: 140; easing.type: Easing.OutCubic }
+        }
+        exit: Transition {
+            NumberAnimation { property: "opacity"; from: 1; to: 0; duration: 100 }
         }
         onAccepted: appBridge.resetData()
     }
