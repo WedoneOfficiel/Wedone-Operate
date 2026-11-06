@@ -28,7 +28,7 @@ ApplicationWindow {
         return {
             bg: p.background,
             surface: p.surface,
-            panel: darkTheme ? "#E51A2635" : "#EFFFFFFF",
+            panel: darkTheme ? "#D91B293A" : "#E8FFFFFF",
             input: p.surface,
             surfaceHover: p.surfaceAlt,
             border: p.border,
@@ -77,30 +77,30 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        implicitHeight: 92
+        implicitHeight: 72
         padding: 0
         background: Item {}
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
-            y: 12
-            width: parent.width - 48
-            height: 66
-            radius: 22
+            y: 8
+            width: parent.width - 40
+            height: 56
+            radius: 17
             color: root.colors.panel
             border.color: root.colors.border
             border.width: 1
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
+                anchors.leftMargin: 18
+                anchors.rightMargin: 18
                 spacing: 12
                 Item { Layout.fillWidth: true }
                 RowLayout {
                     spacing: 9
                     Image {
                         source: "image://branding/logo"
-                        Layout.preferredWidth: 34
-                        Layout.preferredHeight: 34
+                        Layout.preferredWidth: 30
+                        Layout.preferredHeight: 30
                         fillMode: Image.PreserveAspectFit
                         smooth: true
                         mipmap: true
@@ -111,7 +111,7 @@ ApplicationWindow {
                         text: "wedone"
                         color: root.colors.text
                         font.family: "Manrope"
-                        font.pixelSize: 19
+                        font.pixelSize: 18
                         font.weight: Font.ExtraBold
                     }
                     Label {
@@ -168,7 +168,7 @@ ApplicationWindow {
 
     component AppComboBox: ComboBox {
         id: combo
-        implicitHeight: 48
+        implicitHeight: 42
         font.family: "DM Sans"
         font.pixelSize: 14
         contentItem: Text {
@@ -188,7 +188,7 @@ ApplicationWindow {
             font.pixelSize: 18
         }
         background: Rectangle {
-            radius: 14
+            radius: 11
             color: combo.enabled ? root.colors.input : root.colors.surfaceHover
             border.width: combo.activeFocus ? 1.6 : 1
             border.color: combo.activeFocus ? root.colors.accent : root.colors.border
@@ -217,7 +217,7 @@ ApplicationWindow {
             implicitHeight: Math.min(contentItem.implicitHeight + 12, 260)
             padding: 6
             background: Rectangle {
-                radius: 14
+                radius: 12
                 color: root.colors.surface
                 border.color: root.colors.border
                 border.width: 1
@@ -234,9 +234,9 @@ ApplicationWindow {
 
     component AppSpinBox: SpinBox {
         id: numberField
-        implicitHeight: 48
+        implicitHeight: 42
         font.family: "DM Sans"
-        font.pixelSize: 14
+        font.pixelSize: 13
         contentItem: TextInput {
             z: 2
             text: numberField.textFromValue(numberField.value, numberField.locale)
@@ -330,7 +330,7 @@ ApplicationWindow {
 
     component QuietButton: Button {
         id: quiet
-        implicitHeight: 44
+        implicitHeight: 42
         font.family: "DM Sans"
         font.pixelSize: 13
         contentItem: Text {
@@ -343,7 +343,7 @@ ApplicationWindow {
             verticalAlignment: Text.AlignVCenter
         }
         background: Rectangle {
-            radius: 13
+            radius: 11
             color: quiet.down ? root.colors.accentSoft : (quiet.hovered ? root.colors.surfaceHover : "transparent")
             border.color: quiet.hovered ? root.colors.borderHover : "transparent"
             border.width: 1
@@ -357,8 +357,8 @@ ApplicationWindow {
     component NavButton: Button {
         id: navControl
         property bool active: false
-        implicitHeight: 46
-        leftPadding: 14
+        implicitHeight: 42
+        leftPadding: 12
         rightPadding: 12
         contentItem: RowLayout {
             spacing: 11
@@ -382,7 +382,7 @@ ApplicationWindow {
             }
         }
         background: Rectangle {
-            radius: 12
+            radius: 10
             color: navControl.active ? root.colors.accentSoft
                   : navControl.down || navControl.hovered ? root.colors.surfaceHover : "transparent"
             border.width: navControl.active ? 1 : (navControl.hovered ? 1 : 0)
@@ -398,23 +398,23 @@ ApplicationWindow {
         property string symbol
         property string actionMode
         signal chosen(string mode)
-        radius: 24
+        radius: 19
         color: hover.hovered ? root.colors.surfaceHover : root.colors.surface
         border.width: hover.hovered ? 1.5 : 1
         border.color: hover.hovered ? root.colors.accent : root.colors.border
-        implicitWidth: 340
-        implicitHeight: 286
+        implicitWidth: 320
+        implicitHeight: 260
 
         HoverHandler { id: hover }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 28
-            spacing: 16
+            anchors.margins: 24
+            spacing: 13
             Rectangle {
-                width: 60
-                height: 60
-                radius: 18
+                width: 54
+                height: 54
+                radius: 15
                 color: root.colors.accentSoft
                 Text {
                     anchors.centerIn: parent
@@ -449,20 +449,20 @@ ApplicationWindow {
     Rectangle {
         id: navigationPanel
         visible: root.page !== "welcome"
-        x: 20
-        y: 16
-        width: 264
-        height: parent.height - 32
-        radius: 24
+        x: 18
+        y: 14
+        width: 248
+        height: parent.height - 28
+        radius: 19
         color: root.colors.panel
         border.color: root.colors.border
         ColumnLayout {
             anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
-            anchors.topMargin: 20
-            anchors.bottomMargin: 16
-            spacing: 9
+            anchors.leftMargin: 11
+            anchors.rightMargin: 11
+            anchors.topMargin: 16
+            anchors.bottomMargin: 13
+            spacing: 7
             Label {
                 text: "VOTRE ESPACE"
                 color: root.colors.muted
@@ -483,9 +483,9 @@ ApplicationWindow {
                     anchors.rightMargin: 10
                     spacing: 9
                     Rectangle {
-                        Layout.preferredWidth: 30
-                        Layout.preferredHeight: 30
-                        radius: 9
+                        Layout.preferredWidth: 28
+                        Layout.preferredHeight: 28
+                        radius: 8
                         color: root.colors.accentSoft
                         Label {
                             anchors.centerIn: parent
@@ -549,10 +549,10 @@ ApplicationWindow {
     }
 
     StackLayout {
-        x: (root.page === "welcome" ? 32 : 300) / root.uiScale
-        y: 16 / root.uiScale
-        width: (parent.width - (root.page === "welcome" ? 64 : 320)) / root.uiScale
-        height: (parent.height - 32) / root.uiScale
+        x: (root.page === "welcome" ? 32 : 282) / root.uiScale
+        y: 14 / root.uiScale
+        width: (parent.width - (root.page === "welcome" ? 64 : 300)) / root.uiScale
+        height: (parent.height - 28) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
         currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : root.page === "settings" ? 3 : 1
