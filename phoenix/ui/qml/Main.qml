@@ -77,45 +77,78 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        implicitHeight: 72
-        background: Rectangle { color: root.colors.panel; border.color: root.colors.border }
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 28
-            anchors.rightMargin: 28
-            spacing: 12
-
-            Image {
-                source: "image://branding/logo"
-                width: 36
-                height: 36
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-                mipmap: true
-                sourceSize.width: 144
-                sourceSize.height: 144
-                Layout.alignment: Qt.AlignVCenter
-            }
-            Label {
-                text: "wedone"
-                color: root.colors.text
-                font.pixelSize: 19
-                font.weight: Font.DemiBold
-            }
-            Label {
-                text: "OPERATE"
-                color: root.colors.muted
-                font.pixelSize: 10
-                font.weight: Font.Bold
-                Layout.leftMargin: -7
-                Layout.alignment: Qt.AlignVCenter
-            }
-            Item { Layout.fillWidth: true }
-            Label {
-                visible: root.currentMode !== ""
-                text: root.currentMode === "individual" ? "Espace individuel" : "Espace classe"
-                color: root.colors.muted
-                font.pixelSize: 13
+        implicitHeight: 88
+        padding: 0
+        background: Item {}
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: 12
+            width: parent.width - 40
+            height: 64
+            radius: 20
+            color: root.colors.panel
+            border.color: root.colors.border
+            border.width: 1
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 20
+                anchors.rightMargin: 20
+                spacing: 12
+                Item { Layout.fillWidth: true }
+                RowLayout {
+                    spacing: 9
+                    Image {
+                        source: "image://branding/logo"
+                        Layout.preferredWidth: 34
+                        Layout.preferredHeight: 34
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                        mipmap: true
+                        sourceSize.width: 136
+                        sourceSize.height: 136
+                    }
+                    Label {
+                        text: "wedone"
+                        color: root.colors.text
+                        font.family: "Manrope"
+                        font.pixelSize: 19
+                        font.weight: Font.ExtraBold
+                    }
+                    Label {
+                        text: "OPERATE"
+                        color: root.colors.accent
+                        font.family: "Manrope"
+                        font.pixelSize: 10
+                        font.weight: Font.Bold
+                        Layout.leftMargin: -6
+                    }
+                }
+                Item { Layout.fillWidth: true }
+                Rectangle {
+                    visible: root.currentMode !== ""
+                    Layout.preferredWidth: modeLabel.implicitWidth + 30
+                    Layout.preferredHeight: 34
+                    radius: 17
+                    color: root.colors.input
+                    border.color: root.colors.border
+                    RowLayout {
+                        anchors.centerIn: parent
+                        spacing: 7
+                        Rectangle {
+                            Layout.preferredWidth: 7
+                            Layout.preferredHeight: 7
+                            radius: 4
+                            color: root.colors.success
+                        }
+                        Label {
+                            id: modeLabel
+                            text: root.currentMode === "individual" ? "Espace individuel" : "Espace classe"
+                            color: root.colors.textSecondary
+                            font.pixelSize: 12
+                            font.weight: Font.DemiBold
+                        }
+                    }
+                }
             }
         }
     }
@@ -415,16 +448,19 @@ ApplicationWindow {
         id: navigationPanel
         visible: root.page !== "welcome"
         x: 20
-        y: 24
-        width: 216
-        height: parent.height - 48
-        radius: 18
+        y: 104
+        width: 252
+        height: parent.height - 124
+        radius: 22
         color: root.colors.panel
         border.color: root.colors.border
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 14
-            spacing: 7
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            anchors.topMargin: 18
+            anchors.bottomMargin: 14
+            spacing: 8
             Label {
                 text: "VOTRE ESPACE"
                 color: root.colors.muted
@@ -511,10 +547,10 @@ ApplicationWindow {
     }
 
     StackLayout {
-        x: (root.page === "welcome" ? 36 : 260) / root.uiScale
-        y: 24 / root.uiScale
-        width: (parent.width - (root.page === "welcome" ? 72 : 284)) / root.uiScale
-        height: (parent.height - 48) / root.uiScale
+        x: (root.page === "welcome" ? 28 : 290) / root.uiScale
+        y: 104 / root.uiScale
+        width: (parent.width - (root.page === "welcome" ? 56 : 310)) / root.uiScale
+        height: (parent.height - 124) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
         currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : root.page === "settings" ? 3 : 1
