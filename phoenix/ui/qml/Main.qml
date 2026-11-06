@@ -94,7 +94,6 @@ ApplicationWindow {
                 anchors.leftMargin: 18
                 anchors.rightMargin: 18
                 spacing: 12
-                Item { Layout.fillWidth: true }
                 RowLayout {
                     spacing: 9
                     Image {
@@ -428,12 +427,15 @@ ApplicationWindow {
         property string symbol
         property string actionMode
         signal chosen(string mode)
-        radius: 16
+        radius: 18
         color: hover.hovered ? root.colors.surfaceHover : root.colors.surface
         border.width: hover.hovered ? 1.5 : 1
         border.color: hover.hovered ? root.colors.accent : root.colors.border
         implicitWidth: 320
         implicitHeight: 260
+        Behavior on color { ColorAnimation { duration: 140 } }
+        Behavior on border.color { ColorAnimation { duration: 140 } }
+        Behavior on border.width { NumberAnimation { duration: 110 } }
 
         HoverHandler { id: hover }
 
@@ -673,11 +675,13 @@ ApplicationWindow {
                 }
 
                 AppLabel {
-                    visible: root.currentMode === "individual"
-                    text: "L'espace individuel est sélectionné."
+                    text: root.currentMode === "individual"
+                          ? "Retrouvez vos statistiques et lancez une nouvelle séance."
+                          : "Accédez aux espaces élèves et professeurs pour organiser le travail de la classe."
                     color: root.colors.muted
-                    font.pixelSize: 16
+                    font.pixelSize: 14
                     Layout.alignment: Qt.AlignLeft
+                    Layout.bottomMargin: 2
                 }
 
                 RowLayout {
