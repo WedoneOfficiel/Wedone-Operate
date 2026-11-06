@@ -197,15 +197,17 @@ ApplicationWindow {
             font.pixelSize: 18
         }
         background: Rectangle {
-            radius: 11
-            color: combo.enabled ? root.colors.input : root.colors.surfaceHover
+            radius: 10
+            color: !combo.enabled ? root.colors.surfaceHover : combo.hovered ? root.colors.surfaceHover : root.colors.input
             border.width: combo.activeFocus ? 1.6 : 1
             border.color: combo.activeFocus ? root.colors.accent : root.colors.border
+            Behavior on color { ColorAnimation { duration: 120 } }
+            Behavior on border.color { ColorAnimation { duration: 120 } }
         }
         delegate: ItemDelegate {
             required property int index
             width: combo.width
-            height: 42
+            height: 40
             highlighted: combo.highlightedIndex === index
             contentItem: AppText {
                 text: combo.textAt(index)
@@ -216,8 +218,9 @@ ApplicationWindow {
                 elide: Text.ElideRight
             }
             background: Rectangle {
-                radius: 9
+                radius: 8
                 color: parent.highlighted ? root.colors.accentSoft : (parent.hovered ? root.colors.surfaceHover : "transparent")
+                Behavior on color { ColorAnimation { duration: 100 } }
             }
         }
         popup: Popup {
@@ -226,7 +229,7 @@ ApplicationWindow {
             implicitHeight: Math.min(contentItem.implicitHeight + 12, 260)
             padding: 6
             background: Rectangle {
-                radius: 12
+                radius: 11
                 color: root.colors.surface
                 border.color: root.colors.border
                 border.width: 1
@@ -261,26 +264,27 @@ ApplicationWindow {
             onTextEdited: numberField.value = numberField.valueFromText(text, numberField.locale)
         }
         background: Rectangle {
-            radius: 14
-            color: root.colors.input
+            radius: 10
+            color: numberField.enabled ? root.colors.input : root.colors.surfaceHover
             border.color: numberField.activeFocus ? root.colors.accent : root.colors.border
             border.width: numberField.activeFocus ? 1.6 : 1
+            Behavior on border.color { ColorAnimation { duration: 120 } }
         }
         up.indicator: Rectangle {
             x: numberField.width - width
-            width: 34
+            width: 32
             height: numberField.height / 2
-            color: numberField.up.pressed ? root.colors.accentSoft : "transparent"
-            radius: 7
+            color: numberField.up.pressed ? root.colors.accentSoft : (numberField.up.hovered ? root.colors.surfaceHover : "transparent")
+            radius: 6
             AppText { anchors.centerIn: parent; text: "+"; color: root.colors.text; font.pixelSize: 15 }
         }
         down.indicator: Rectangle {
             x: numberField.width - width
             y: numberField.height / 2
-            width: 34
+            width: 32
             height: numberField.height / 2
-            color: numberField.down.pressed ? root.colors.accentSoft : "transparent"
-            radius: 7
+            color: numberField.down.pressed ? root.colors.accentSoft : (numberField.down.hovered ? root.colors.surfaceHover : "transparent")
+            radius: 6
             AppText { anchors.centerIn: parent; text: "−"; color: root.colors.text; font.pixelSize: 15 }
         }
     }
@@ -302,10 +306,12 @@ ApplicationWindow {
             implicitHeight: 20
             x: 0
             y: (check.height - height) / 2
-            radius: 6
-            color: check.checked ? root.colors.accent : root.colors.input
-            border.color: check.checked ? root.colors.accent : root.colors.border
-            AppText { anchors.centerIn: parent; text: check.checked ? "✓" : ""; color: "#FFFFFF"; font.pixelSize: 13; font.weight: Font.Bold }
+            radius: 5
+            color: check.checked ? root.colors.accent : (check.enabled ? root.colors.input : root.colors.surfaceHover)
+            border.color: check.activeFocus ? root.colors.accent : (check.checked ? root.colors.accent : root.colors.border)
+            border.width: check.activeFocus ? 1.6 : 1
+            AppText { anchors.centerIn: parent; text: check.checked ? "✓" : ""; color: "#FFFFFF"; font.pixelSize: 12; font.weight: Font.Bold }
+            Behavior on color { ColorAnimation { duration: 110 } }
         }
     }
 
@@ -352,10 +358,11 @@ ApplicationWindow {
             verticalAlignment: Text.AlignVCenter
         }
         background: Rectangle {
-            radius: 11
-            color: quiet.down ? root.colors.accentSoft : (quiet.hovered ? root.colors.surfaceHover : "transparent")
-            border.color: quiet.hovered ? root.colors.borderHover : "transparent"
-            border.width: 1
+            radius: 10
+            color: !quiet.enabled ? "transparent" : quiet.down ? root.colors.accentSoft : (quiet.hovered ? root.colors.surfaceHover : "transparent")
+            border.color: quiet.hovered || quiet.activeFocus ? root.colors.border : "transparent"
+            border.width: quiet.hovered || quiet.activeFocus ? 1 : 0
+            Behavior on color { ColorAnimation { duration: 110 } }
         }
     }
 
@@ -391,10 +398,10 @@ ApplicationWindow {
             }
         }
         background: Rectangle {
-            radius: 10
+            radius: 9
             color: navControl.active ? root.colors.accentSoft
                   : navControl.down || navControl.hovered ? root.colors.surfaceHover : "transparent"
-            border.width: navControl.active ? 1 : (navControl.hovered ? 1 : 0)
+            border.width: navControl.active || navControl.hovered || navControl.activeFocus ? 1 : 0
             border.color: navControl.active ? root.colors.accent : root.colors.border
         }
         Behavior on opacity { NumberAnimation { duration: 120 } }
@@ -407,7 +414,7 @@ ApplicationWindow {
         property string symbol
         property string actionMode
         signal chosen(string mode)
-        radius: 19
+        radius: 16
         color: hover.hovered ? root.colors.surfaceHover : root.colors.surface
         border.width: hover.hovered ? 1.5 : 1
         border.color: hover.hovered ? root.colors.accent : root.colors.border
@@ -418,8 +425,8 @@ ApplicationWindow {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 24
-            spacing: 13
+            anchors.margins: 20
+            spacing: 11
             Rectangle {
                 width: 54
                 height: 54
@@ -705,7 +712,7 @@ ApplicationWindow {
                             Layout.preferredWidth: 300
                             Layout.minimumWidth: 0
                             height: 190
-                            radius: 20
+                            radius: 16
                             color: root.colors.surface
                             border.color: root.colors.border
                             ColumnLayout {
@@ -1703,7 +1710,7 @@ ApplicationWindow {
         width: 440
         padding: 22
         background: Rectangle {
-            radius: 20
+            radius: 16
             color: root.colors.surface
             border.color: root.colors.border
         }
@@ -1727,7 +1734,7 @@ ApplicationWindow {
         width: 480
         padding: 24
         background: Rectangle {
-            radius: 20
+            radius: 16
             color: root.colors.surface
             border.color: root.colors.border
         }
