@@ -603,18 +603,19 @@ ApplicationWindow {
                 contentWidth: availableWidth
 
                 ColumnLayout {
-                    width: Math.min(parent.width, 720)
+                    width: Math.min(parent.width, 1120)
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
-                    anchors.topMargin: 24
-                    spacing: 20
+                    anchors.topMargin: 18
+                    spacing: 18
 
                 Label {
                     text: root.currentMode === "individual" ? "Votre espace de pratique" : "Espace classe"
                     color: root.colors.text
                     font.pixelSize: 34
                     font.weight: Font.Bold
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignLeft
+                    font.family: "Manrope"
                 }
 
                 Label {
@@ -622,13 +623,13 @@ ApplicationWindow {
                     text: "L'espace individuel est sélectionné."
                     color: root.colors.muted
                     font.pixelSize: 16
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignLeft
                 }
 
                 RowLayout {
                     visible: root.currentMode === "individual"
-                    Layout.alignment: Qt.AlignHCenter
-                    spacing: 12
+                    Layout.fillWidth: true
+                    spacing: 14
                     Repeater {
                         model: [
                             { label: "Séances", value: root.progressSummary.sessions },
@@ -637,10 +638,10 @@ ApplicationWindow {
                         ]
                         delegate: Rectangle {
                             required property var modelData
-                            width: 150
-                            height: 88
-                            radius: 16
-                            color: root.colors.surface
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 104
+                            radius: 18
+                            color: root.colors.panel
                             border.color: root.colors.border
                             ColumnLayout {
                                 anchors.centerIn: parent
@@ -666,8 +667,8 @@ ApplicationWindow {
                 PrimaryButton {
                     visible: root.currentMode === "individual"
                     text: "Commencer une séance"
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: 12
+                    Layout.alignment: Qt.AlignLeft
+                    Layout.topMargin: 2
                     width: 280
                     onClicked: root.page = "practice"
                 }
