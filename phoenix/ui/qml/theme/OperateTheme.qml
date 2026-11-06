@@ -13,6 +13,7 @@ QtObject {
     readonly property color lightBlue: "#167CC2"
     readonly property color lightBlueHover: "#1168A5"
     readonly property color lightBlueSoft: "#E8F3FC"
+    readonly property color lightBlueInk: "#125F98"
 
     readonly property color darkBackground: "#111925"
     readonly property color darkSurface: "#1A2635"
@@ -23,6 +24,7 @@ QtObject {
     readonly property color darkBlue: "#55A9E5"
     readonly property color darkBlueHover: "#78BDED"
     readonly property color darkBlueSoft: "#203C55"
+    readonly property color darkBlueInk: "#B9E2FF"
 
     function palette(dark, highContrast) {
         if (dark) {
@@ -37,6 +39,7 @@ QtObject {
                 accentHover: darkBlueHover,
                 accentSoft: darkBlueSoft,
                 onAccent: "#071522",
+                accentInk: darkBlueInk,
                 success: "#4CC99A",
                 warning: "#F0BF69",
                 danger: "#F08A9A",
@@ -54,6 +57,7 @@ QtObject {
             accentHover: lightBlueHover,
             accentSoft: lightBlueSoft,
             onAccent: "#FFFFFF",
+            accentInk: lightBlueInk,
             success: "#16845D",
             warning: "#99600D",
             danger: "#B73550",
