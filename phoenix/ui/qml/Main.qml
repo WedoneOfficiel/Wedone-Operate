@@ -323,25 +323,39 @@ ApplicationWindow {
 
     component NavButton: Button {
         id: navControl
-        implicitHeight: 44
-        contentItem: Text {
-            anchors.fill: parent
-            anchors.leftMargin: 14
-            text: navControl.text
-            color: navControl.hovered ? root.colors.text : root.colors.muted
-            font.pixelSize: 13
-            font.weight: Font.DemiBold
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
+        property bool active: false
+        implicitHeight: 46
+        leftPadding: 14
+        rightPadding: 12
+        contentItem: RowLayout {
+            spacing: 11
+            Rectangle {
+                Layout.preferredWidth: 7
+                Layout.preferredHeight: 7
+                radius: 4
+                color: navControl.active ? root.colors.accent : root.colors.muted
+                opacity: navControl.active ? 1 : 0.55
+            }
+            Text {
+                Layout.fillWidth: true
+                text: navControl.text
+                color: navControl.active ? root.colors.accentInk : (navControl.hovered ? root.colors.text : root.colors.muted)
+                font.family: "DM Sans"
+                font.pixelSize: 13
+                font.weight: navControl.active ? Font.Bold : Font.DemiBold
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+            }
         }
         background: Rectangle {
             radius: 12
-            color: navControl.down ? root.colors.accentSoft
-                  : navControl.hovered ? root.colors.accentSoft : "transparent"
-            border.width: navControl.hovered ? 1 : 0
-            border.color: root.colors.border
+            color: navControl.active ? root.colors.accentSoft
+                  : navControl.down || navControl.hovered ? root.colors.surfaceHover : "transparent"
+            border.width: navControl.active ? 1 : (navControl.hovered ? 1 : 0)
+            border.color: navControl.active ? root.colors.accent : root.colors.border
         }
+        Behavior on opacity { NumberAnimation { duration: 120 } }
     }
 
     component ModeCard: Rectangle {
@@ -400,54 +414,107 @@ ApplicationWindow {
     Rectangle {
         id: navigationPanel
         visible: root.page !== "welcome"
-        x: 18
-        y: 42
-        width: 194
-        height: parent.height - 84
-        radius: 20
+        x: 20
+        y: 24
+        width: 216
+        height: parent.height - 48
+        radius: 18
         color: root.colors.panel
         border.color: root.colors.border
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 12
-            spacing: 8
+            anchors.margins: 14
+            spacing: 7
             Label {
-                text: "ESPACE DE TRAVAIL"
+                text: "VOTRE ESPACE"
                 color: root.colors.muted
                 font.pixelSize: 10
                 font.weight: Font.Bold
                 Layout.leftMargin: 10
-                Layout.bottomMargin: 6
+                Layout.bottomMargin: 5
             }
-            NavButton { text: "Vue d'ensemble"; Layout.fillWidth: true; onClicked: root.page = "home" }
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 54
+                radius: 13
+                color: root.colors.surface
+                border.color: root.colors.border
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 11
+                    anchors.rightMargin: 10
+                    spacing: 9
+                    Rectangle {
+                        Layout.preferredWidth: 30
+                        Layout.preferredHeight: 30
+                        radius: 9
+                        color: root.colors.accentSoft
+                        Label {
+                            anchors.centerIn: parent
+                            text: root.currentMode === "individual" ? "↗" : "▦"
+                            color: root.colors.accent
+                            font.pixelSize: 15
+                            font.weight: Font.Bold
+                        }
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 1
+                        Label {
+                            text: root.currentMode === "individual" ? "Individuel" : "Classe"
+                            color: root.colors.text
+                            font.family: "Manrope"
+                            font.pixelSize: 12
+                            font.weight: Font.Bold
+                        }
+                        Label {
+                            text: "Wedone Operate"
+                            color: root.colors.muted
+                            font.pixelSize: 10
+                        }
+                    }
+                }
+            }
+            Item { Layout.preferredHeight: 8 }
+            NavButton { text: "Vue d'ensemble"; active: root.page === "home"; Layout.fillWidth: true; onClicked: root.page = "home" }
             NavButton {
                 visible: root.currentMode === "classroom"
                 text: "Espace professeur"
+                active: root.page === "area" && root.classroomArea === "teacher"
                 Layout.fillWidth: true
                 onClicked: { root.classroomArea = "teacher"; root.page = "area" }
             }
             NavButton {
                 visible: root.currentMode === "classroom"
                 text: "Espace élève"
+                active: root.page === "area" && root.classroomArea === "student"
                 Layout.fillWidth: true
                 onClicked: { root.classroomArea = "student"; root.page = "area" }
             }
-            NavButton { text: "Entraînement"; Layout.fillWidth: true; onClicked: root.page = "practice" }
+            NavButton { text: "Entraînement"; active: root.page === "practice"; Layout.fillWidth: true; onClicked: root.page = "practice" }
             NavButton {
                 text: "Paramètres"
+                active: root.page === "settings"
                 Layout.fillWidth: true
                 onClicked: { root.settingsReturnPage = root.page; root.page = "settings" }
             }
             Item { Layout.fillHeight: true }
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color: root.colors.border
+                Layout.topMargin: 5
+                Layout.bottomMargin: 5
+            }
             NavButton { text: "Changer de mode"; Layout.fillWidth: true; onClicked: appBridge.returnToModeChoice() }
         }
     }
 
     StackLayout {
-        x: (root.page === "welcome" ? 42 : 230) / root.uiScale
-        y: 42 / root.uiScale
-        width: (parent.width - (root.page === "welcome" ? 84 : 272)) / root.uiScale
-        height: (parent.height - 84) / root.uiScale
+        x: (root.page === "welcome" ? 36 : 260) / root.uiScale
+        y: 24 / root.uiScale
+        width: (parent.width - (root.page === "welcome" ? 72 : 284)) / root.uiScale
+        height: (parent.height - 48) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
         currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : root.page === "settings" ? 3 : 1
