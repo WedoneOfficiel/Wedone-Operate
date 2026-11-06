@@ -8,7 +8,9 @@ Button {
     property int controlRadius: 10
     property color fillColor: palette.accent || "#167CC2"
     property color hoverColor: palette.accentHover || "#1168A5"
-    property color textColor: kind === "primary" ? (palette.onAccent || "#FFFFFF") : (palette.text || "#172536")
+    property color textColor: kind === "primary" ? (palette.onAccent || "#FFFFFF")
+                       : kind === "danger" ? "#FFFFFF"
+                       : (palette.text || "#172536")
     implicitHeight: 42
     leftPadding: 15
     rightPadding: 15

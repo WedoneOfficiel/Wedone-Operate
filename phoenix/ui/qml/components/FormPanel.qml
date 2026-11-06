@@ -20,7 +20,7 @@ Rectangle {
         id: body
         anchors.fill: parent
         anchors.margins: 18
-        spacing: 9
+        spacing: 10
 
         Label {
             visible: panel.title.length > 0
@@ -37,9 +37,12 @@ Rectangle {
             text: panel.subtitle
             color: panel.palette.muted || "#718096"
             font.family: "DM Sans"
-            font.pixelSize: 11
+            font.pixelSize: 12
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
         }
     }
+
+    Behavior on color { ColorAnimation { duration: 140 } }
+    Behavior on border.color { ColorAnimation { duration: 140 } }
 }
