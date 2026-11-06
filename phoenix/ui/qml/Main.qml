@@ -253,7 +253,7 @@ ApplicationWindow {
             z: 2
             text: numberField.textFromValue(numberField.value, numberField.locale)
             font: numberField.font
-            color: root.colors.text
+            color: numberField.enabled ? root.colors.text : root.colors.muted
             selectionColor: root.colors.accent
             selectedTextColor: "#FFFFFF"
             horizontalAlignment: TextInput.AlignHCenter
@@ -268,6 +268,7 @@ ApplicationWindow {
             color: numberField.enabled ? root.colors.input : root.colors.surfaceHover
             border.color: numberField.activeFocus ? root.colors.accent : root.colors.border
             border.width: numberField.activeFocus ? 1.6 : 1
+            Behavior on color { ColorAnimation { duration: 120 } }
             Behavior on border.color { ColorAnimation { duration: 120 } }
         }
         up.indicator: Rectangle {
@@ -324,6 +325,7 @@ ApplicationWindow {
             height: 6
             radius: 3
             color: root.colors.border
+            Behavior on color { ColorAnimation { duration: 120 } }
             Rectangle {
                 width: slider.visualPosition * parent.width
                 height: parent.height
@@ -337,9 +339,10 @@ ApplicationWindow {
             width: 19
             height: 19
             radius: 10
-            color: root.colors.surface
-            border.color: root.colors.accent
-            border.width: 2
+            color: slider.enabled ? root.colors.surface : root.colors.surfaceHover
+            border.color: slider.activeFocus ? root.colors.accent : root.colors.accent
+            border.width: slider.activeFocus ? 3 : slider.hovered ? 2.5 : 2
+            Behavior on border.width { NumberAnimation { duration: 100 } }
         }
     }
 

@@ -27,5 +27,4 @@ Rectangle {
 
     Behavior on color { ColorAnimation { duration: 130 } }
     Behavior on border.color { ColorAnimation { duration: 130 } }
-    Behavior on border.width { NumberAnimation { duration: 110 } }
 }

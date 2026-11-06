@@ -38,5 +38,6 @@ Button {
         border.color: control.activeFocus ? (control.palette.accent || "#167CC2") : (control.palette.border || "#E1E8F0")
         Behavior on color { ColorAnimation { duration: 110 } }
         Behavior on border.color { ColorAnimation { duration: 110 } }
+        Behavior on border.width { NumberAnimation { duration: 100 } }
     }
 }

@@ -20,5 +20,7 @@ TextField {
         color: field.enabled ? (field.palette.surface || "#FFFFFF") : (field.palette.surfaceAlt || "#F7FAFD")
         border.width: field.activeFocus ? 1.5 : 1
         border.color: field.activeFocus ? (field.palette.accent || "#167CC2") : (field.palette.border || "#E1E8F0")
+        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on border.color { ColorAnimation { duration: 120 } }
     }
 }

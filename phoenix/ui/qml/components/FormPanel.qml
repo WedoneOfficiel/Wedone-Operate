@@ -13,8 +13,6 @@ Rectangle {
     color: palette.panel || palette.surface || "#FFFFFF"
     border.width: 1
     border.color: palette.border || "#E1E8F0"
-    Behavior on color { ColorAnimation { duration: 130 } }
-    Behavior on border.color { ColorAnimation { duration: 130 } }
     implicitWidth: 320
     implicitHeight: body.implicitHeight + 36
 
