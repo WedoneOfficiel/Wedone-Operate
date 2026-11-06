@@ -634,7 +634,7 @@ ApplicationWindow {
                 RowLayout {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.topMargin: 18
-                    spacing: 18
+                    contentSpacing: 18
                     ModeCard {
                         heading: "Utilisation individuelle"
                         subtitle: "Accédez directement à votre espace de pratique."
@@ -664,7 +664,7 @@ ApplicationWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     anchors.topMargin: 18
-                    spacing: 18
+                    contentSpacing: 18
 
                 AppLabel {
                     text: root.currentMode === "individual" ? "Votre espace de pratique" : "Espace classe"
@@ -1506,7 +1506,7 @@ ApplicationWindow {
                     visible: appBridge.questionTotal > 0 && !appBridge.practiceFinished
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
-                    spacing: 18
+                    contentSpacing: 18
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -1667,7 +1667,7 @@ ApplicationWindow {
                     visible: appBridge.practiceFinished
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
-                    spacing: 18
+                    contentSpacing: 18
                     Rectangle {
                         Layout.fillWidth: true
                         implicitHeight: 170
@@ -1735,7 +1735,7 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.topMargin: 24
                     width: Math.min(parent.width, 1040)
-                    spacing: 18
+                    contentSpacing: 18
 
                     AppLabel {
                     text: "Paramètres"

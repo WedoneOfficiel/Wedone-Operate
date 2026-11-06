@@ -7,6 +7,7 @@ Rectangle {
     property string title: ""
     property string subtitle: ""
     property var palette: ({})
+    property int contentSpacing: 11
     default property alias content: body.data
 
     radius: 18
@@ -20,7 +21,7 @@ Rectangle {
         id: body
         anchors.fill: parent
         anchors.margins: 20
-        spacing: 11
+        spacing: panel.contentSpacing
 
         Label {
             visible: panel.title.length > 0
