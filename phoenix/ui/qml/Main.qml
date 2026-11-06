@@ -154,8 +154,12 @@ ApplicationWindow {
                     Layout.preferredWidth: modeLabel.implicitWidth + 30
                     Layout.preferredHeight: 34
                     radius: 17
-                    color: root.colors.input
-                    border.color: root.colors.border
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: root.colors.glassTop }
+                        GradientStop { position: 1.0; color: root.colors.panel }
+                    }
+                    border.color: root.colors.glassHighlight
+                    border.width: 1
                     RowLayout {
                         anchors.centerIn: parent
                         spacing: 7
@@ -403,11 +407,11 @@ ApplicationWindow {
         id: navControl
         property bool active: false
         property string symbol: "•"
-        implicitHeight: 43
-        leftPadding: 11
-        rightPadding: 11
+        implicitHeight: 45
+        leftPadding: 12
+        rightPadding: 12
         contentItem: RowLayout {
-            spacing: 11
+            spacing: 12
             AppText {
                 Layout.preferredWidth: 19
                 text: navControl.symbol
@@ -437,13 +441,31 @@ ApplicationWindow {
             }
         }
         background: Rectangle {
-            radius: 10
-            color: navControl.active ? root.colors.accentSoft
-                  : navControl.down || navControl.hovered ? root.colors.surfaceHover : "transparent"
-            border.width: navControl.active ? 1 : navControl.hovered || navControl.activeFocus ? 1 : 0
-            border.color: navControl.active ? root.colors.accent : root.colors.border
-            Behavior on color { ColorAnimation { duration: 120 } }
-            Behavior on border.color { ColorAnimation { duration: 120 } }
+            radius: 12
+            layer.enabled: navControl.active || navControl.hovered
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: root.colors.shadow
+                shadowBlur: navControl.active ? 0.30 : 0.18
+                shadowOpacity: navControl.active ? 0.15 : 0.08
+                shadowVerticalOffset: navControl.active ? 3 : 1
+            }
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: navControl.active ? root.colors.glassTop : navControl.down ? root.colors.accentSoft : navControl.hovered ? root.colors.glassTop : "transparent" }
+                GradientStop { position: 1.0; color: navControl.active ? root.colors.accentSoft : navControl.down ? root.colors.accentSoft : navControl.hovered ? root.colors.surfaceHover : "transparent" }
+            }
+            border.width: navControl.active ? 1.2 : navControl.hovered || navControl.activeFocus ? 1 : 0
+            border.color: navControl.active ? root.colors.accent : navControl.hovered || navControl.activeFocus ? root.colors.glassHighlight : "transparent"
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 1
+                radius: parent.radius - 1
+                color: "transparent"
+                border.width: navControl.active ? 1 : 0
+                border.color: root.colors.glassHighlight
+                opacity: 0.55
+            }
+            Behavior on border.color { ColorAnimation { duration: 140 } }
         }
     }
 
@@ -556,10 +578,29 @@ ApplicationWindow {
             }
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 54
-                radius: 13
-                color: root.colors.surface
-                border.color: root.colors.border
+                Layout.preferredHeight: 58
+                radius: 14
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: root.colors.shadow
+                    shadowBlur: 0.22
+                    shadowOpacity: 0.10
+                    shadowVerticalOffset: 3
+                }
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: root.colors.glassTop }
+                    GradientStop { position: 1.0; color: root.colors.panel }
+                }
+                border.color: root.colors.glassHighlight
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    radius: parent.radius - 1
+                    color: "transparent"
+                    border.color: root.colors.border
+                    opacity: 0.65
+                }
                 RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 11
@@ -645,9 +686,13 @@ ApplicationWindow {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: root.colors.border
-                Layout.topMargin: 5
-                Layout.bottomMargin: 5
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: "transparent" }
+                    GradientStop { position: 0.5; color: root.colors.border }
+                    GradientStop { position: 1.0; color: "transparent" }
+                }
+                Layout.topMargin: 7
+                Layout.bottomMargin: 7
             }
             NavButton { text: "Changer de mode"; symbol: "⇄"; Layout.fillWidth: true; onClicked: appBridge.returnToModeChoice() }
         }
