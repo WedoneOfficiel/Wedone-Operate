@@ -448,9 +448,9 @@ ApplicationWindow {
         id: navigationPanel
         visible: root.page !== "welcome"
         x: 20
-        y: 104
+        y: 16
         width: 252
-        height: parent.height - 124
+        height: parent.height - 32
         radius: 22
         color: root.colors.panel
         border.color: root.colors.border
@@ -548,9 +548,9 @@ ApplicationWindow {
 
     StackLayout {
         x: (root.page === "welcome" ? 28 : 290) / root.uiScale
-        y: 104 / root.uiScale
+        y: 16 / root.uiScale
         width: (parent.width - (root.page === "welcome" ? 56 : 310)) / root.uiScale
-        height: (parent.height - 124) / root.uiScale
+        height: (parent.height - 32) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
         currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : root.page === "settings" ? 3 : 1
