@@ -1492,13 +1492,6 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
                     Label {
-                        text: "Séance terminée"
-                        color: root.colors.text
-                        font.pixelSize: 32
-                        font.weight: Font.Bold
-                        Layout.alignment: Qt.AlignHCenter
-                    }
-                    Label {
                         text: appBridge.scoreText
                         color: root.colors.accent
                         font.pixelSize: 23
