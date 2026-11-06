@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import "theme" as Theme
+import "components" as Components
 
 ApplicationWindow {
     id: root
@@ -126,23 +127,8 @@ ApplicationWindow {
         }
     }
 
-    component AppTextField: TextField {
-        id: field
-        implicitHeight: 48
-        leftPadding: 14
-        rightPadding: 14
-        font.family: "DM Sans"
-        font.pixelSize: 14
-        color: root.colors.text
-        placeholderTextColor: root.colors.muted
-        selectionColor: root.colors.accent
-        selectedTextColor: "#FFFFFF"
-        background: Rectangle {
-            radius: 14
-            color: field.enabled ? root.colors.input : root.colors.surfaceHover
-            border.width: field.activeFocus ? 1.6 : 1
-            border.color: field.activeFocus ? root.colors.accent : root.colors.border
-        }
+    component AppTextField: Components.OperateTextField {
+        palette: root.colors
     }
 
     component AppComboBox: ComboBox {
@@ -329,27 +315,8 @@ ApplicationWindow {
         }
     }
 
-    component PrimaryButton: Button {
-        id: control
-        property color fillColor: root.colors.accent
-        property color hoverColor: root.colors.accentHover
-        property color textColor: "white"
-        implicitHeight: 48
-        font.family: "DM Sans"
-        font.pixelSize: 14
-        contentItem: Text {
-            text: control.text
-            color: control.textColor
-            font.family: "DM Sans"
-            font.pixelSize: 14
-            font.weight: Font.DemiBold
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
-        background: Rectangle {
-            radius: 14
-            color: !control.enabled ? root.colors.border : control.down ? control.hoverColor : (control.hovered ? control.hoverColor : control.fillColor)
-        }
+    component PrimaryButton: Components.OperateButton {
+        palette: root.colors
     }
 
     component NavButton: Button {
