@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import sys
+from ctypes import c_void_p
 from pathlib import Path
 
 from PySide6.QtCore import QObject, Property, Signal, Slot
@@ -25,9 +26,6 @@ def _find_qsb() -> str | None:
         if found:
             return found
     try:
-        # PySide6 is a namespace package in Essentials-only installations;
-        # its top-level __file__ is therefore None. Resolve a concrete Qt
-        # module to locate the shared package directory instead.
         module = importlib.util.find_spec("PySide6.QtCore")
         if module is None or not module.origin:
             return None
@@ -42,15 +40,53 @@ def _find_qsb() -> str | None:
 
 
 class PlatformEffects(QObject):
+    """Optional native window materials; Qt Quick remains the shared renderer."""
+
     nativeBackdropChanged = Signal()
     shaderAvailableChanged = Signal()
     backendChanged = Signal()
+    platformChanged = Signal()
+    nativeMaterialNameChanged = Signal()
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
         self._native_backdrop = False
         self._shader_available = _shader_binary().is_file()
+        self._platform = self._detect_platform()
+        self._native_material_name = self._describe_native_material()
         self._backend = self._describe_backend()
+
+    @staticmethod
+    def _detect_platform() -> str:
+        if sys.platform == "darwin":
+            return "macos"
+        if sys.platform == "win32":
+            return "windows"
+        return "linux"
+
+    def _describe_native_material(self) -> str:
+        if self._platform == "macos":
+            return "AppKit · NSVisualEffectView"
+        if self._platform == "windows":
+            return "Windows DWM · system backdrop"
+        return "Qt Quick · shader material"
+
+    def _describe_backend(self) -> str:
+        if self._platform == "windows":
+            return "Windows DWM + Qt Quick"
+        if self._platform == "macos":
+            return "AppKit + Qt Quick"
+        desktop = os.environ.get("XDG_CURRENT_DESKTOP", "Linux")
+        session = os.environ.get("XDG_SESSION_TYPE", "unknown")
+        return f"{desktop} / {session} · Qt Quick"
+
+    @Property(str, notify=platformChanged)
+    def platform(self) -> str:
+        return self._platform
+
+    @Property(str, notify=nativeMaterialNameChanged)
+    def nativeMaterialName(self) -> str:
+        return self._native_material_name
 
     @Property(bool, notify=nativeBackdropChanged)
     def nativeBackdropApplied(self) -> bool:
@@ -63,15 +99,6 @@ class PlatformEffects(QObject):
     @Property(str, notify=backendChanged)
     def backend(self) -> str:
         return self._backend
-
-    def _describe_backend(self) -> str:
-        if sys.platform == "win32":
-            return "Windows DWM · Desktop Acrylic + Qt Quick"
-        if sys.platform == "darwin":
-            return "macOS AppKit · NSVisualEffectView + Qt Quick"
-        desktop = os.environ.get("XDG_CURRENT_DESKTOP", "Linux")
-        session = os.environ.get("XDG_SESSION_TYPE", "unknown")
-        return f"{desktop} / {session} · Qt Quick fallback"
 
     @Slot(result=bool)
     def prepare_shader_assets(self) -> bool:
@@ -86,8 +113,10 @@ class PlatformEffects(QObject):
             return False
         try:
             target.parent.mkdir(parents=True, exist_ok=True)
-            subprocess.run([compiler, "--qt6", "-o", str(target), str(source)],
-                           check=True, capture_output=True, text=True, timeout=30)
+            subprocess.run(
+                [compiler, "--qt6", "-o", str(target), str(source)],
+                check=True, capture_output=True, text=True, timeout=30,
+            )
         except (OSError, subprocess.SubprocessError):
             self._set_shader_available(False)
             return False
@@ -108,19 +137,17 @@ class PlatformEffects(QObject):
 
     @Slot(QObject)
     def applyToWindow(self, window: QObject) -> None:
-        # Offscreen smoke tests do not expose a real HWND/NSView. Calling the
-        # native APIs with those synthetic handles can crash the host process.
         if os.environ.get("QT_QPA_PLATFORM", "").lower() == "offscreen":
             self._set_native_backdrop(False)
             return
         applied = False
         try:
-            if sys.platform == "win32":
+            if self._platform == "windows":
                 applied = self._apply_windows(window)
-            elif sys.platform == "darwin":
+            elif self._platform == "macos":
                 applied = self._apply_macos(window)
-            # Linux compositor blur protocols are not universal; the QML
-            # shader remains active instead of advertising a fake native blur.
+            # Linux compositor blur protocols differ across Wayland and X11.
+            # Qt Quick is the guaranteed material path on both.
         except Exception:
             applied = False
         self._set_native_backdrop(applied)
@@ -135,7 +162,9 @@ class PlatformEffects(QObject):
             return False
         dwmapi = ctypes.WinDLL("dwmapi")
         handle = wintypes.HWND(hwnd)
-        for backdrop_type in (3, 2):  # Desktop Acrylic, then Mica on older Windows 11
+        # DWMSBT_MAINWINDOW (2), then DWMSBT_TRANSIENTWINDOW (3).
+        # These are system backdrop types, not an Acrylic enum.
+        for backdrop_type in (2, 3):
             backdrop = wintypes.DWORD(backdrop_type)
             result = dwmapi.DwmSetWindowAttribute(
                 handle, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop)

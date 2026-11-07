@@ -1,4 +1,4 @@
-"""Platform effect safety tests for headless CI and desktop fallbacks."""
+"""Platform effect safety and cross-platform capability tests."""
 from __future__ import annotations
 
 import os
@@ -11,6 +11,11 @@ from phoenix.ui.platform_effects import PlatformEffects
 
 
 class PlatformEffectsTests(unittest.TestCase):
+    def test_platform_is_exposed_as_a_stable_identifier(self):
+        effects = PlatformEffects()
+        self.assertIn(effects.platform, ("macos", "windows", "linux"))
+        self.assertTrue(effects.nativeMaterialName)
+
     def test_offscreen_mode_never_calls_native_window_api(self):
         effects = PlatformEffects()
         with patch.dict(os.environ, {"QT_QPA_PLATFORM": "offscreen"}):

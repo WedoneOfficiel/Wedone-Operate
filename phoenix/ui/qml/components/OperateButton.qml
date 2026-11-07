@@ -1,20 +1,16 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 
 Button {
     id: control
     property string kind: "primary" // primary, secondary, quiet, danger
     property var palette: ({})
-    property int controlRadius: 10
-    property color fillColor: palette.accent || "#167CC2"
-    property color hoverColor: palette.accentHover || "#1168A5"
-    property color textColor: kind === "primary" ? (palette.onAccent || "#FFFFFF")
-                       : kind === "danger" ? "#FFFFFF"
-                       : (palette.text || "#172536")
+    property int controlRadius: 12
     implicitHeight: 42
-    leftPadding: 15
-    rightPadding: 15
+    leftPadding: 16
+    rightPadding: 16
+    topPadding: 8
+    bottomPadding: 8
     font.family: "DM Sans"
     font.pixelSize: 13
     font.weight: Font.DemiBold
@@ -22,59 +18,29 @@ Button {
     contentItem: Text {
         text: control.text
         font: control.font
-        color: !control.enabled ? (control.palette.muted || "#718096") : control.textColor
+        color: !control.enabled ? (control.palette.muted || "#718096")
+             : control.kind === "danger" ? "#FFFFFF"
+             : control.kind === "primary" ? (control.palette.onAccent || "#FFFFFF")
+             : (control.palette.text || "#172536")
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
 
-    background: Rectangle {
-        radius: control.controlRadius
-        layer.enabled: control.kind === "primary" && control.enabled
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: control.palette.shadow || "#33000000"
-            shadowBlur: 0.28
-            shadowOpacity: control.hovered ? 0.26 : 0.16
-            shadowVerticalOffset: control.hovered ? 4 : 2
-        }
-        gradient: Gradient {
-            GradientStop {
-                position: 0.0
-                color: {
-                    if (!control.enabled) return control.palette.surfaceAlt || "#F7FAFD"
-                    if (control.kind === "primary") return Qt.lighter(control.down || control.hovered ? control.hoverColor : control.fillColor, 1.12)
-                    if (control.kind === "danger") return control.down ? "#B33D57" : (control.hovered ? "#D75A73" : Qt.lighter(control.palette.danger || "#B73550", 1.12))
-                    if (control.kind === "secondary") return control.down || control.hovered ? (control.palette.accentSoft || "#E8F3FC") : (control.palette.glassTop || "#FFFFFF")
-                    return control.hovered ? (control.palette.surfaceAlt || "#F7FAFD") : "transparent"
-                }
-            }
-            GradientStop {
-                position: 1.0
-                color: {
-                    if (!control.enabled) return control.palette.surfaceAlt || "#F7FAFD"
-                    if (control.kind === "primary") return control.down || control.hovered ? control.hoverColor : control.fillColor
-                    if (control.kind === "danger") return control.down ? "#922B43" : (control.hovered ? "#C94560" : (control.palette.danger || "#B73550"))
-                    if (control.kind === "secondary") return control.down || control.hovered ? (control.palette.accentSoft || "#E8F3FC") : (control.palette.surface || "#FFFFFF")
-                    return control.hovered ? (control.palette.surfaceAlt || "#F7FAFD") : "transparent"
-                }
-            }
-        }
-        border.width: control.activeFocus ? 2 : control.kind === "secondary" ? 1 : control.kind === "danger" ? 1 : 0
-        border.color: control.activeFocus ? (control.palette.accent || "#167CC2")
-                    : control.kind === "danger" ? Qt.darker(control.palette.danger || "#B73550", 1.12)
-                    : control.kind === "secondary" ? (control.palette.border || "#E1E8F0")
-                    : "transparent"
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 1
-            radius: parent.radius - 1
-            color: "transparent"
-            border.width: control.kind === "primary" || control.kind === "danger" ? 1 : 0
-            border.color: "#55FFFFFF"
-            opacity: control.down ? 0.16 : control.hovered ? 0.52 : 0.34
-        }
-        Behavior on border.color { ColorAnimation { duration: 120 } }
-        Behavior on border.width { NumberAnimation { duration: 100 } }
+    background: OperateMaterial {
+        palette: control.palette
+        cornerRadius: control.controlRadius
+        variant: control.kind === "primary" ? "accent"
+               : control.kind === "danger" ? "danger"
+               : control.kind === "secondary" ? "glass" : "quiet"
+        hovered: control.hovered
+        pressed: control.down
+        focused: control.activeFocus
+        enabled: control.enabled
+        elevated: control.kind === "primary" || control.kind === "danger"
+        materialOpacity: control.kind === "quiet" ? 0.92 : 1.0
     }
+
+    onDownChanged: scale = down ? 0.985 : 1.0
+    Behavior on scale { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
 }

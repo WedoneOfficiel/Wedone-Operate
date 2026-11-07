@@ -167,11 +167,11 @@ ApplicationWindow {
             width: parent.width - 60
             height: 66
             cornerRadius: 22
-            backdropItem: pageStack
+            backdropItem: ambientBackground
             tint: root.darkTheme ? "#991A293B" : "#BFFFFFFF"
-            refraction: 6.0
-            blurAmount: 1.8
-            materialOpacity: 0.96
+            refraction: 5.2
+            blurAmount: 1.45
+            materialOpacity: 0.94
             shadowEnabled: true
             shadowOpacity: 0.18
             reduceMotion: appBridge.reduceMotion
@@ -2396,7 +2396,7 @@ ApplicationWindow {
         background: Components.LiquidGlassSurface {
             anchors.fill: parent
             cornerRadius: 19
-            backdropItem: pageStack
+            backdropItem: ambientBackground
             tint: root.darkTheme ? "#C51B293B" : "#BFFFFFFF"
             refraction: 5.5
             blurAmount: 1.8
@@ -2451,7 +2451,7 @@ ApplicationWindow {
         background: Components.LiquidGlassSurface {
             anchors.fill: parent
             cornerRadius: 19
-            backdropItem: pageStack
+            backdropItem: ambientBackground
             tint: root.darkTheme ? "#C51B293B" : "#BFFFFFFF"
             refraction: 5.5
             blurAmount: 1.8

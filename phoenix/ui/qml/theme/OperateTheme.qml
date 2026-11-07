@@ -3,7 +3,6 @@ import QtQuick
 
 QtObject {
     id: theme
-
     readonly property color lightBackground: "#F1F5FA"
     readonly property color lightSurface: "#FFFFFF"
     readonly property color lightSurfaceAlt: "#F6F8FC"
@@ -14,7 +13,6 @@ QtObject {
     readonly property color lightBlueHover: "#206DA8"
     readonly property color lightBlueSoft: "#E8F2FA"
     readonly property color lightBlueInk: "#185F91"
-
     readonly property color darkBackground: "#101824"
     readonly property color darkSurface: "#182536"
     readonly property color darkSurfaceAlt: "#1E2D40"
@@ -32,42 +30,35 @@ QtObject {
                 background: highContrast ? "#080D14" : darkBackground,
                 surface: highContrast ? "#111B29" : darkSurface,
                 surfaceAlt: darkSurfaceAlt,
+                panel: "#D91B293A", input: "#E51A293A",
                 border: highContrast ? "#718096" : darkBorder,
+                glassBorder: "#3DFFFFFF",
                 text: highContrast ? "#FFFFFF" : darkText,
                 muted: highContrast ? "#D5DFEA" : darkMuted,
-                accent: darkBlue,
-                accentHover: darkBlueHover,
-                accentSoft: darkBlueSoft,
-                onAccent: "#071522",
+                accent: darkBlue, accentHover: darkBlueHover,
+                accentSoft: darkBlueSoft, onAccent: "#071522",
                 accentInk: darkBlueInk,
-                success: "#4CC99A",
-                warning: "#F0BF69",
-                danger: "#F08A9A",
-                shadow: "#88000000",
-                glassTop: "#3AFFFFFF",
-                glassBottom: "#10111D2B",
-                glassHighlight: "#55FFFFFF"
+                success: "#4CC99A", warning: "#F0BF69", danger: "#F08A9A",
+                shadow: "#99000000",
+                glassTop: "#35FFFFFF", glassBottom: "#B81B293A",
+                glassHighlight: "#66FFFFFF", glassEdge: "#A6FFFFFF"
             }
         }
         return {
             background: highContrast ? "#FFFFFF" : lightBackground,
-            surface: "#FFFFFF",
-            surfaceAlt: lightSurfaceAlt,
+            surface: "#FFFFFF", surfaceAlt: lightSurfaceAlt,
+            panel: "#E8FFFFFF", input: "#F4FFFFFF",
             border: highContrast ? "#526477" : lightBorder,
+            glassBorder: "#A6FFFFFF",
             text: highContrast ? "#071522" : lightText,
             muted: highContrast ? "#40546A" : lightMuted,
-            accent: lightBlue,
-            accentHover: lightBlueHover,
-            accentSoft: lightBlueSoft,
-            onAccent: "#FFFFFF",
+            accent: lightBlue, accentHover: lightBlueHover,
+            accentSoft: lightBlueSoft, onAccent: "#FFFFFF",
             accentInk: lightBlueInk,
-            success: "#16845D",
-            warning: "#99600D",
-            danger: "#B73550",
+            success: "#16845D", warning: "#99600D", danger: "#B73550",
             shadow: "#260D2940",
-            glassTop: "#F8FFFFFF",
-            glassBottom: "#B8EAF2FA",
-            glassHighlight: "#FFFFFFFF"
+            glassTop: "#F8FFFFFF", glassBottom: "#B8EAF2FA",
+            glassHighlight: "#FFFFFFFF", glassEdge: "#FFFFFFFF"
         }
     }
 }
