@@ -32,6 +32,13 @@ Item {
     property bool shadowEnabled: elevated
     property real shadowOpacity: hovered ? 0.24 : 0.16
     property bool reduceMotion: false
+    property point pointerPosition: Qt.point(width * 0.5, height * 0.28)
+    HoverHandler {
+        id: pointerTracker
+        onPointChanged: if (hovered)
+            root.pointerPosition = Qt.point(point.position.x, point.position.y)
+    }
+    TapHandler { id: pressTracker }
 
     implicitWidth: glass.implicitWidth
     implicitHeight: glass.implicitHeight
@@ -54,7 +61,8 @@ Item {
         elevation: root.shadowEnabled ? (root.hovered ? 13 : 8) : 0
         shadowColor: root.palette.shadow || "#33000000"
         hovered: root.hovered
-        pressed: root.pressed
+        pressed: root.pressed || pressTracker.pressed
+        pointerPosition: root.pointerPosition
         reduceMotion: root.reduceMotion
 
         Rectangle {
@@ -65,6 +73,15 @@ Item {
             border.color: root.focused || root.selected
                          ? (root.palette.accent || "#287FBE")
                          : Qt.rgba(1, 1, 1, root.borderOpacity * 0.64)
+        }
+        Rectangle {
+            anchors.fill: parent
+            radius: root.cornerRadius
+            color: root.variant === "accent" ? Qt.rgba(root.fillColor.r, root.fillColor.g, root.fillColor.b, 0.48)
+                 : root.variant === "danger" ? Qt.rgba(root.dangerColor.r, root.dangerColor.g, root.dangerColor.b, 0.48)
+                 : root.variant === "control" ? Qt.rgba(1, 1, 1, root.focused ? 0.18 : 0.10)
+                 : root.variant === "quiet" ? Qt.rgba(1, 1, 1, root.hovered ? 0.14 : 0.025)
+                 : Qt.rgba(1, 1, 1, 0.075)
         }
         Rectangle {
             anchors.fill: parent
