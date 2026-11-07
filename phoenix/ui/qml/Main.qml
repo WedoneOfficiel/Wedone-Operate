@@ -1167,74 +1167,128 @@ ApplicationWindow {
                     }
                 }
 
-                Components.FormPanel {
-                    title: "Espace professeur"
-                    subtitle: "Connectez-vous ou créez un profil pour gérer vos classes et les entraînements."
-                    palette: root.colors
+                GridLayout {
                     visible: root.page === "area" && root.classroomArea === "teacher" && !appBridge.teacherAuthenticated
                     Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignTop
-                    AppLabel { text: "Se connecter"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold }
-                    AppComboBox {
-                        id: teacherSelect
+                    columns: root.width >= 1050 ? 2 : 1
+                    columnSpacing: 16
+                    rowSpacing: 16
+
+                    Components.FormPanel {
+                        title: "Se connecter"
+                        subtitle: "Retrouvez votre espace et vos classes."
+                        palette: root.colors
                         Layout.fillWidth: true
-                        implicitHeight: 46
-                        textRole: "display_name"
-                        valueRole: "id"
-                        model: JSON.parse(appBridge.teachersJson)
+                        Layout.alignment: Qt.AlignTop
+                        AppLabel {
+                            text: "PROFIL EXISTANT"
+                            color: root.colors.accent
+                            font.pixelSize: 10
+                            font.weight: Font.Bold
+                            font.letterSpacing: 1.2
+                        }
+                        AppLabel {
+                            text: "Sélectionnez votre profil professeur."
+                            color: root.colors.textSecondary
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                        AppComboBox {
+                            id: teacherSelect
+                            Layout.fillWidth: true
+                            implicitHeight: 46
+                            textRole: "display_name"
+                            valueRole: "id"
+                            model: JSON.parse(appBridge.teachersJson)
+                        }
+                        AppTextField {
+                            id: teacherLoginPassword
+                            Layout.fillWidth: true
+                            implicitHeight: 46
+                            placeholderText: "Mot de passe professeur"
+                            echoMode: TextInput.Password
+                            onAccepted: appBridge.loginTeacher(teacherSelect.currentValue || "", text)
+                        }
+                        PrimaryButton {
+                            text: "Se connecter  →"
+                            Layout.fillWidth: true
+                            implicitHeight: 48
+                            enabled: !!teacherSelect.currentValue
+                            onClicked: appBridge.loginTeacher(teacherSelect.currentValue, teacherLoginPassword.text)
+                        }
+                        AppLabel {
+                            visible: teacherSelect.count === 0
+                            text: "Aucun profil n'existe encore. Créez votre premier compte à côté."
+                            color: root.colors.muted
+                            font.pixelSize: 11
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
                     }
-                    AppTextField {
-                        id: teacherLoginPassword
+
+                    Components.FormPanel {
+                        title: "Créer un profil"
+                        subtitle: "Configurez votre accès professeur en quelques instants."
+                        palette: root.colors
                         Layout.fillWidth: true
-                        implicitHeight: 46
-                        placeholderText: "Mot de passe professeur"
-                        echoMode: TextInput.Password
-                        onAccepted: appBridge.loginTeacher(teacherSelect.currentValue || "", text)
+                        Layout.alignment: Qt.AlignTop
+                        AppLabel {
+                            text: "NOUVEAU PROFIL"
+                            color: root.colors.accent
+                            font.pixelSize: 10
+                            font.weight: Font.Bold
+                            font.letterSpacing: 1.2
+                        }
+                        AppLabel {
+                            text: "Votre nom sera utilisé pour identifier votre espace."
+                            color: root.colors.textSecondary
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                        AppTextField {
+                            id: newTeacherName
+                            Layout.fillWidth: true
+                            implicitHeight: 46
+                            placeholderText: "Votre nom"
+                        }
+                        AppTextField {
+                            id: newTeacherPassword
+                            Layout.fillWidth: true
+                            implicitHeight: 46
+                            placeholderText: "Mot de passe (8 caractères minimum)"
+                            echoMode: TextInput.Password
+                            onAccepted: appBridge.createTeacher(newTeacherName.text, text)
+                        }
+                        AppLabel {
+                            visible: newTeacherPassword.text.length > 0 && newTeacherPassword.text.length < 8
+                            text: "Encore " + (8 - newTeacherPassword.text.length) + " caractère(s) minimum."
+                            color: root.colors.warning
+                            font.pixelSize: 11
+                        }
+                        AppLabel {
+                            visible: newTeacherPassword.text.length >= 8
+                            text: "Longueur du mot de passe suffisante."
+                            color: root.colors.success
+                            font.pixelSize: 11
+                        }
+                        PrimaryButton {
+                            text: "Créer mon profil  →"
+                            Layout.fillWidth: true
+                            implicitHeight: 48
+                            enabled: newTeacherName.text.trim().length > 0 && newTeacherPassword.text.length >= 8
+                            onClicked: appBridge.createTeacher(newTeacherName.text, newTeacherPassword.text)
+                        }
                     }
-                    PrimaryButton {
-                        text: "Se connecter"
-                        Layout.fillWidth: true
-                        enabled: !!teacherSelect.currentValue
-                        onClicked: appBridge.loginTeacher(teacherSelect.currentValue, teacherLoginPassword.text)
-                    }
-                    AppLabel { text: "Créer un profil professeur"; color: root.colors.text; font.pixelSize: 20; font.weight: Font.DemiBold; Layout.topMargin: 18 }
-                    AppLabel {
-                        visible: teacherSelect.count === 0
-                        text: "Aucun compte professeur n'existe encore. Créez le premier profil ci-dessous."
-                        color: root.colors.muted
-                        font.pixelSize: 13
-                        wrapMode: Text.WordWrap
-                        Layout.fillWidth: true
-                    }
-                    AppTextField { id: newTeacherName; Layout.fillWidth: true; implicitHeight: 46; placeholderText: "Votre nom" }
-                    AppTextField {
-                        id: newTeacherPassword
-                        Layout.fillWidth: true
-                        implicitHeight: 46
-                        placeholderText: "Mot de passe (8 caractères minimum)"
-                        echoMode: TextInput.Password
-                        onAccepted: appBridge.createTeacher(newTeacherName.text, text)
-                    }
-                    AppLabel {
-                        visible: newTeacherPassword.text.length > 0 && newTeacherPassword.text.length < 8
-                        text: "Le mot de passe doit contenir au moins 8 caractères."
-                        color: root.colors.warning
-                        font.pixelSize: 12
-                    }
-                    PrimaryButton {
-                        text: "Créer mon profil"
-                        Layout.fillWidth: true
-                        enabled: newTeacherName.text.trim().length > 0 && newTeacherPassword.text.length >= 8
-                        onClicked: appBridge.createTeacher(newTeacherName.text, newTeacherPassword.text)
-                    }
-                    AppLabel {
-                        visible: appBridge.classroomMessage !== ""
-                        text: appBridge.classroomMessage
-                        color: appBridge.teacherAuthenticated ? root.colors.success : root.colors.warning
-                        font.pixelSize: 13
-                        wrapMode: Text.WordWrap
-                        Layout.fillWidth: true
-                    }
+                }
+                AppLabel {
+                    visible: root.page === "area" && root.classroomArea === "teacher" && !appBridge.teacherAuthenticated && appBridge.classroomMessage !== ""
+                    text: appBridge.classroomMessage
+                    color: root.colors.warning
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
                 }
 
                 GridLayout {
