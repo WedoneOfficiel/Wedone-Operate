@@ -227,12 +227,31 @@ ApplicationWindow {
             font.pixelSize: 18
         }
         background: Rectangle {
-            radius: 10
-            color: !combo.enabled ? root.colors.surfaceHover : combo.hovered ? root.colors.surfaceHover : root.colors.input
+            radius: 11
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: root.colors.shadow
+                shadowBlur: combo.activeFocus ? 0.28 : 0.16
+                shadowOpacity: combo.activeFocus ? 0.13 : 0.07
+                shadowVerticalOffset: 2
+            }
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: !combo.enabled ? root.colors.surfaceHover : combo.activeFocus ? root.colors.glassTop : root.colors.input }
+                GradientStop { position: 1.0; color: combo.hovered ? root.colors.surfaceHover : root.colors.panel }
+            }
             border.width: combo.activeFocus ? 1.6 : 1
             border.color: combo.activeFocus ? root.colors.accent : root.colors.border
-            Behavior on color { ColorAnimation { duration: 120 } }
-            Behavior on border.color { ColorAnimation { duration: 120 } }
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 1
+                radius: parent.radius - 1
+                color: "transparent"
+                border.width: 1
+                border.color: root.colors.glassHighlight
+                opacity: 0.45
+            }
+            Behavior on border.color { ColorAnimation { duration: 140 } }
         }
         delegate: ItemDelegate {
             required property int index
@@ -259,10 +278,30 @@ ApplicationWindow {
             implicitHeight: Math.min(contentItem.implicitHeight + 12, 260)
             padding: 6
             background: Rectangle {
-                radius: 11
-                color: root.colors.surface
+                radius: 13
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: root.colors.shadow
+                    shadowBlur: 0.48
+                    shadowOpacity: 0.22
+                    shadowVerticalOffset: 8
+                }
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: root.colors.glassTop }
+                    GradientStop { position: 1.0; color: root.colors.surface }
+                }
                 border.color: root.colors.border
                 border.width: 1
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    radius: parent.radius - 1
+                    color: "transparent"
+                    border.width: 1
+                    border.color: root.colors.glassHighlight
+                    opacity: 0.5
+                }
             }
             contentItem: ListView {
                 clip: true
@@ -797,27 +836,58 @@ ApplicationWindow {
                             palette: root.colors
                             interactive: true
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 116
+                            Layout.preferredHeight: 132
                             ColumnLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: 22
-                                anchors.rightMargin: 18
-                                anchors.topMargin: 18
-                                anchors.bottomMargin: 18
-                                spacing: 7
+                                anchors.leftMargin: 21
+                                anchors.rightMargin: 20
+                                anchors.topMargin: 17
+                                anchors.bottomMargin: 17
+                                spacing: 0
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    AppLabel {
+                                        text: modelData.label.toUpperCase()
+                                        color: root.colors.muted
+                                        font.pixelSize: 10
+                                        font.weight: Font.Bold
+                                        font.letterSpacing: 1.0
+                                        Layout.fillWidth: true
+                                    }
+                                    Rectangle {
+                                        Layout.preferredWidth: 27
+                                        Layout.preferredHeight: 27
+                                        radius: 9
+                                        color: root.colors.accentSoft
+                                        AppLabel {
+                                            anchors.centerIn: parent
+                                            text: modelData.label === "Séances" ? "◷" : modelData.label === "Réponses" ? "✓" : "↗"
+                                            color: root.colors.accent
+                                            font.pixelSize: 15
+                                            font.weight: Font.Bold
+                                        }
+                                    }
+                                }
+                                Item { Layout.fillHeight: true }
                                 AppLabel {
                                     text: modelData.value
-                                    color: root.colors.accent
-                                    font.pixelSize: 23
+                                    color: root.colors.text
+                                    font.pixelSize: 31
                                     font.weight: Font.Bold
                                     Layout.alignment: Qt.AlignLeft
                                     font.family: "Manrope"
                                 }
-                                AppLabel {
-                                    text: modelData.label
-                                    color: root.colors.muted
-                                    font.pixelSize: 12
-                                    Layout.alignment: Qt.AlignLeft
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 3
+                                    radius: 2
+                                    color: root.colors.border
+                                    Rectangle {
+                                        width: parent.width * (modelData.label === "Réussite" && root.progressSummary.accuracy !== null ? root.progressSummary.accuracy / 100 : modelData.label === "Réponses" ? Math.min(1, root.progressSummary.answered / 100) : Math.min(1, root.progressSummary.sessions / 20))
+                                        height: parent.height
+                                        radius: 2
+                                        color: root.colors.accent
+                                    }
                                 }
                             }
                         }
@@ -964,25 +1034,87 @@ ApplicationWindow {
                     Rectangle {
                         visible: !!studentProfileSelect.currentValue
                         Layout.fillWidth: true
-                        implicitHeight: studentSummary.implicitHeight + 22
-                        radius: 10
-                        color: root.colors.surfaceHover
+                        implicitHeight: studentSummary.implicitHeight + 34
+                        radius: 14
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: root.colors.glassTop }
+                            GradientStop { position: 1.0; color: root.colors.surfaceHover }
+                        }
                         border.color: root.colors.border
+                        Rectangle {
+                            width: 3
+                            anchors.left: parent.left
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            radius: 2
+                            color: root.colors.accent
+                        }
                         ColumnLayout {
                             id: studentSummary
                             anchors.fill: parent
-                            anchors.margins: 11
-                            spacing: 3
-                            AppLabel {
-                                text: "Votre progression"
-                                color: root.colors.text
-                                font.pixelSize: 12
-                                font.weight: Font.Bold
+                            anchors.margins: 15
+                            spacing: 12
+                            RowLayout {
+                                Layout.fillWidth: true
+                                AppLabel {
+                                    text: "VOTRE PROGRESSION"
+                                    color: root.colors.text
+                                    font.pixelSize: 10
+                                    font.weight: Font.Bold
+                                    font.letterSpacing: 1.1
+                                    Layout.fillWidth: true
+                                }
+                                AppLabel {
+                                    text: root.progressSummary.sessions > 0 ? "ACTIF" : "NOUVEAU"
+                                    color: root.colors.accent
+                                    font.pixelSize: 9
+                                    font.weight: Font.Bold
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 8
+                                Repeater {
+                                    model: [
+                                        { label: "Séances", value: root.progressSummary.sessions },
+                                        { label: "Réponses", value: root.progressSummary.answered },
+                                        { label: "Réussite", value: root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%" }
+                                    ]
+                                    delegate: Rectangle {
+                                        required property var modelData
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: 62
+                                        radius: 10
+                                        color: root.colors.panel
+                                        border.color: root.colors.glassHighlight
+                                        ColumnLayout {
+                                            anchors.fill: parent
+                                            anchors.leftMargin: 10
+                                            anchors.rightMargin: 6
+                                            anchors.topMargin: 8
+                                            anchors.bottomMargin: 7
+                                            spacing: 2
+                                            AppLabel {
+                                                text: modelData.value
+                                                color: root.colors.text
+                                                font.pixelSize: 18
+                                                font.weight: Font.Bold
+                                                font.family: "Manrope"
+                                            }
+                                            AppLabel {
+                                                text: modelData.label
+                                                color: root.colors.muted
+                                                font.pixelSize: 10
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             AppLabel {
-                                text: root.progressSummary.sessions === 0 ? "Pas encore de résultat pour cet élève." : root.progressSummary.sessions + " séances · " + root.progressSummary.answered + " réponses · " + (root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "% de réussite")
+                                visible: root.progressSummary.sessions === 0
+                                text: "Aucun résultat enregistré pour le moment. Lancez une première séance !"
                                 color: root.colors.muted
-                                font.pixelSize: 12
+                                font.pixelSize: 11
                                 wrapMode: Text.WordWrap
                                 Layout.fillWidth: true
                             }
@@ -1389,25 +1521,53 @@ ApplicationWindow {
                         }
                         Repeater {
                             model: root.progressSummary.skills
-                            delegate: RowLayout {
+                            delegate: Rectangle {
                                 required property var modelData
                                 Layout.fillWidth: true
-                                AppLabel {
-                                    text: modelData.skill_id
-                                    color: root.colors.textSecondary
-                                    font.pixelSize: 12
-                                    Layout.fillWidth: true
-                                }
-                                AppLabel {
-                                    text: modelData.correct + "/" + modelData.answered
-                                    color: root.colors.muted
-                                    font.pixelSize: 12
-                                }
-                                AppLabel {
-                                    text: modelData.accuracy + "%"
-                                    color: root.colors.accent
-                                    font.pixelSize: 12
-                                    font.weight: Font.DemiBold
+                                implicitHeight: 58
+                                radius: 10
+                                color: root.colors.surfaceHover
+                                border.color: root.colors.border
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 12
+                                    anchors.rightMargin: 12
+                                    anchors.topMargin: 8
+                                    anchors.bottomMargin: 8
+                                    spacing: 12
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 5
+                                        AppLabel {
+                                            text: modelData.skill_id
+                                            color: root.colors.text
+                                            font.pixelSize: 12
+                                            font.weight: Font.DemiBold
+                                        }
+                                        Rectangle {
+                                            Layout.fillWidth: true
+                                            Layout.preferredHeight: 4
+                                            radius: 2
+                                            color: root.colors.border
+                                            Rectangle {
+                                                width: parent.width * Math.max(0, Math.min(1, modelData.accuracy / 100))
+                                                height: parent.height
+                                                radius: 2
+                                                color: modelData.accuracy >= 80 ? root.colors.success : root.colors.accent
+                                            }
+                                        }
+                                    }
+                                    AppLabel {
+                                        text: modelData.correct + "/" + modelData.answered
+                                        color: root.colors.muted
+                                        font.pixelSize: 11
+                                    }
+                                    AppLabel {
+                                        text: modelData.accuracy + "%"
+                                        color: root.colors.accent
+                                        font.pixelSize: 13
+                                        font.weight: Font.Bold
+                                    }
                                 }
                             }
                         }
