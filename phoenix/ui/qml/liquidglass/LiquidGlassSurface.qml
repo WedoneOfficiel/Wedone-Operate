@@ -305,28 +305,35 @@ Item {
                     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
                 }
                 
-                // Lens distortion function - creates convex glass effect
-                vec2 lensDistort(vec2 uv, float strength) {
-                    vec2 center = vec2(0.5);
-                    vec2 delta = uv - center;
-                    float dist = length(delta);
-                    
-                    // Barrel distortion for convex lens effect
-                    float distortAmount = 1.0 + strength * dist * dist;
-                    return center + delta * distortAmount;
-                }
-                
                 void main() {
                     vec2 uv = texCoord;
                     vec2 center = vec2(0.5);
                     vec2 delta = uv - center;
                     float distFromCenter = length(delta);
-                    
-                    // === Lens Refraction Effect ===
-                    // Center refraction - objects appear magnified/displaced through glass
-                    float lensStrength = distortion * 2.0;
-                    vec2 refractedUV = lensDistort(uv, lensStrength);
-                    
+
+                    // Refraction is strongest near the panel perimeter: this bends
+                    // the captured image like a lens instead of applying blur alone.
+                    float edgeLeft = uv.x;
+                    float edgeRight = 1.0 - uv.x;
+                    float edgeTop = uv.y;
+                    float edgeBottom = 1.0 - uv.y;
+                    float nearestEdge = min(min(edgeLeft, edgeRight), min(edgeTop, edgeBottom));
+                    float edgeBand = 1.0 - smoothstep(0.015, 0.24, nearestEdge);
+
+                    vec2 edgeNormal = vec2(0.0);
+                    if (nearestEdge == edgeLeft) edgeNormal = vec2(-1.0, 0.0);
+                    else if (nearestEdge == edgeRight) edgeNormal = vec2(1.0, 0.0);
+                    else if (nearestEdge == edgeTop) edgeNormal = vec2(0.0, -1.0);
+                    else edgeNormal = vec2(0.0, 1.0);
+
+                    // Edge bending plus a mild convex bulge toward the centre.
+                    // Offsets are normalized UV units, so they scale with the surface.
+                    vec2 refractedUV = uv
+                        + edgeNormal * (distortion * 0.18 * edgeBand)
+                        + delta * (distortion * 0.10 * edgeBand);
+                    refractedUV = clamp(refractedUV, 0.0, 1.0);
+                    float edgeDispersionFactor = edgeBand;
+
                     // Add subtle noise-based distortion for organic glass feel
                     float n1 = noise2D(uv * 6.0 + time * 0.3);
                     float n2 = noise2D(uv * 8.0 - time * 0.2);
@@ -343,7 +350,7 @@ Item {
                     
                     // Chromatic aberration strength increases toward edges
                     // Base strength + edge-dependent strength + time modulation
-                    float aberrationStrength = (distortion * 2.0 + edgeDispersionFactor * 0.08) * timeModulation;
+                    float aberrationStrength = (0.0012 + edgeDispersionFactor * distortion * 0.035) * timeModulation;
                     
                     // Direction of dispersion - radial from center
                     // Add NORMALIZE_EPSILON to prevent NaN when delta is zero (at exact center)
@@ -351,8 +358,8 @@ Item {
                     
                     // Different wavelengths refract at different angles
                     // Red refracts least, Blue refracts most (like real prism dispersion)
-                    float redOffset = aberrationStrength * 0.8;   // Red - least refraction
-                    float blueOffset = -aberrationStrength * 1.2; // Blue - most refraction
+                    float redOffset = aberrationStrength * 0.45;  // Red - least refraction
+                    float blueOffset = -aberrationStrength * 0.65; // Blue - most refraction
                     
                     // Sample each color channel with wavelength-dependent offsets
                     vec2 uvR = refractedUV + noiseOffset + aberrationDir * redOffset;
@@ -392,7 +399,7 @@ Item {
                     
                     // === Fresnel Edge Effect ===
                     // Glass edges appear brighter due to internal reflection
-                    float edgeFactor = pow(distFromCenter * 1.8, fresnel);
+                    float edgeFactor = pow(edgeDispersionFactor, fresnel);
                     edgeFactor = clamp(edgeFactor, 0.0, 1.0);
                     
                     // Smooth edge highlight following glass perimeter (white, not colored)

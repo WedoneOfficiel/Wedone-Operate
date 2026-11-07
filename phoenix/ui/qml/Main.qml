@@ -152,17 +152,22 @@ ApplicationWindow {
         }
     }
 
-    header: ToolBar {
-        implicitHeight: 78
+    ToolBar {
+        id: floatingHeader
+        x: 0
+        y: 0
+        width: parent.width
+        height: 78
+        z: 1000
         padding: 0
         background: Item {}
         Components.LiquidGlassSurface {
             anchors.horizontalCenter: parent.horizontalCenter
             y: 6
-            width: parent.width - 36
+            width: parent.width - 60
             height: 66
             cornerRadius: 22
-            backdropItem: ambientBackground
+            backdropItem: pageStack
             tint: root.darkTheme ? "#991A293B" : "#BFFFFFFF"
             refraction: 6.0
             blurAmount: 1.8
@@ -672,9 +677,9 @@ ApplicationWindow {
     StackLayout {
         id: pageStack
         x: 30 / root.uiScale
-        y: 14 / root.uiScale
+        y: 0
         width: (parent.width - 60) / root.uiScale
-        height: (parent.height - 28) / root.uiScale
+        height: (parent.height - 14) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
         currentIndex: root.page === "welcome" ? 0 : root.page === "practice" ? 2 : root.page === "settings" ? 3 : 1
@@ -730,7 +735,7 @@ ApplicationWindow {
                     width: Math.min(parent.width, 1240)
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
-                    anchors.topMargin: 18
+                    anchors.topMargin: 110
                     spacing: 18
 
                 AppLabel {
@@ -1777,7 +1782,7 @@ ApplicationWindow {
                     width: Math.min(parent.width, 920)
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
-                    anchors.topMargin: 24
+                    anchors.topMargin: 116
                     spacing: 20
 
                 AppLabel {

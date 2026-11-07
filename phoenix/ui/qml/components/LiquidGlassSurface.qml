@@ -38,10 +38,11 @@ Item {
         downsampleFactor: 1.0
         // Keep the upstream library's material defaults instead of remapping
         // them through the old hand-written shader's unrelated opacity scale.
-        baseOpacity: 0.35
+        baseOpacity: Math.max(0.18, Math.min(0.4, 0.24 + (1.0 - root.materialOpacity) * 0.08))
         tintColor: root.tint
         tintStrength: 0.15
-        distortionStrength: Math.max(0.0, root.refraction) * 0.0025
+        // Normalized UV displacement: enough to bend the image visibly at the bevel.
+        distortionStrength: Math.max(0.0, Math.min(0.18, root.refraction * 0.025))
         highlightIntensity: Math.max(0.0, Math.min(1.0, root.borderOpacity * 0.83))
         edgeHighlightColor: root.rimColor
         elevation: root.shadowEnabled ? 8 : 0
