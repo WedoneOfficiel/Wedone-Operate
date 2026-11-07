@@ -18,8 +18,9 @@ Item {
     property real materialOpacity: 0.96
     property color fillColor: palette.accent || "#287FBE"
     property color hoverColor: palette.accentHover || fillColor
+    readonly property color effectiveFillColor: hovered ? hoverColor : fillColor
     readonly property color dangerColor: palette.danger || "#B73550"
-    property color tint: variant === "accent" ? Qt.rgba(fillColor.r, fillColor.g, fillColor.b, 0.68)
+    property color tint: variant === "accent" ? Qt.rgba(effectiveFillColor.r, effectiveFillColor.g, effectiveFillColor.b, 0.68)
                         : variant === "danger" ? Qt.rgba(dangerColor.r, dangerColor.g, dangerColor.b, 0.72)
                         : variant === "quiet" ? Qt.rgba(1, 1, 1, hovered ? 0.12 : 0.035)
                         : variant === "control" ? (focused ? Qt.rgba(fillColor.r, fillColor.g, fillColor.b, 0.20) : Qt.rgba(1, 1, 1, 0.15))
@@ -77,7 +78,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: root.cornerRadius
-            color: root.variant === "accent" ? Qt.rgba(root.fillColor.r, root.fillColor.g, root.fillColor.b, 0.48)
+            color: root.variant === "accent" ? Qt.rgba(root.effectiveFillColor.r, root.effectiveFillColor.g, root.effectiveFillColor.b, 0.48)
                  : root.variant === "danger" ? Qt.rgba(root.dangerColor.r, root.dangerColor.g, root.dangerColor.b, 0.48)
                  : root.variant === "control" ? Qt.rgba(1, 1, 1, root.focused ? 0.18 : 0.10)
                  : root.variant === "quiet" ? Qt.rgba(1, 1, 1, root.hovered ? 0.14 : 0.025)

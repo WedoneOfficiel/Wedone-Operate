@@ -370,7 +370,7 @@ ApplicationWindow {
                 implicitHeight: contentHeight
                 model: combo.popup.visible ? combo.delegateModel : null
                 currentIndex: combo.highlightedIndex
-                ScrollIndicator.vertical: ScrollIndicator {}
+                ScrollBar.vertical: Components.GlassScrollBar { palette: root.colors }
             }
         }
     }
@@ -680,6 +680,8 @@ ApplicationWindow {
 
         Item {
             ScrollView {
+                ScrollBar.vertical: Components.GlassScrollBar { palette: root.colors }
+                ScrollBar.horizontal: Components.GlassScrollBar { palette: root.colors; orientation: Qt.Horizontal }
                 anchors.fill: parent
                 clip: true
                 contentWidth: availableWidth
@@ -836,15 +838,7 @@ ApplicationWindow {
                             Layout.minimumWidth: 0
                             height: 190
                             cornerRadius: 18
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.margins: 1
-                                radius: parent.cornerRadius - 1
-                                color: "transparent"
-                                border.width: 1
-                                border.color: root.colors.border
-                                opacity: 0.52
-                            }
+                            
                             
                             HoverHandler { id: hoverArea }
                             ColumnLayout {
@@ -1740,6 +1734,8 @@ ApplicationWindow {
 
         Item {
             ScrollView {
+                ScrollBar.vertical: Components.GlassScrollBar { palette: root.colors }
+                ScrollBar.horizontal: Components.GlassScrollBar { palette: root.colors; orientation: Qt.Horizontal }
                 anchors.fill: parent
                 clip: true
                 contentWidth: availableWidth
@@ -2179,6 +2175,8 @@ ApplicationWindow {
 
         Item {
             ScrollView {
+                ScrollBar.vertical: Components.GlassScrollBar { palette: root.colors }
+                ScrollBar.horizontal: Components.GlassScrollBar { palette: root.colors; orientation: Qt.Horizontal }
                 anchors.fill: parent
                 contentWidth: availableWidth
                 ColumnLayout {
