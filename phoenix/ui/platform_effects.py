@@ -1,6 +1,7 @@
 """Cross-platform native window effects and Qt Quick shader preparation."""
 from __future__ import annotations
 
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -24,9 +25,14 @@ def _find_qsb() -> str | None:
         if found:
             return found
     try:
-        import PySide6
-        package = Path(PySide6.__file__).resolve().parent
-    except Exception:
+        # PySide6 is a namespace package in Essentials-only installations;
+        # its top-level __file__ is therefore None. Resolve a concrete Qt
+        # module to locate the shared package directory instead.
+        module = importlib.util.find_spec("PySide6.QtCore")
+        if module is None or not module.origin:
+            return None
+        package = Path(module.origin).resolve().parent
+    except (ImportError, ModuleNotFoundError, ValueError):
         return None
     candidates = (
         package / "Qt" / "libexec" / ("qsb.exe" if os.name == "nt" else "qsb"),

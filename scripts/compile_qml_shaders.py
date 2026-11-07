@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import shutil
 import subprocess
 import sys
@@ -18,9 +19,14 @@ def find_qsb() -> str | None:
         if executable:
             return executable
     try:
-        import PySide6
-        package = Path(PySide6.__file__).resolve().parent
-    except Exception:
+        # PySide6 is a namespace package in Essentials-only installations;
+        # its top-level __file__ is therefore None. Resolve a concrete Qt
+        # module to locate the shared package directory instead.
+        module = importlib.util.find_spec("PySide6.QtCore")
+        if module is None or not module.origin:
+            return None
+        package = Path(module.origin).resolve().parent
+    except (ImportError, ModuleNotFoundError, ValueError):
         return None
     for candidate in (
         package / "Qt" / "libexec" / ("qsb.exe" if sys.platform == "win32" else "qsb"),
