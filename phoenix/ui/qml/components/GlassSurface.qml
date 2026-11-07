@@ -23,15 +23,15 @@ Item {
     property color tint: variant === "accent" ? Qt.rgba(effectiveFillColor.r, effectiveFillColor.g, effectiveFillColor.b, 0.68)
                         : variant === "danger" ? Qt.rgba(dangerColor.r, dangerColor.g, dangerColor.b, 0.72)
                         : variant === "quiet" ? Qt.rgba(1, 1, 1, hovered ? 0.12 : 0.035)
-                        : variant === "control" ? (focused ? Qt.rgba(fillColor.r, fillColor.g, fillColor.b, 0.20) : Qt.rgba(1, 1, 1, 0.15))
+                        : variant === "control" ? (focused ? Qt.rgba(effectiveFillColor.r, effectiveFillColor.g, effectiveFillColor.b, 0.20) : Qt.rgba(1, 1, 1, 0.15))
                         : variant === "glass" ? Qt.rgba(1, 1, 1, 0.18)
                         : Qt.rgba(1, 1, 1, 0.12)
     property real refraction: variant === "quiet" ? 1.4 : variant === "control" ? 2.4 : 4.6
     property real blurAmount: variant === "quiet" ? 0.35 : variant === "control" ? 0.85 : 1.35
-    property real borderOpacity: focused || selected ? 0.98 : hovered ? 0.82 : 0.56
-    property color rimColor: "#EFFFFFFF"
+    property real borderOpacity: focused || selected ? 0.98 : (hovered || pointerTracker.hovered) ? 0.82 : 0.56
+    property color rimColor: palette.glassHighlight || "#EFFFFFFF"
     property bool shadowEnabled: elevated
-    property real shadowOpacity: hovered ? 0.24 : 0.16
+    property real shadowOpacity: (hovered || pointerTracker.hovered) ? 0.24 : 0.16
     property bool reduceMotion: false
     property point pointerPosition: Qt.point(width * 0.5, height * 0.28)
     HoverHandler {
