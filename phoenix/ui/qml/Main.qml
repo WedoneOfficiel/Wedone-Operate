@@ -740,6 +740,7 @@ ApplicationWindow {
                             { label: "Réussite", value: root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%" }
                         ]
                         delegate: Components.SurfaceCard {
+                            backdropItem: ambientBackground
                             required property var modelData
                             palette: root.colors
                             interactive: true

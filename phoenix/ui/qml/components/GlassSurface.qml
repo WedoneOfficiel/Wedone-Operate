@@ -15,12 +15,12 @@ Item {
     property bool focused: false
     property bool selected: false
     property bool elevated: false
-    property bool enabled: true
     property real materialOpacity: 0.96
     property color fillColor: palette.accent || "#287FBE"
     property color hoverColor: palette.accentHover || fillColor
+    readonly property color dangerColor: palette.danger || "#B73550"
     property color tint: variant === "accent" ? Qt.rgba(fillColor.r, fillColor.g, fillColor.b, 0.68)
-                        : variant === "danger" ? Qt.rgba((palette.danger || "#B73550").r, (palette.danger || "#B73550").g, (palette.danger || "#B73550").b, 0.72)
+                        : variant === "danger" ? Qt.rgba(dangerColor.r, dangerColor.g, dangerColor.b, 0.72)
                         : variant === "quiet" ? Qt.rgba(1, 1, 1, hovered ? 0.12 : 0.035)
                         : variant === "control" ? (focused ? Qt.rgba(fillColor.r, fillColor.g, fillColor.b, 0.20) : Qt.rgba(1, 1, 1, 0.15))
                         : variant === "glass" ? Qt.rgba(1, 1, 1, 0.18)
