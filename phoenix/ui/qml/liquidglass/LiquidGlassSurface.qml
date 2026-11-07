@@ -28,6 +28,7 @@ Item {
     property real cornerRadius: Tokens.cornerRadius
     property real elevation: Tokens.elevation
     property color shadowColor: Tokens.shadowColor
+    property real shadowOpacity: 0.5
     property bool readabilityMode: Tokens.readabilityMode
     
     // Interactive state (can be controlled externally)
@@ -118,7 +119,7 @@ Item {
             shadowBlur: Math.min(root.elevation / 64, 1.0)  // Normalize to 0-1 range, clamped
             shadowVerticalOffset: root.elevation / 2
             shadowHorizontalOffset: 0
-            shadowOpacity: 0.5
+            shadowOpacity: root.shadowOpacity
         }
     }
     

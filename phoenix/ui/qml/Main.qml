@@ -836,13 +836,13 @@ ApplicationWindow {
                             Rectangle {
                                 anchors.fill: parent
                                 anchors.margins: 1
-                                radius: parent.radius - 1
+                                radius: parent.cornerRadius - 1
                                 color: "transparent"
                                 border.width: 1
                                 border.color: root.colors.border
                                 opacity: 0.52
                             }
-                            Behavior on border.color { ColorAnimation { duration: 130 } }
+                            
                             HoverHandler { id: hoverArea }
                             ColumnLayout {
                                 anchors.fill: parent

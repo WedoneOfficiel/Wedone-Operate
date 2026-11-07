@@ -60,6 +60,7 @@ Item {
         edgeHighlightColor: root.rimColor
         elevation: root.shadowEnabled ? (root.hovered || pointerTracker.hovered ? 13 : 8) : 0
         shadowColor: root.palette.shadow || "#33000000"
+        shadowOpacity: root.shadowOpacity
         hovered: root.hovered || pointerTracker.hovered
         pressed: root.pressed || pressTracker.pressed
         pointerPosition: root.pointerPosition
