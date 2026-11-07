@@ -556,46 +556,34 @@ ApplicationWindow {
         }
     }
 
-    component ModeCard: Rectangle {
+    component ModeCard: Components.OperateMaterial {
         id: card
         property string heading
         property string subtitle
         property string symbol
         property string actionMode
         signal chosen(string mode)
-        radius: 18
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: root.colors.shadow
-            shadowBlur: hover.hovered ? 0.42 : 0.28
-            shadowOpacity: hover.hovered ? 0.22 : 0.13
-            shadowVerticalOffset: hover.hovered ? 7 : 4
-        }
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: root.colors.glassTop }
-            GradientStop { position: 1.0; color: hover.hovered ? root.colors.surfaceHover : root.colors.surface }
-        }
-        color: hover.hovered ? root.colors.surfaceHover : root.colors.surface
-        border.width: hover.hovered ? 1.5 : 1
-        border.color: hover.hovered ? root.colors.accent : root.colors.border
+
+        palette: root.colors
+        cornerRadius: 20
+        variant: "glass"
+        hovered: hover.hovered
+        elevated: true
         implicitWidth: 320
         implicitHeight: 260
-        Behavior on color { ColorAnimation { duration: 140 } }
-        Behavior on border.color { ColorAnimation { duration: 140 } }
-        Behavior on border.width { NumberAnimation { duration: 110 } }
 
         HoverHandler { id: hover }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 20
+            anchors.margins: 22
             spacing: 11
-            Rectangle {
-                width: 54
-                height: 54
-                radius: 15
-                color: root.colors.accentSoft
+            Components.OperateMaterial {
+                Layout.preferredWidth: 54
+                Layout.preferredHeight: 54
+                palette: root.colors
+                variant: "control"
+                cornerRadius: 16
                 AppText {
                     anchors.centerIn: parent
                     text: card.symbol
