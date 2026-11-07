@@ -38,7 +38,6 @@ Item {
         onPointChanged: if (hovered)
             root.pointerPosition = Qt.point(point.position.x, point.position.y)
     }
-    TapHandler { id: pressTracker }
 
     implicitWidth: glass.implicitWidth
     implicitHeight: glass.implicitHeight
@@ -62,7 +61,7 @@ Item {
         shadowColor: root.palette.shadow || "#33000000"
         shadowOpacity: root.shadowOpacity
         hovered: root.hovered || pointerTracker.hovered
-        pressed: root.pressed || pressTracker.pressed
+        pressed: root.pressed
         pointerPosition: root.pointerPosition
         reduceMotion: root.reduceMotion
 

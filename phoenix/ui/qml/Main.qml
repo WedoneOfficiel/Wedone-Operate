@@ -761,11 +761,14 @@ ApplicationWindow {
                                         font.letterSpacing: 1.0
                                         Layout.fillWidth: true
                                     }
-                                    Rectangle {
+                                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "control"
+    elevated: true
                                         Layout.preferredWidth: 27
                                         Layout.preferredHeight: 27
-                                        radius: 9
-                                        color: root.colors.accentSoft
+                                        cornerRadius: 9
                                         AppLabel {
                                             anchors.centerIn: parent
                                             text: modelData.label === "Séances" ? "◷" : modelData.label === "Réponses" ? "✓" : "↗"
@@ -909,6 +912,7 @@ ApplicationWindow {
                 }
 
                 Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                     title: "Accéder à son espace élève"
                     subtitle: "Choisissez votre classe, votre groupe et votre profil pour retrouver vos exercices."
@@ -1090,6 +1094,7 @@ ApplicationWindow {
                     rowSpacing: 16
 
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Se connecter"
                         subtitle: "Retrouvez votre espace et vos classes."
@@ -1144,6 +1149,7 @@ ApplicationWindow {
                     }
 
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Créer un profil"
                         subtitle: "Configurez votre accès professeur en quelques instants."
@@ -1334,6 +1340,7 @@ ApplicationWindow {
                     columnSpacing: 18
                     rowSpacing: 18
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Mes classes"
                         subtitle: "Créez une classe et organisez votre année scolaire."
@@ -1358,6 +1365,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Classes et groupes"
                         subtitle: "Sélectionnez une classe pour modifier ses informations et structurer les groupes."
@@ -1447,6 +1455,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Exercices"
                         subtitle: "Préparez un entraînement et attribuez-le à la classe sélectionnée."
@@ -1514,6 +1523,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Archivage"
                         subtitle: "Archivez une classe ou un groupe sans perdre l'historique associé."
@@ -1552,6 +1562,7 @@ ApplicationWindow {
                         }
                     }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Élèves et suivi"
                         subtitle: "Sélectionnez un élève pour modifier son profil et consulter ses résultats."
@@ -1684,6 +1695,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Mon profil"
                         subtitle: "Modifiez votre nom affiché ou fermez votre session."
@@ -1777,6 +1789,7 @@ ApplicationWindow {
                 }
 
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Votre séance"
                         subtitle: "Choisissez le contenu et le niveau de votre entraînement."
@@ -1901,6 +1914,7 @@ ApplicationWindow {
 
                     }
                 Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                     title: "À vous de jouer"
                     subtitle: "Concentrez-vous sur une question à la fois. Vous avancez à votre rythme."
@@ -2093,6 +2107,7 @@ ApplicationWindow {
                 }
 
                 Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                     title: "Séance terminée"
                     subtitle: "Bravo pour votre effort. Voici le récapitulatif de votre entraînement."
@@ -2182,6 +2197,7 @@ ApplicationWindow {
                     font.family: "Manrope"
                 }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Apparence"
                         subtitle: "Personnalisez l'apparence de Wedone Operate."
@@ -2206,6 +2222,7 @@ ApplicationWindow {
                 }
                     }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Accessibilité"
                         subtitle: "Adaptez l'interface à vos préférences de confort visuel."
@@ -2235,6 +2252,7 @@ ApplicationWindow {
                 }
                     }
                     Components.FormPanel {
+                    palette: root.colors
                     backdropItem: ambientBackground
                         title: "Données et sauvegardes"
                         subtitle: "Importez, exportez et restaurez vos données en toute sécurité."
