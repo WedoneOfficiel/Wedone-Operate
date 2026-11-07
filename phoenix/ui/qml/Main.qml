@@ -22,6 +22,30 @@ ApplicationWindow {
     property string currentMode: appBridge.mode
     property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
+
+    function openSettings() {
+        if (root.page !== "settings") {
+            root.settingsReturnPage = root.page
+            root.page = "settings"
+        }
+    }
+
+    function closeSettings() {
+        const destination = root.settingsReturnPage
+        root.page = destination && destination !== "settings" && destination !== "welcome"
+                    ? destination
+                    : (root.currentMode === "classroom" ? "home" : "practice")
+        root.settingsReturnPage = "home"
+    }
+
+    function openClassroomArea(area) {
+        if (root.currentMode !== "classroom")
+            return
+        root.classroomArea = area === "student" ? "student" : "teacher"
+        if (root.classroomArea === "student")
+            appBridge.selectStudent("")
+        root.page = "area"
+    }
     property string themeMode: appBridge.themeMode
     property bool darkTheme: themeMode === "dark" || (themeMode === "system" && appBridge.systemDark)
     property var colors: {
@@ -200,8 +224,10 @@ ApplicationWindow {
                     Layout.preferredHeight: 40
                     visible: root.page !== "welcome"
                     onClicked: {
-                        root.settingsReturnPage = root.page
-                        root.page = "settings"
+                        if (root.page === "settings")
+                            root.closeSettings()
+                        else
+                            root.openSettings()
                     }
                     background: Rectangle {
                         radius: 13
@@ -211,14 +237,14 @@ ApplicationWindow {
                         Behavior on color { ColorAnimation { duration: 130 } }
                     }
                     contentItem: AppLabel {
-                        text: "⚙"
+                        text: root.page === "settings" ? "‹" : "⚙"
                         color: settingsButton.hovered ? root.colors.accent : root.colors.textSecondary
                         font.pixelSize: 20
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
                     ToolTip.visible: hovered
-                    ToolTip.text: "Paramètres"
+                    ToolTip.text: root.page === "settings" ? "Retour à l’application" : "Paramètres"
                 }
             }
         }
@@ -867,9 +893,7 @@ ApplicationWindow {
                                     text: "Ouvrir"
                                     Layout.fillWidth: true
                                     onClicked: {
-                                        root.classroomArea = index === 0 ? "student" : "teacher"
-                                        if (index === 0) appBridge.selectStudent("")
-                                        root.page = "area"
+                                        root.openClassroomArea(modelData.title === "Espace élève" ? "student" : "teacher")
                                     }
                                 }
                             }
@@ -897,14 +921,11 @@ ApplicationWindow {
                     }
                     QuietButton {
                         text: "Espace élève"
-                        onClicked: {
-                            root.classroomArea = "student"
-                            appBridge.selectStudent("")
-                        }
+                        onClicked: root.openClassroomArea("student")
                     }
                     QuietButton {
                         text: "Espace professeur"
-                        onClicked: root.classroomArea = "teacher"
+                        onClicked: root.openClassroomArea("teacher")
                     }
                     Item { Layout.fillWidth: true }
                 }
@@ -1715,26 +1736,6 @@ ApplicationWindow {
                     }
                 }
 
-                PrimaryButton {
-                    visible: root.page === "home"
-                    text: "Paramètres"
-                    fillColor: root.colors.accentSoft
-                    hoverColor: root.colors.accentHoverSoft
-                    textColor: root.colors.accent
-                    Layout.alignment: Qt.AlignHCenter
-                    onClicked: {
-                        root.settingsReturnPage = root.page
-                        root.page = "settings"
-                    }
-                }
-
-                PrimaryButton {
-                    visible: root.page === "home"
-                    text: "Changer de mode"
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: 12
-                    onClicked: appBridge.returnToModeChoice()
-                }
                 }
             }
         }
@@ -2308,7 +2309,7 @@ ApplicationWindow {
                 PrimaryButton {
                     text: "Retour"
                     Layout.fillWidth: true
-                    onClicked: root.page = root.settingsReturnPage
+                    onClicked: root.closeSettings()
                 }
                 }
             }
