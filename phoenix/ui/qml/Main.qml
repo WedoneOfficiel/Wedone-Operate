@@ -134,9 +134,8 @@ ApplicationWindow {
                 anchors.rightMargin: 15
                 spacing: 12
 
-                Item { Layout.fillWidth: true }
-
                 RowLayout {
+                    anchors.centerIn: parent
                     spacing: 9
                     Image {
                         source: "image://branding/logo"
@@ -168,59 +167,62 @@ ApplicationWindow {
                     }
                 }
 
-                Item { Layout.fillWidth: true }
-
-                Rectangle {
-                    visible: root.currentMode !== ""
-                    Layout.preferredWidth: modeLabel.implicitWidth + 27
-                    Layout.preferredHeight: 36
-                    radius: 18
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: root.colors.glassTop }
-                        GradientStop { position: 1.0; color: root.colors.panel }
-                    }
-                    border.color: root.colors.glassHighlight
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: 7
-                        Rectangle {
-                            Layout.preferredWidth: 7
-                            Layout.preferredHeight: 7
-                            radius: 4
-                            color: root.colors.success
-                        }
-                        AppLabel {
-                            id: modeLabel
-                            text: root.currentMode === "individual" ? "Individuel" : "Classe"
-                            color: root.colors.textSecondary
-                            font.pixelSize: 11
-                            font.weight: Font.DemiBold
-                        }
-                    }
-                }
-
-                ToolButton {
-                    Layout.preferredWidth: 38
-                    Layout.preferredHeight: 38
-                    visible: root.page !== "welcome"
-                    onClicked: root.navigationOpen = !root.navigationOpen
-                    background: Rectangle {
-                        radius: 12
+                RowLayout {
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                    Layout.leftMargin: parent.width - implicitWidth - 30
+                    spacing: 9
+                    Rectangle {
+                        visible: root.currentMode !== ""
+                        Layout.preferredWidth: modeLabel.implicitWidth + 27
+                        Layout.preferredHeight: 36
+                        radius: 18
                         gradient: Gradient {
-                            GradientStop { position: 0.0; color: parent.parent.hovered ? root.colors.accentSoft : root.colors.glassTop }
+                            GradientStop { position: 0.0; color: root.colors.glassTop }
                             GradientStop { position: 1.0; color: root.colors.panel }
                         }
-                        border.color: parent.parent.hovered ? root.colors.accent : root.colors.glassHighlight
+                        border.color: root.colors.glassHighlight
+                        RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 7
+                            Rectangle {
+                                Layout.preferredWidth: 7
+                                Layout.preferredHeight: 7
+                                radius: 4
+                                color: root.colors.success
+                            }
+                            AppLabel {
+                                id: modeLabel
+                                text: root.currentMode === "individual" ? "Individuel" : "Classe"
+                                color: root.colors.textSecondary
+                                font.pixelSize: 11
+                                font.weight: Font.DemiBold
+                            }
+                        }
                     }
-                    contentItem: AppLabel {
-                        text: "☰"
-                        color: root.colors.text
-                        font.pixelSize: 18
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+
+                    ToolButton {
+                        Layout.preferredWidth: 38
+                        Layout.preferredHeight: 38
+                        visible: root.page !== "welcome"
+                        onClicked: root.navigationOpen = !root.navigationOpen
+                        background: Rectangle {
+                            radius: 12
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: parent.parent.hovered ? root.colors.accentSoft : root.colors.glassTop }
+                                GradientStop { position: 1.0; color: root.colors.panel }
+                            }
+                            border.color: parent.parent.hovered ? root.colors.accent : root.colors.glassHighlight
+                        }
+                        contentItem: AppLabel {
+                            text: "☰"
+                            color: root.colors.text
+                            font.pixelSize: 18
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        ToolTip.visible: hovered
+                        ToolTip.text: root.navigationOpen ? "Masquer la navigation" : "Afficher la navigation"
                     }
-                    ToolTip.visible: hovered
-                    ToolTip.text: root.navigationOpen ? "Masquer la navigation" : "Afficher la navigation"
                 }
             }
         }
