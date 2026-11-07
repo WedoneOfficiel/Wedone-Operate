@@ -19,9 +19,10 @@ def _shader_binary() -> Path:
 
 
 def _find_qsb() -> str | None:
-    found = shutil.which("qsb")
-    if found:
-        return found
+    for name in ("pyside6-qsb", "qsb"):
+        found = shutil.which(name)
+        if found:
+            return found
     try:
         import PySide6
         package = Path(PySide6.__file__).resolve().parent
@@ -128,10 +129,6 @@ class PlatformEffects(QObject):
         )
         if result != 0:
             return False
-        dark = wintypes.BOOL(1)
-        dwmapi.DwmSetWindowAttribute(
-            wintypes.HWND(hwnd), 20, ctypes.byref(dark), ctypes.sizeof(dark)
-        )
         return True
 
     @staticmethod

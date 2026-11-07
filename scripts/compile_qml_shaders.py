@@ -13,9 +13,10 @@ TARGET = SOURCE.with_suffix(SOURCE.suffix + ".qsb")
 
 
 def find_qsb() -> str | None:
-    executable = shutil.which("qsb")
-    if executable:
-        return executable
+    for name in ("pyside6-qsb", "qsb"):
+        executable = shutil.which(name)
+        if executable:
+            return executable
     try:
         import PySide6
         package = Path(PySide6.__file__).resolve().parent

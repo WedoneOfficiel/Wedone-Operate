@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 
 Item {
     id: glass
@@ -11,12 +12,23 @@ Item {
     property real blurAmount: 1.0
     property real materialOpacity: 0.96
     property real borderOpacity: 0.72
+    property color rimColor: "#BFFFFFFF"
+    property bool shadowEnabled: false
+    property real shadowOpacity: 0.18
     property bool reduceMotion: false
     property real pointerLift: 0
     readonly property bool shaderAvailable: platformEffects.shaderAvailable
     readonly property bool darkTint: tint.hsvValue < 0.5
 
     clip: true
+    layer.enabled: glass.shadowEnabled
+    layer.effect: MultiEffect {
+        shadowEnabled: glass.shadowEnabled
+        shadowColor: "#66000000"
+        shadowBlur: 0.58
+        shadowOpacity: glass.shadowOpacity
+        shadowVerticalOffset: 8
+    }
 
     Behavior on pointerLift {
         enabled: !glass.reduceMotion
@@ -71,7 +83,7 @@ Item {
         radius: glass.cornerRadius
         color: "transparent"
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, glass.borderOpacity)
+        border.color: glass.rimColor
         opacity: 0.92
     }
 

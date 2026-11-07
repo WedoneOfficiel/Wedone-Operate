@@ -128,10 +128,13 @@ ApplicationWindow {
             height: 66
             cornerRadius: 22
             backdropItem: ambientBackground
-            tint: root.darkTheme ? "#A91A293B" : "#DDFBFDFF"
-            refraction: 5.0
-            blurAmount: 1.35
-            materialOpacity: 0.98
+            tint: root.darkTheme ? "#991A293B" : "#BFFFFFFF"
+            refraction: 6.0
+            blurAmount: 1.8
+            materialOpacity: 0.96
+            shadowEnabled: true
+            shadowOpacity: 0.18
+            reduceMotion: appBridge.reduceMotion
             RowLayout {
                 anchors.centerIn: parent
                 spacing: 9
@@ -214,11 +217,12 @@ ApplicationWindow {
                         anchors.fill: parent
                         cornerRadius: 13
                         backdropItem: ambientBackground
-                        tint: root.darkTheme ? "#9D25364A" : "#C8FFFFFF"
+                        tint: root.darkTheme ? "#8825364A" : "#99FFFFFF"
                         refraction: 3.2
                         blurAmount: 0.9
                         materialOpacity: settingsButton.hovered ? 0.98 : 0.84
                         borderOpacity: settingsButton.hovered || settingsButton.activeFocus ? 0.95 : 0.58
+                        reduceMotion: appBridge.reduceMotion
                     }
                     contentItem: AppLabel {
                         text: root.page === "settings" ? "‹" : "⚙"
@@ -2344,30 +2348,18 @@ ApplicationWindow {
         width: Math.min(440, root.width - 40)
         padding: 22
         spacing: 16
-        background: Rectangle {
-            radius: 19
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: root.colors.shadow
-                shadowBlur: 0.55
-                shadowOpacity: 0.24
-                shadowVerticalOffset: 10
-            }
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: root.colors.glassTop }
-                GradientStop { position: 1.0; color: root.colors.surface }
-            }
-            border.color: root.colors.border
-            border.width: 1
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1
-                radius: parent.radius - 1
-                color: "transparent"
-                border.color: root.colors.glassHighlight
-                opacity: 0.55
-            }
+        background: Components.LiquidGlassSurface {
+            anchors.fill: parent
+            cornerRadius: 19
+            backdropItem: ambientBackground
+            tint: root.darkTheme ? "#C51B293B" : "#BFFFFFFF"
+            refraction: 5.5
+            blurAmount: 1.8
+            materialOpacity: 0.96
+            shadowEnabled: true
+            shadowOpacity: 0.24
+            borderOpacity: 0.88
+            reduceMotion: appBridge.reduceMotion
         }
         AppLabel {
             width: archiveConfirmation.availableWidth
@@ -2411,30 +2403,19 @@ ApplicationWindow {
         width: Math.min(480, root.width - 40)
         padding: 22
         spacing: 16
-        background: Rectangle {
-            radius: 19
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: root.colors.shadow
-                shadowBlur: 0.55
-                shadowOpacity: 0.24
-                shadowVerticalOffset: 10
-            }
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: root.colors.glassTop }
-                GradientStop { position: 1.0; color: root.colors.surface }
-            }
-            border.color: root.colors.danger
-            border.width: 1
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1
-                radius: parent.radius - 1
-                color: "transparent"
-                border.color: root.colors.glassHighlight
-                opacity: 0.55
-            }
+        background: Components.LiquidGlassSurface {
+            anchors.fill: parent
+            cornerRadius: 19
+            backdropItem: ambientBackground
+            tint: root.darkTheme ? "#C51B293B" : "#BFFFFFFF"
+            refraction: 5.5
+            blurAmount: 1.8
+            materialOpacity: 0.96
+            shadowEnabled: true
+            shadowOpacity: 0.24
+            borderOpacity: 0.94
+            rimColor: root.colors.danger
+            reduceMotion: appBridge.reduceMotion
         }
         AppLabel {
             width: resetConfirmation.availableWidth
