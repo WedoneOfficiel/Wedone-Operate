@@ -6,6 +6,11 @@ Button {
     property string kind: "primary" // primary, secondary, quiet, danger
     property var palette: ({})
     property int controlRadius: 12
+    property color fillColor: palette.accent || "#167CC2"
+    property color hoverColor: palette.accentHover || "#1168A5"
+    property color textColor: kind === "primary" ? (palette.onAccent || "#FFFFFF")
+                       : kind === "danger" ? "#FFFFFF"
+                       : (palette.text || "#172536")
     implicitHeight: 42
     leftPadding: 16
     rightPadding: 16
@@ -18,10 +23,7 @@ Button {
     contentItem: Text {
         text: control.text
         font: control.font
-        color: !control.enabled ? (control.palette.muted || "#718096")
-             : control.kind === "danger" ? "#FFFFFF"
-             : control.kind === "primary" ? (control.palette.onAccent || "#FFFFFF")
-             : (control.palette.text || "#172536")
+        color: !control.enabled ? (control.palette.muted || "#718096") : control.textColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -33,6 +35,8 @@ Button {
         variant: control.kind === "primary" ? "accent"
                : control.kind === "danger" ? "danger"
                : control.kind === "secondary" ? "glass" : "quiet"
+        fillColor: control.kind === "danger" ? (control.palette.danger || "#B73550") : control.fillColor
+        hoverColor: control.kind === "danger" ? Qt.lighter(control.palette.danger || "#B73550", 1.08) : control.hoverColor
         hovered: control.hovered
         pressed: control.down
         focused: control.activeFocus

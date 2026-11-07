@@ -12,15 +12,17 @@ Rectangle {
     property bool selected: false
     property bool elevated: false
     property real materialOpacity: 1.0
+    property color fillColor: palette.accent || "#287FBE"
+    property color hoverColor: palette.accentHover || fillColor
 
-    readonly property color _accent: palette.accent || "#287FBE"
+    readonly property color _accent: fillColor
     readonly property color _surface: palette.surface || "#FFFFFF"
     readonly property color _surfaceAlt: palette.surfaceAlt || "#F6F8FC"
     readonly property color _border: palette.border || "#DDE5EF"
 
     readonly property color topColor: {
         if (!enabled) return _surfaceAlt
-        if (variant === "accent") return Qt.lighter(pressed || hovered ? (palette.accentHover || _accent) : _accent, 1.10)
+        if (variant === "accent") return Qt.lighter(pressed || hovered ? hoverColor : fillColor, 1.10)
         if (variant === "danger") return Qt.lighter(palette.danger || "#B73550", pressed ? 1.0 : 1.08)
         if (variant === "quiet") return hovered || pressed ? _surfaceAlt : "transparent"
         if (variant === "glass") return palette.glassTop || "#EFFFFFFF"
@@ -29,7 +31,7 @@ Rectangle {
     }
     readonly property color bottomColor: {
         if (!enabled) return _surfaceAlt
-        if (variant === "accent") return pressed ? (palette.accentHover || _accent) : _accent
+        if (variant === "accent") return pressed ? hoverColor : fillColor
         if (variant === "danger") return pressed ? Qt.darker(palette.danger || "#B73550", 1.14) : (palette.danger || "#B73550")
         if (variant === "quiet") return hovered || pressed ? _surfaceAlt : "transparent"
         if (variant === "glass") return palette.glassBottom || "#DDF2F7FC"
