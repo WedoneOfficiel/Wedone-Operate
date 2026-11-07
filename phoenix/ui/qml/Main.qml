@@ -992,13 +992,15 @@ ApplicationWindow {
                                         { label: "Réponses", value: root.progressSummary.answered },
                                         { label: "Réussite", value: root.progressSummary.accuracy === null ? "—" : root.progressSummary.accuracy + "%" }
                                     ]
-                                    delegate: Rectangle {
+                                    delegate: Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "control"
+    elevated: true
                                         required property var modelData
                                         Layout.fillWidth: true
                                         Layout.preferredHeight: 62
-                                        radius: 10
-                                        color: root.colors.panel
-                                        border.color: root.colors.glassHighlight
+                                        cornerRadius: 10
                                         ColumnLayout {
                                             anchors.fill: parent
                                             anchors.leftMargin: 10
