@@ -322,32 +322,13 @@ ApplicationWindow {
             color: root.colors.muted
             font.pixelSize: 18
         }
-        background: Rectangle {
-            radius: 11
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: root.colors.shadow
-                shadowBlur: combo.activeFocus ? 0.28 : 0.16
-                shadowOpacity: combo.activeFocus ? 0.13 : 0.07
-                shadowVerticalOffset: 2
-            }
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: !combo.enabled ? root.colors.surfaceHover : combo.activeFocus ? root.colors.glassTop : root.colors.input }
-                GradientStop { position: 1.0; color: combo.hovered ? root.colors.surfaceHover : root.colors.panel }
-            }
-            border.width: combo.activeFocus ? 1.6 : 1
-            border.color: combo.activeFocus ? root.colors.accent : root.colors.border
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1
-                radius: parent.radius - 1
-                color: "transparent"
-                border.width: 1
-                border.color: root.colors.glassHighlight
-                opacity: 0.45
-            }
-            Behavior on border.color { ColorAnimation { duration: 140 } }
+        background: Components.OperateMaterial {
+            palette: root.colors
+            cornerRadius: 12
+            variant: "control"
+            hovered: combo.hovered
+            focused: combo.activeFocus
+            enabled: combo.enabled
         }
         delegate: ItemDelegate {
             required property int index
@@ -362,10 +343,12 @@ ApplicationWindow {
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
             }
-            background: Rectangle {
-                radius: 8
-                color: parent.highlighted ? root.colors.accentSoft : (parent.hovered ? root.colors.surfaceHover : "transparent")
-                Behavior on color { ColorAnimation { duration: 100 } }
+            background: Components.OperateMaterial {
+                palette: root.colors
+                cornerRadius: 8
+                variant: "quiet"
+                hovered: parent.hovered
+                selected: parent.highlighted
             }
         }
         popup: Popup {
@@ -373,31 +356,11 @@ ApplicationWindow {
             width: combo.width
             implicitHeight: Math.min(contentItem.implicitHeight + 12, 260)
             padding: 6
-            background: Rectangle {
-                radius: 13
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowColor: root.colors.shadow
-                    shadowBlur: 0.48
-                    shadowOpacity: 0.22
-                    shadowVerticalOffset: 8
-                }
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: root.colors.glassTop }
-                    GradientStop { position: 1.0; color: root.colors.surface }
-                }
-                border.color: root.colors.border
-                border.width: 1
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 1
-                    radius: parent.radius - 1
-                    color: "transparent"
-                    border.width: 1
-                    border.color: root.colors.glassHighlight
-                    opacity: 0.5
-                }
+            background: Components.OperateMaterial {
+                palette: root.colors
+                cornerRadius: 14
+                variant: "glass"
+                elevated: true
             }
             contentItem: ListView {
                 clip: true
@@ -428,30 +391,45 @@ ApplicationWindow {
             inputMethodHints: Qt.ImhFormattedNumbersOnly
             onTextEdited: numberField.value = numberField.valueFromText(text, numberField.locale)
         }
-        background: Rectangle {
-            radius: 10
-            color: numberField.enabled ? root.colors.input : root.colors.surfaceHover
-            border.color: numberField.activeFocus ? root.colors.accent : root.colors.border
-            border.width: numberField.activeFocus ? 1.6 : 1
-            Behavior on color { ColorAnimation { duration: 120 } }
-            Behavior on border.color { ColorAnimation { duration: 120 } }
+        background: Components.OperateMaterial {
+            palette: root.colors
+            cornerRadius: 12
+            variant: "control"
+            focused: numberField.activeFocus
+            enabled: numberField.enabled
         }
-        up.indicator: Rectangle {
+        up.indicator: Components.OperateMaterial {
             x: numberField.width - width
             width: 32
             height: numberField.height / 2
-            color: numberField.up.pressed ? root.colors.accentSoft : (numberField.up.hovered ? root.colors.surfaceHover : "transparent")
-            radius: 6
-            AppText { anchors.centerIn: parent; text: "+"; color: root.colors.text; font.pixelSize: 15 }
+            cornerRadius: 7
+            palette: root.colors
+            variant: "quiet"
+            hovered: numberField.up.hovered
+            pressed: numberField.up.pressed
+            AppText {
+                anchors.centerIn: parent
+                text: "+"
+                color: root.colors.text
+                font.pixelSize: 15
+            }
         }
-        down.indicator: Rectangle {
+        down.indicator: Components.OperateMaterial {
             x: numberField.width - width
             y: numberField.height / 2
             width: 32
             height: numberField.height / 2
-            color: numberField.down.pressed ? root.colors.accentSoft : (numberField.down.hovered ? root.colors.surfaceHover : "transparent")
-            radius: 6
-            AppText { anchors.centerIn: parent; text: "−"; color: root.colors.text; font.pixelSize: 15 }
+            cornerRadius: 7
+            palette: root.colors
+            variant: "quiet"
+            hovered: numberField.down.hovered
+            pressed: numberField.down.pressed
+            AppText {
+                anchors.centerIn: parent
+                text: "−"
+                color: root.colors.text
+                font.pixelSize: 15
+            }
         }
     }
 
@@ -467,17 +445,24 @@ ApplicationWindow {
             verticalAlignment: Text.AlignVCenter
             leftPadding: check.indicator.width + check.spacing
         }
-        indicator: Rectangle {
+        indicator: Components.OperateMaterial {
             implicitWidth: 20
             implicitHeight: 20
             x: 0
             y: (check.height - height) / 2
-            radius: 5
-            color: check.checked ? root.colors.accent : (check.enabled ? root.colors.input : root.colors.surfaceHover)
-            border.color: check.activeFocus ? root.colors.accent : (check.checked ? root.colors.accent : root.colors.border)
-            border.width: check.activeFocus ? 1.6 : 1
-            AppText { anchors.centerIn: parent; text: check.checked ? "✓" : ""; color: "#FFFFFF"; font.pixelSize: 12; font.weight: Font.Bold }
-            Behavior on color { ColorAnimation { duration: 110 } }
+            cornerRadius: 6
+            palette: root.colors
+            variant: check.checked ? "accent" : "control"
+            focused: check.activeFocus
+            hovered: check.hovered
+            enabled: check.enabled
+            AppText {
+                anchors.centerIn: parent
+                text: check.checked ? "✓" : ""
+                color: "#FFFFFF"
+                font.pixelSize: 12
+                font.weight: Font.Bold
+            }
         }
     }
 
@@ -490,7 +475,6 @@ ApplicationWindow {
             height: 6
             radius: 3
             color: root.colors.border
-            Behavior on color { ColorAnimation { duration: 120 } }
             Rectangle {
                 width: slider.visualPosition * parent.width
                 height: parent.height
@@ -498,40 +482,24 @@ ApplicationWindow {
                 color: root.colors.accent
             }
         }
-        handle: Rectangle {
+        handle: Components.OperateMaterial {
             x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
             y: slider.topPadding + slider.availableHeight / 2 - height / 2
             width: 19
             height: 19
-            radius: 10
-            color: slider.enabled ? root.colors.surface : root.colors.surfaceHover
-            border.color: slider.activeFocus ? root.colors.accent : root.colors.accent
-            border.width: slider.activeFocus ? 3 : slider.hovered ? 2.5 : 2
-            Behavior on border.width { NumberAnimation { duration: 100 } }
+            cornerRadius: 10
+            palette: root.colors
+            variant: "glass"
+            focused: slider.activeFocus
+            hovered: slider.hovered
+            elevated: true
         }
     }
 
-    component QuietButton: Button {
-        id: quiet
-        implicitHeight: 42
-        font.family: "DM Sans"
-        font.pixelSize: 13
-        contentItem: AppText {
-            text: quiet.text
-            color: quiet.enabled ? root.colors.textSecondary : root.colors.muted
-            font.family: "DM Sans"
-            font.pixelSize: 13
-            font.weight: Font.DemiBold
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
-        background: Rectangle {
-            radius: 10
-            color: !quiet.enabled ? "transparent" : quiet.down ? root.colors.accentSoft : (quiet.hovered ? root.colors.surfaceHover : "transparent")
-            border.color: quiet.hovered || quiet.activeFocus ? root.colors.border : "transparent"
-            border.width: quiet.hovered || quiet.activeFocus ? 1 : 0
-            Behavior on color { ColorAnimation { duration: 110 } }
-        }
+    component QuietButton: Components.OperateButton {
+        palette: root.colors
+        kind: "quiet"
+        controlRadius: 12
     }
 
     component PrimaryButton: Components.OperateButton {
@@ -575,32 +543,16 @@ ApplicationWindow {
                 color: root.colors.accent
             }
         }
-        background: Rectangle {
-            radius: 12
-            layer.enabled: navControl.active || navControl.hovered
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: root.colors.shadow
-                shadowBlur: navControl.active ? 0.30 : 0.18
-                shadowOpacity: navControl.active ? 0.15 : 0.08
-                shadowVerticalOffset: navControl.active ? 3 : 1
-            }
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: navControl.active ? root.colors.glassTop : navControl.down ? root.colors.accentSoft : navControl.hovered ? root.colors.glassTop : "transparent" }
-                GradientStop { position: 1.0; color: navControl.active ? root.colors.accentSoft : navControl.down ? root.colors.accentSoft : navControl.hovered ? root.colors.surfaceHover : "transparent" }
-            }
-            border.width: navControl.active ? 1.2 : navControl.hovered || navControl.activeFocus ? 1 : 0
-            border.color: navControl.active ? root.colors.accent : navControl.hovered || navControl.activeFocus ? root.colors.glassHighlight : "transparent"
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 1
-                radius: parent.radius - 1
-                color: "transparent"
-                border.width: navControl.active ? 1 : 0
-                border.color: root.colors.glassHighlight
-                opacity: 0.55
-            }
-            Behavior on border.color { ColorAnimation { duration: 140 } }
+        background: Components.OperateMaterial {
+            palette: root.colors
+            cornerRadius: 12
+            variant: "glass"
+            hovered: navControl.hovered
+            pressed: navControl.down
+            focused: navControl.activeFocus
+            selected: navControl.active
+            elevated: navControl.active || navControl.hovered
+            materialOpacity: navControl.active ? 0.98 : 0.72
         }
     }
 
