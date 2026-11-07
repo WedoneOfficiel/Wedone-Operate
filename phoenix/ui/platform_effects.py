@@ -102,6 +102,11 @@ class PlatformEffects(QObject):
 
     @Slot(QObject)
     def applyToWindow(self, window: QObject) -> None:
+        # Offscreen smoke tests do not expose a real HWND/NSView. Calling the
+        # native APIs with those synthetic handles can crash the host process.
+        if os.environ.get("QT_QPA_PLATFORM", "").lower() == "offscreen":
+            self._set_native_backdrop(False)
+            return
         applied = False
         try:
             if sys.platform == "win32":
