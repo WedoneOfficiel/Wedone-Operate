@@ -1,0 +1,10 @@
+module LiquidGlass
+
+# Design tokens (singleton)
+singleton Tokens 1.0 Tokens.qml
+
+# Components
+LiquidGlassSurface 1.0 LiquidGlassSurface.qml
+LiquidGlassButton 1.0 LiquidGlassButton.qml
+LiquidGlassPanel 1.0 LiquidGlassPanel.qml
+LiquidGlassSlider 1.0 LiquidGlassSlider.qml

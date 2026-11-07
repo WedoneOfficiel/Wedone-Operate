@@ -1,10 +1,9 @@
 import QtQuick
-import QtQuick.Effects
+import "../liquidglass" as LiquidGlass
 
 Item {
-    id: glass
-    default property alias content: contentLayer.data
-
+    id: root
+    default property alias content: material.content
     property Item backdropItem
     property color tint: "#DDFBFDFF"
     property real cornerRadius: 18
@@ -18,104 +17,25 @@ Item {
     property bool reduceMotion: false
     property real pointerLift: 0
     property vector2d pointerPosition: Qt.vector2d(width * 0.5, height * 0.25)
-    readonly property bool shaderAvailable: platformEffects.shaderAvailable
-    readonly property bool darkTint: tint.hsvValue < 0.5
 
-    clip: true
-    layer.enabled: glass.shadowEnabled
-    layer.effect: MultiEffect {
-        shadowEnabled: glass.shadowEnabled
-        shadowColor: "#66000000"
-        shadowBlur: 0.58
-        shadowOpacity: glass.shadowOpacity
-        shadowVerticalOffset: 8
-    }
-
-    Behavior on pointerLift {
-        enabled: !glass.reduceMotion
-        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
-    }
-
-    ShaderEffectSource {
-        id: backdropCapture
+    LiquidGlass.LiquidGlassSurface {
+        id: material
         anchors.fill: parent
-        visible: false
-        live: true
-        recursive: false
-        hideSource: false
-        sourceItem: glass.backdropItem
-        sourceRect: {
-            if (!glass.backdropItem)
-                return Qt.rect(0, 0, Math.max(1, glass.width), Math.max(1, glass.height))
-            const origin = glass.mapToItem(glass.backdropItem, 0, 0)
-            return Qt.rect(origin.x, origin.y, Math.max(1, glass.width), Math.max(1, glass.height))
-        }
-        textureSize: Qt.size(Math.max(1, Math.round(glass.width)), Math.max(1, Math.round(glass.height)))
-    }
-
-    ShaderEffect {
-        anchors.fill: parent
-        visible: glass.shaderAvailable && glass.backdropItem !== null
-        property variant source: backdropCapture
-        property vector2d texelSize: Qt.vector2d(1.0 / Math.max(1.0, width), 1.0 / Math.max(1.0, height))
-        property vector2d itemSize: Qt.vector2d(Math.max(1.0, width), Math.max(1.0, height))
-        property real radius: glass.cornerRadius
-        property real refractionStrength: glass.refraction + glass.pointerLift * 1.4
-        property vector2d lightPosition: glass.pointerPosition
-        property real pointerIntensity: glass.pointerLift
-        property real blur: glass.blurAmount
-        property color glassTint: glass.tint
-        property real opacityFactor: glass.materialOpacity
-        fragmentShader: Qt.resolvedUrl("../shaders/glass.frag.qsb")
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        visible: !glass.shaderAvailable || glass.backdropItem === null
-        radius: glass.cornerRadius
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: Qt.lighter(glass.tint, 1.08) }
-            GradientStop { position: 0.52; color: glass.tint }
-            GradientStop { position: 1.0; color: Qt.darker(glass.tint, 1.06) }
-        }
-    }
-
-    // Independent optical rim: no layout geometry is changed by the effect.
-    Rectangle {
-        anchors.fill: parent
-        radius: glass.cornerRadius
-        color: "transparent"
-        border.width: 1
-        border.color: glass.rimColor
-        opacity: 0.92
-    }
-
-    Rectangle {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 1.5
-        height: Math.max(1, Math.min(2.2, glass.height * 0.035))
-        radius: height / 2
-        color: "#BFFFFFFF"
-        opacity: glass.borderOpacity * 0.62
-    }
-
-    Item {
-        id: contentLayer
-        anchors.fill: parent
-    }
-
-    HoverHandler {
-        enabled: !glass.reduceMotion
-        onHoveredChanged: {
-            glass.pointerLift = hovered ? 1 : 0
-            if (!hovered)
-                glass.pointerPosition = Qt.vector2d(glass.width * 0.5, glass.height * 0.25)
-        }
-        onPointChanged: {
-            if (hovered)
-                glass.pointerPosition = Qt.vector2d(point.position.x, point.position.y)
-        }
+        backgroundSource: root.backdropItem
+        cornerRadius: root.cornerRadius
+        blurRadius: Math.max(0, Math.min(64, root.blurAmount * 24))
+        downsampleFactor: 1.0
+        baseOpacity: 0.22 + (1.0 - Math.max(0.0, Math.min(1.0, root.materialOpacity))) * 0.5
+        tintColor: root.tint
+        tintStrength: 0.18
+        distortionStrength: Math.max(0.0, root.refraction) * 0.00375
+        highlightIntensity: Math.max(0.0, Math.min(1.0, root.borderOpacity))
+        edgeHighlightColor: root.rimColor
+        elevation: root.shadowEnabled ? 8 : 0
+        shadowColor: Qt.rgba(0, 0, 0, root.shadowOpacity)
+        hovered: root.pointerLift > 0
+        pressed: false
+        pointerPosition: Qt.point(root.pointerPosition.x, root.pointerPosition.y)
+        reduceMotion: root.reduceMotion
     }
 }
