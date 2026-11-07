@@ -22,6 +22,7 @@ ApplicationWindow {
     property string currentMode: appBridge.mode
     property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
+    property bool navigationOpen: true
     property string themeMode: appBridge.themeMode
     property bool darkTheme: themeMode === "dark" || (themeMode === "system" && appBridge.systemDark)
     property var colors: {
@@ -92,74 +93,93 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        implicitHeight: 72
+        implicitHeight: 78
         padding: 0
         background: Item {}
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
-            y: 8
-            width: parent.width - 40
-            height: 56
-            radius: 19
+            y: 6
+            width: parent.width - 36
+            height: 66
+            radius: 22
             layer.enabled: true
             layer.effect: MultiEffect {
                 shadowEnabled: true
                 shadowColor: root.colors.shadow
-                shadowBlur: 0.38
-                shadowOpacity: 0.2
-                shadowVerticalOffset: 5
+                shadowBlur: 0.52
+                shadowOpacity: 0.17
+                shadowVerticalOffset: 6
             }
             gradient: Gradient {
                 GradientStop { position: 0.0; color: root.colors.glassTop }
-                GradientStop { position: 1.0; color: root.colors.panel }
+                GradientStop { position: 0.48; color: root.colors.panel }
+                GradientStop { position: 1.0; color: root.darkTheme ? "#A91A293B" : "#DDFBFDFF" }
             }
             border.color: root.colors.glassHighlight
             border.width: 1
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.leftMargin: 2
+                anchors.rightMargin: 2
+                anchors.topMargin: 1
+                height: 1
+                radius: 1
+                color: root.darkTheme ? "#66FFFFFF" : "#DFFFFFFF"
+            }
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 18
-                anchors.rightMargin: 18
+                anchors.leftMargin: 15
+                anchors.rightMargin: 15
                 spacing: 12
+
+                Item { Layout.fillWidth: true }
+
                 RowLayout {
                     spacing: 9
                     Image {
                         source: "image://branding/logo"
-                        Layout.preferredWidth: 30
-                        Layout.preferredHeight: 30
+                        Layout.preferredWidth: 31
+                        Layout.preferredHeight: 31
                         fillMode: Image.PreserveAspectFit
                         smooth: true
                         mipmap: true
                         sourceSize.width: 136
                         sourceSize.height: 136
                     }
-                    AppLabel {
-                        text: "wedone"
-                        color: root.colors.text
-                        font.family: "Manrope"
-                        font.pixelSize: 18
-                        font.weight: Font.ExtraBold
-                    }
-                    AppLabel {
-                        text: "OPERATE"
-                        color: root.colors.accent
-                        font.family: "Manrope"
-                        font.pixelSize: 10
-                        font.weight: Font.Bold
-                        Layout.leftMargin: -6
+                    ColumnLayout {
+                        spacing: -2
+                        AppLabel {
+                            text: "wedone"
+                            color: root.colors.text
+                            font.family: "Manrope"
+                            font.pixelSize: 17
+                            font.weight: Font.ExtraBold
+                        }
+                        AppLabel {
+                            text: "OPERATE"
+                            color: root.colors.accent
+                            font.family: "Manrope"
+                            font.pixelSize: 9
+                            font.weight: Font.Bold
+                            font.letterSpacing: 1.25
+                        }
                     }
                 }
+
                 Item { Layout.fillWidth: true }
+
                 Rectangle {
                     visible: root.currentMode !== ""
-                    Layout.preferredWidth: modeLabel.implicitWidth + 30
-                    Layout.preferredHeight: 34
-                    radius: 17
+                    Layout.preferredWidth: modeLabel.implicitWidth + 27
+                    Layout.preferredHeight: 36
+                    radius: 18
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: root.colors.glassTop }
                         GradientStop { position: 1.0; color: root.colors.panel }
                     }
                     border.color: root.colors.glassHighlight
-                    border.width: 1
                     RowLayout {
                         anchors.centerIn: parent
                         spacing: 7
@@ -171,12 +191,36 @@ ApplicationWindow {
                         }
                         AppLabel {
                             id: modeLabel
-                            text: root.currentMode === "individual" ? "Espace individuel" : "Espace classe"
+                            text: root.currentMode === "individual" ? "Individuel" : "Classe"
                             color: root.colors.textSecondary
-                            font.pixelSize: 12
+                            font.pixelSize: 11
                             font.weight: Font.DemiBold
                         }
                     }
+                }
+
+                ToolButton {
+                    Layout.preferredWidth: 38
+                    Layout.preferredHeight: 38
+                    visible: root.page !== "welcome"
+                    onClicked: root.navigationOpen = !root.navigationOpen
+                    background: Rectangle {
+                        radius: 12
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: parent.parent.hovered ? root.colors.accentSoft : root.colors.glassTop }
+                            GradientStop { position: 1.0; color: root.colors.panel }
+                        }
+                        border.color: parent.parent.hovered ? root.colors.accent : root.colors.glassHighlight
+                    }
+                    contentItem: AppLabel {
+                        text: "☰"
+                        color: root.colors.text
+                        font.pixelSize: 18
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    ToolTip.visible: hovered
+                    ToolTip.text: root.navigationOpen ? "Masquer la navigation" : "Afficher la navigation"
                 }
             }
         }
@@ -580,7 +624,7 @@ ApplicationWindow {
 
     Rectangle {
         id: navigationPanel
-        visible: root.page !== "welcome"
+        visible: root.page !== "welcome" && root.page !== "practice" && root.navigationOpen
         x: 18
         y: 14
         width: 248
@@ -738,9 +782,9 @@ ApplicationWindow {
     }
 
     StackLayout {
-        x: (root.page === "welcome" ? 32 : 282) / root.uiScale
+        x: (root.page === "welcome" || root.page === "practice" || !root.navigationOpen ? 32 : 282) / root.uiScale
         y: 14 / root.uiScale
-        width: (parent.width - (root.page === "welcome" ? 64 : 300)) / root.uiScale
+        width: (parent.width - (root.page === "welcome" || root.page === "practice" || !root.navigationOpen ? 64 : 300)) / root.uiScale
         height: (parent.height - 28) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
