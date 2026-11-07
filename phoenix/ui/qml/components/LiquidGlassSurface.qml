@@ -17,6 +17,7 @@ Item {
     property real shadowOpacity: 0.18
     property bool reduceMotion: false
     property real pointerLift: 0
+    property vector2d pointerPosition: Qt.vector2d(width * 0.5, height * 0.25)
     readonly property bool shaderAvailable: platformEffects.shaderAvailable
     readonly property bool darkTint: tint.hsvValue < 0.5
 
@@ -59,7 +60,9 @@ Item {
         property vector2d texelSize: Qt.vector2d(1.0 / Math.max(1.0, width), 1.0 / Math.max(1.0, height))
         property vector2d itemSize: Qt.vector2d(Math.max(1.0, width), Math.max(1.0, height))
         property real radius: glass.cornerRadius
-        property real refract: glass.refraction + glass.pointerLift * 1.4
+        property real refractionStrength: glass.refraction + glass.pointerLift * 1.4
+        property vector2d lightPosition: glass.pointerPosition
+        property real pointerIntensity: glass.pointerLift
         property real blur: glass.blurAmount
         property color glassTint: glass.tint
         property real opacityFactor: glass.materialOpacity
@@ -105,6 +108,14 @@ Item {
 
     HoverHandler {
         enabled: !glass.reduceMotion
-        onHoveredChanged: glass.pointerLift = hovered ? 1 : 0
+        onHoveredChanged: {
+            glass.pointerLift = hovered ? 1 : 0
+            if (!hovered)
+                glass.pointerPosition = Qt.vector2d(glass.width * 0.5, glass.height * 0.25)
+        }
+        onPointChanged: {
+            if (hovered)
+                glass.pointerPosition = Qt.vector2d(point.position.x, point.position.y)
+        }
     }
 }

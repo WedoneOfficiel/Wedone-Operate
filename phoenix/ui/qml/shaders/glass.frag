@@ -10,10 +10,12 @@ layout(std140, binding = 0) uniform buf {
     vec2 texelSize;
     vec2 itemSize;
     float radius;
-    float refract;
+    float refractionStrength;
     float blur;
     vec4 glassTint;
     float opacityFactor;
+    vec2 lightPosition;
+    float pointerIntensity;
 } ubuf;
 
 float roundedBoxDistance(vec2 point, vec2 halfSize, float cornerRadius)
@@ -35,7 +37,7 @@ void main()
     float inside = 1.0 - smoothstep(-0.8, 0.8, distanceToEdge);
     float edge = 1.0 - smoothstep(-5.0, -0.2, distanceToEdge);
     vec2 normal = normalize(centered + vec2(0.001, 0.001));
-    vec2 displacement = normal * ubuf.texelSize * ubuf.refract * edge;
+    vec2 displacement = normal * ubuf.texelSize * ubuf.refractionStrength * edge;
 
     float blurPixels = max(0.0, ubuf.blur);
     vec3 base = texture(source, uv + displacement).rgb * 0.40;
@@ -49,6 +51,8 @@ void main()
     float topSheen = pow(1.0 - smoothstep(0.0, 0.48, uv.y), 2.0) * 0.13;
     float rim = (1.0 - smoothstep(0.0, 1.8, abs(distanceToEdge))) * 0.22;
     float fresnel = pow(1.0 - max(dot(normalize(vec3(centered, 80.0)), vec3(0.0, 0.0, 1.0)), 0.0), 2.0) * edge;
-    color += vec3(1.0) * (topSheen + rim + fresnel * 0.12);
+    vec2 lightDelta = (pixel - ubuf.lightPosition) / max(1.0, min(ubuf.itemSize.x, ubuf.itemSize.y));
+    float cursorSpecular = exp(-dot(lightDelta, lightDelta) * 54.0) * ubuf.pointerIntensity * 0.18;
+    color += vec3(1.0) * (topSheen + rim + fresnel * 0.12 + cursorSpecular);
     fragColor = vec4(color, inside * ubuf.qt_Opacity);
 }
