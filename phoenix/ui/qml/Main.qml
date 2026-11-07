@@ -53,8 +53,8 @@ ApplicationWindow {
         return {
             bg: p.background,
             surface: p.surface,
-            panel: darkTheme ? "#D91B293A" : "#E8FFFFFF",
-            input: p.surface,
+            panel: p.panel,
+            input: p.input,
             surfaceHover: p.surfaceAlt,
             border: p.border,
             borderHover: p.accent,
