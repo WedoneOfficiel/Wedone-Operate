@@ -129,100 +129,95 @@ ApplicationWindow {
                 color: root.darkTheme ? "#66FFFFFF" : "#DFFFFFFF"
             }
             RowLayout {
+                anchors.centerIn: parent
+                spacing: 9
+                Image {
+                    source: "image://branding/logo"
+                    Layout.preferredWidth: 31
+                    Layout.preferredHeight: 31
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    mipmap: true
+                    sourceSize.width: 136
+                    sourceSize.height: 136
+                }
+                ColumnLayout {
+                    spacing: -2
+                    AppLabel {
+                        text: "wedone"
+                        color: root.colors.text
+                        font.family: "Manrope"
+                        font.pixelSize: 17
+                        font.weight: Font.ExtraBold
+                    }
+                    AppLabel {
+                        text: "OPERATE"
+                        color: root.colors.accent
+                        font.family: "Manrope"
+                        font.pixelSize: 9
+                        font.weight: Font.Bold
+                        font.letterSpacing: 1.25
+                    }
+                }
+            }
+
+            RowLayout {
                 anchors.fill: parent
                 anchors.leftMargin: 15
                 anchors.rightMargin: 15
-                spacing: 12
-
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 9
-                    Image {
-                        source: "image://branding/logo"
-                        Layout.preferredWidth: 31
-                        Layout.preferredHeight: 31
-                        fillMode: Image.PreserveAspectFit
-                        smooth: true
-                        mipmap: true
-                        sourceSize.width: 136
-                        sourceSize.height: 136
+                spacing: 9
+                Item { Layout.fillWidth: true }
+                Rectangle {
+                    visible: root.currentMode !== ""
+                    Layout.preferredWidth: modeLabel.implicitWidth + 27
+                    Layout.preferredHeight: 36
+                    radius: 18
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: root.colors.glassTop }
+                        GradientStop { position: 1.0; color: root.colors.panel }
                     }
-                    ColumnLayout {
-                        spacing: -2
-                        AppLabel {
-                            text: "wedone"
-                            color: root.colors.text
-                            font.family: "Manrope"
-                            font.pixelSize: 17
-                            font.weight: Font.ExtraBold
+                    border.color: root.colors.glassHighlight
+                    RowLayout {
+                        anchors.centerIn: parent
+                        spacing: 7
+                        Rectangle {
+                            Layout.preferredWidth: 7
+                            Layout.preferredHeight: 7
+                            radius: 4
+                            color: root.colors.success
                         }
                         AppLabel {
-                            text: "OPERATE"
-                            color: root.colors.accent
-                            font.family: "Manrope"
-                            font.pixelSize: 9
-                            font.weight: Font.Bold
-                            font.letterSpacing: 1.25
+                            id: modeLabel
+                            text: root.currentMode === "individual" ? "Individuel" : "Classe"
+                            color: root.colors.textSecondary
+                            font.pixelSize: 11
+                            font.weight: Font.DemiBold
                         }
                     }
                 }
-
-                RowLayout {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                    Layout.leftMargin: parent.width - implicitWidth - 30
-                    spacing: 9
-                    Rectangle {
-                        visible: root.currentMode !== ""
-                        Layout.preferredWidth: modeLabel.implicitWidth + 27
-                        Layout.preferredHeight: 36
-                        radius: 18
+                ToolButton {
+                    id: navToggle
+                    Layout.preferredWidth: 38
+                    Layout.preferredHeight: 38
+                    visible: root.page !== "welcome"
+                    onClicked: root.navigationOpen = !root.navigationOpen
+                    background: Rectangle {
+                        radius: 12
                         gradient: Gradient {
-                            GradientStop { position: 0.0; color: root.colors.glassTop }
+                            GradientStop { position: 0.0; color: navToggle.hovered ? root.colors.accentSoft : root.colors.glassTop }
                             GradientStop { position: 1.0; color: root.colors.panel }
                         }
-                        border.color: root.colors.glassHighlight
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 7
-                            Rectangle {
-                                Layout.preferredWidth: 7
-                                Layout.preferredHeight: 7
-                                radius: 4
-                                color: root.colors.success
-                            }
-                            AppLabel {
-                                id: modeLabel
-                                text: root.currentMode === "individual" ? "Individuel" : "Classe"
-                                color: root.colors.textSecondary
-                                font.pixelSize: 11
-                                font.weight: Font.DemiBold
-                            }
-                        }
+                        border.color: navToggle.hovered ? root.colors.accent : root.colors.glassHighlight
                     }
-
-                    ToolButton {
-                        Layout.preferredWidth: 38
-                        Layout.preferredHeight: 38
-                        visible: root.page !== "welcome"
-                        onClicked: root.navigationOpen = !root.navigationOpen
-                        background: Rectangle {
-                            radius: 12
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: parent.parent.hovered ? root.colors.accentSoft : root.colors.glassTop }
-                                GradientStop { position: 1.0; color: root.colors.panel }
-                            }
-                            border.color: parent.parent.hovered ? root.colors.accent : root.colors.glassHighlight
-                        }
-                        contentItem: AppLabel {
-                            text: "☰"
-                            color: root.colors.text
-                            font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        ToolTip.visible: hovered
-                        ToolTip.text: root.navigationOpen ? "Masquer la navigation" : "Afficher la navigation"
+                    contentItem: AppLabel {
+                        text: "☰"
+                        color: root.colors.text
+                        font.pixelSize: 18
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
+                    ToolTip.visible: hovered
+                    ToolTip.text: root.navigationOpen ? "Masquer la navigation" : "Afficher la navigation"
                 }
             }
         }
