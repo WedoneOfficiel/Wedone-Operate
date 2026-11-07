@@ -2,7 +2,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-OperateMaterial {
+GlassSurface {
+    property Item backdropItem: null
+    backgroundSource: backdropItem
     id: panel
     property string title: ""
     property string subtitle: ""

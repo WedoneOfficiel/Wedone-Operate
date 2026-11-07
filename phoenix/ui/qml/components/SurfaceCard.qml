@@ -1,6 +1,8 @@
 import QtQuick
 
-OperateMaterial {
+GlassSurface {
+    property Item backdropItem: null
+    backgroundSource: backdropItem
     id: card
     property int cardRadius: 20
     property bool interactive: false

@@ -4,10 +4,11 @@ import QtQuick.Controls
 TextField {
     id: field
     property var palette: ({})
-    property int fieldRadius: 12
-    implicitHeight: 44
-    leftPadding: 14
-    rightPadding: 14
+    property Item backgroundSource: null
+    property int fieldRadius: 13
+    implicitHeight: 46
+    leftPadding: 15
+    rightPadding: 15
     font.family: "DM Sans"
     font.pixelSize: 13
     color: enabled ? (palette.text || "#172536") : (palette.muted || "#718096")
@@ -15,16 +16,15 @@ TextField {
     selectionColor: palette.accent || "#287FBE"
     selectedTextColor: "#FFFFFF"
     verticalAlignment: TextInput.AlignVCenter
-
     HoverHandler { id: hover; enabled: field.enabled }
-
-    background: OperateMaterial {
+    background: GlassSurface {
+        backgroundSource: field.backgroundSource
         palette: field.palette
         cornerRadius: field.fieldRadius
         variant: "control"
         hovered: hover.hovered
         focused: field.activeFocus
         enabled: field.enabled
-        materialOpacity: field.enabled ? 1.0 : 0.82
+        materialOpacity: field.enabled ? 0.98 : 0.75
     }
 }

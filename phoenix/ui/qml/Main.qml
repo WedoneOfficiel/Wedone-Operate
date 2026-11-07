@@ -161,7 +161,7 @@ ApplicationWindow {
         z: 1000
         padding: 0
         background: Item {}
-        Components.LiquidGlassSurface {
+        Components.GlassSurface {
             anchors.horizontalCenter: parent.horizontalCenter
             y: 6
             width: parent.width - 60
@@ -253,7 +253,7 @@ ApplicationWindow {
                         else
                             root.openSettings()
                     }
-                    background: Components.LiquidGlassSurface {
+                    background: Components.GlassSurface {
                         anchors.fill: parent
                         cornerRadius: 13
                         backdropItem: ambientBackground
@@ -296,7 +296,8 @@ ApplicationWindow {
         font.family: "DM Sans"
     }
 
-    component AppTextField: Components.OperateTextField {
+    component AppTextField: Components.GlassTextField {
+        backgroundSource: ambientBackground
         palette: root.colors
         implicitHeight: 44
     }
@@ -322,7 +323,8 @@ ApplicationWindow {
             color: root.colors.muted
             font.pixelSize: 18
         }
-        background: Components.OperateMaterial {
+        background: Components.GlassSurface {
+            backdropItem: ambientBackground
             palette: root.colors
             cornerRadius: 12
             variant: "control"
@@ -343,7 +345,8 @@ ApplicationWindow {
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
             }
-            background: Components.OperateMaterial {
+            background: Components.GlassSurface {
+            backdropItem: ambientBackground
                 palette: root.colors
                 cornerRadius: 8
                 variant: "quiet"
@@ -356,7 +359,8 @@ ApplicationWindow {
             width: combo.width
             implicitHeight: Math.min(contentItem.implicitHeight + 12, 260)
             padding: 6
-            background: Components.OperateMaterial {
+            background: Components.GlassSurface {
+            backdropItem: ambientBackground
                 palette: root.colors
                 cornerRadius: 14
                 variant: "glass"
@@ -391,14 +395,16 @@ ApplicationWindow {
             inputMethodHints: Qt.ImhFormattedNumbersOnly
             onTextEdited: numberField.value = numberField.valueFromText(text, numberField.locale)
         }
-        background: Components.OperateMaterial {
+        background: Components.GlassSurface {
+            backdropItem: ambientBackground
             palette: root.colors
             cornerRadius: 12
             variant: "control"
             focused: numberField.activeFocus
             enabled: numberField.enabled
         }
-        up.indicator: Components.OperateMaterial {
+        up.indicator: Components.GlassSurface {
+            backdropItem: ambientBackground
             x: numberField.width - width
             width: 32
             height: numberField.height / 2
@@ -414,7 +420,8 @@ ApplicationWindow {
                 font.pixelSize: 15
             }
         }
-        down.indicator: Components.OperateMaterial {
+        down.indicator: Components.GlassSurface {
+            backdropItem: ambientBackground
             x: numberField.width - width
             y: numberField.height / 2
             width: 32
@@ -445,7 +452,8 @@ ApplicationWindow {
             verticalAlignment: Text.AlignVCenter
             leftPadding: check.indicator.width + check.spacing
         }
-        indicator: Components.OperateMaterial {
+        indicator: Components.GlassSurface {
+            backdropItem: ambientBackground
             implicitWidth: 20
             implicitHeight: 20
             x: 0
@@ -482,7 +490,8 @@ ApplicationWindow {
                 color: root.colors.accent
             }
         }
-        handle: Components.OperateMaterial {
+        handle: Components.GlassSurface {
+            backdropItem: ambientBackground
             x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
             y: slider.topPadding + slider.availableHeight / 2 - height / 2
             width: 19
@@ -496,13 +505,15 @@ ApplicationWindow {
         }
     }
 
-    component QuietButton: Components.OperateButton {
+    component QuietButton: Components.GlassButton {
+        backgroundSource: ambientBackground
         palette: root.colors
         kind: "quiet"
         controlRadius: 12
     }
 
-    component PrimaryButton: Components.OperateButton {
+    component PrimaryButton: Components.GlassButton {
+        backgroundSource: ambientBackground
         palette: root.colors
     }
 
@@ -543,7 +554,8 @@ ApplicationWindow {
                 color: root.colors.accent
             }
         }
-        background: Components.OperateMaterial {
+        background: Components.GlassSurface {
+            backdropItem: ambientBackground
             palette: root.colors
             cornerRadius: 12
             variant: "glass"
@@ -556,7 +568,9 @@ ApplicationWindow {
         }
     }
 
-    component ModeCard: Components.OperateMaterial {
+    component ModeCard: Components.GlassSurface {
+        backdropItem: ambientBackground
+            backdropItem: ambientBackground
         id: card
         property string heading
         property string subtitle
@@ -578,7 +592,8 @@ ApplicationWindow {
             anchors.fill: parent
             anchors.margins: 22
             spacing: 11
-            Components.OperateMaterial {
+            Components.GlassSurface {
+            backdropItem: ambientBackground
                 Layout.preferredWidth: 54
                 Layout.preferredHeight: 54
                 palette: root.colors
@@ -904,6 +919,7 @@ ApplicationWindow {
                 }
 
                 Components.FormPanel {
+                    backdropItem: ambientBackground
                     title: "Accéder à son espace élève"
                     subtitle: "Choisissez votre classe, votre groupe et votre profil pour retrouver vos exercices."
                     palette: root.colors
@@ -1085,6 +1101,7 @@ ApplicationWindow {
                     rowSpacing: 16
 
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Se connecter"
                         subtitle: "Retrouvez votre espace et vos classes."
                         palette: root.colors
@@ -1138,6 +1155,7 @@ ApplicationWindow {
                     }
 
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Créer un profil"
                         subtitle: "Configurez votre accès professeur en quelques instants."
                         palette: root.colors
@@ -1329,6 +1347,7 @@ ApplicationWindow {
                     columnSpacing: 18
                     rowSpacing: 18
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Mes classes"
                         subtitle: "Créez une classe et organisez votre année scolaire."
                         palette: root.colors
@@ -1352,6 +1371,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Classes et groupes"
                         subtitle: "Sélectionnez une classe pour modifier ses informations et structurer les groupes."
                         palette: root.colors
@@ -1440,6 +1460,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Exercices"
                         subtitle: "Préparez un entraînement et attribuez-le à la classe sélectionnée."
                         palette: root.colors
@@ -1506,6 +1527,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Archivage"
                         subtitle: "Archivez une classe ou un groupe sans perdre l'historique associé."
                         palette: root.colors
@@ -1543,6 +1565,7 @@ ApplicationWindow {
                         }
                     }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Élèves et suivi"
                         subtitle: "Sélectionnez un élève pour modifier son profil et consulter ses résultats."
                         palette: root.colors
@@ -1672,6 +1695,7 @@ ApplicationWindow {
                     }
                     }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Mon profil"
                         subtitle: "Modifiez votre nom affiché ou fermez votre session."
                         palette: root.colors
@@ -1764,6 +1788,7 @@ ApplicationWindow {
                 }
 
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Votre séance"
                         subtitle: "Choisissez le contenu et le niveau de votre entraînement."
                         palette: root.colors
@@ -1881,6 +1906,7 @@ ApplicationWindow {
 
                     }
                 Components.FormPanel {
+                    backdropItem: ambientBackground
                     title: "À vous de jouer"
                     subtitle: "Concentrez-vous sur une question à la fois. Vous avancez à votre rythme."
                     palette: root.colors
@@ -2072,6 +2098,7 @@ ApplicationWindow {
                 }
 
                 Components.FormPanel {
+                    backdropItem: ambientBackground
                     title: "Séance terminée"
                     subtitle: "Bravo pour votre effort. Voici le récapitulatif de votre entraînement."
                     palette: root.colors
@@ -2157,6 +2184,7 @@ ApplicationWindow {
                     font.family: "Manrope"
                 }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Apparence"
                         subtitle: "Personnalisez l'apparence de Wedone Operate."
                         palette: root.colors
@@ -2180,6 +2208,7 @@ ApplicationWindow {
                 }
                     }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Accessibilité"
                         subtitle: "Adaptez l'interface à vos préférences de confort visuel."
                         palette: root.colors
@@ -2208,6 +2237,7 @@ ApplicationWindow {
                 }
                     }
                     Components.FormPanel {
+                    backdropItem: ambientBackground
                         title: "Données et sauvegardes"
                         subtitle: "Importez, exportez et restaurez vos données en toute sécurité."
                         palette: root.colors
@@ -2333,7 +2363,7 @@ ApplicationWindow {
         width: Math.min(440, root.width - 40)
         padding: 22
         spacing: 16
-        background: Components.LiquidGlassSurface {
+        background: Components.GlassSurface {
             anchors.fill: parent
             cornerRadius: 19
             backdropItem: ambientBackground
@@ -2388,7 +2418,7 @@ ApplicationWindow {
         width: Math.min(480, root.width - 40)
         padding: 22
         spacing: 16
-        background: Components.LiquidGlassSurface {
+        background: Components.GlassSurface {
             anchors.fill: parent
             cornerRadius: 19
             backdropItem: ambientBackground

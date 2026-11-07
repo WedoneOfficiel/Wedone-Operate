@@ -3,23 +3,22 @@ import QtQuick.Controls
 
 Button {
     id: control
-    property string kind: "primary" // primary, secondary, quiet, danger
+    property string kind: "primary"
     property var palette: ({})
-    property int controlRadius: 12
+    property Item backgroundSource: null
+    property int controlRadius: 13
     property color fillColor: palette.accent || "#167CC2"
     property color hoverColor: palette.accentHover || "#1168A5"
     property color textColor: kind === "primary" ? (palette.onAccent || "#FFFFFF")
-                       : kind === "danger" ? "#FFFFFF"
-                       : (palette.text || "#172536")
-    implicitHeight: 42
-    leftPadding: 16
-    rightPadding: 16
-    topPadding: 8
-    bottomPadding: 8
+                       : kind === "danger" ? "#FFFFFF" : (palette.text || "#172536")
+    implicitHeight: 44
+    leftPadding: 17
+    rightPadding: 17
+    topPadding: 9
+    bottomPadding: 9
     font.family: "DM Sans"
     font.pixelSize: 13
     font.weight: Font.DemiBold
-
     contentItem: Text {
         text: control.text
         font: control.font
@@ -28,23 +27,21 @@ Button {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
-
-    background: OperateMaterial {
+    background: GlassSurface {
+        backgroundSource: control.backgroundSource
         palette: control.palette
         cornerRadius: control.controlRadius
-        variant: control.kind === "primary" ? "accent"
-               : control.kind === "danger" ? "danger"
+        variant: control.kind === "primary" ? "accent" : control.kind === "danger" ? "danger"
                : control.kind === "secondary" ? "glass" : "quiet"
         fillColor: control.kind === "danger" ? (control.palette.danger || "#B73550") : control.fillColor
-        hoverColor: control.kind === "danger" ? Qt.lighter(control.palette.danger || "#B73550", 1.08) : control.hoverColor
+        hoverColor: control.hoverColor
         hovered: control.hovered
         pressed: control.down
         focused: control.activeFocus
         enabled: control.enabled
         elevated: control.kind === "primary" || control.kind === "danger"
-        materialOpacity: control.kind === "quiet" ? 0.92 : 1.0
+        materialOpacity: control.kind === "quiet" ? 0.94 : 1
     }
-
-    onDownChanged: scale = down ? 0.985 : 1.0
-    Behavior on scale { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
+    onDownChanged: scale = down ? 0.985 : 1
+    Behavior on scale { NumberAnimation { duration: 130; easing.type: Easing.OutCubic } }
 }
