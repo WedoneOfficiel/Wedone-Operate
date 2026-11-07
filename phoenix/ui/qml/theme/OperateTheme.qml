@@ -2,62 +2,61 @@ pragma Singleton
 import QtQuick
 
 QtObject {
-    id: theme
-    readonly property color lightBackground: "#F1F5FA"
-    readonly property color lightSurface: "#FFFFFF"
-    readonly property color lightSurfaceAlt: "#F6F8FC"
-    readonly property color lightBorder: "#DDE5EF"
-    readonly property color lightText: "#172536"
-    readonly property color lightMuted: "#718096"
-    readonly property color lightBlue: "#287FBE"
-    readonly property color lightBlueHover: "#206DA8"
-    readonly property color lightBlueSoft: "#E8F2FA"
-    readonly property color lightBlueInk: "#185F91"
-    readonly property color darkBackground: "#101824"
-    readonly property color darkSurface: "#182536"
-    readonly property color darkSurfaceAlt: "#1E2D40"
-    readonly property color darkBorder: "#2D4056"
-    readonly property color darkText: "#F1F5FA"
-    readonly property color darkMuted: "#A0AEC0"
-    readonly property color darkBlue: "#66B4EA"
-    readonly property color darkBlueHover: "#85C5F0"
-    readonly property color darkBlueSoft: "#203B55"
-    readonly property color darkBlueInk: "#C3E6FF"
+    readonly property color lightBackground: "#EAF0F7"
+    readonly property color lightSurface: "#F8FBFF"
+    readonly property color lightSurfaceAlt: "#E7EEF7"
+    readonly property color lightBorder: "#B9C9DA"
+    readonly property color lightText: "#142438"
+    readonly property color lightMuted: "#60748B"
+    readonly property color lightBlue: "#176FC1"
+    readonly property color lightBlueHover: "#0F5FA9"
+    readonly property color lightBlueSoft: "#CFE5FA"
+    readonly property color lightBlueInk: "#104E83"
+    readonly property color darkBackground: "#091522"
+    readonly property color darkSurface: "#142438"
+    readonly property color darkSurfaceAlt: "#1C3048"
+    readonly property color darkBorder: "#3C5874"
+    readonly property color darkText: "#F1F7FF"
+    readonly property color darkMuted: "#A5B8CB"
+    readonly property color darkBlue: "#79C4FF"
+    readonly property color darkBlueHover: "#A0D7FF"
+    readonly property color darkBlueSoft: "#1A4264"
+    readonly property color darkBlueInk: "#E1F3FF"
 
     function palette(dark, highContrast) {
         if (dark) {
             return {
-                background: highContrast ? "#080D14" : darkBackground,
-                surface: highContrast ? "#111B29" : darkSurface,
+                background: highContrast ? "#050B12" : darkBackground,
+                surface: highContrast ? "#101D2B" : darkSurface,
                 surfaceAlt: darkSurfaceAlt,
-                panel: "#D91B293A", input: "#E51A293A",
-                border: highContrast ? "#718096" : darkBorder,
-                glassBorder: "#3DFFFFFF",
+                panel: "#D91B3048", input: "#D91B3048",
+                border: highContrast ? "#A0B9D1" : darkBorder,
+                glassBorder: "#55FFFFFF",
                 text: highContrast ? "#FFFFFF" : darkText,
-                muted: highContrast ? "#D5DFEA" : darkMuted,
+                muted: highContrast ? "#D9E8F6" : darkMuted,
                 accent: darkBlue, accentHover: darkBlueHover,
                 accentSoft: darkBlueSoft, onAccent: "#071522",
                 accentInk: darkBlueInk,
-                success: "#4CC99A", warning: "#F0BF69", danger: "#F08A9A",
-                shadow: "#99000000",
-                glassTop: "#35FFFFFF", glassBottom: "#B81B293A",
-                glassHighlight: "#66FFFFFF", glassEdge: "#A6FFFFFF"
+                success: "#56D6A5", warning: "#F4C56E", danger: "#FF91A3",
+                shadow: "#B0000812",
+                glassTop: "#55FFFFFF", glassBottom: "#B8101F30",
+                glassHighlight: "#BFFFFFFF", glassEdge: "#E6FFFFFF"
             }
         }
         return {
             background: highContrast ? "#FFFFFF" : lightBackground,
-            surface: "#FFFFFF", surfaceAlt: lightSurfaceAlt,
-            panel: "#E8FFFFFF", input: "#F4FFFFFF",
-            border: highContrast ? "#526477" : lightBorder,
-            glassBorder: "#A6FFFFFF",
+            surface: "#F9FCFF", surfaceAlt: lightSurfaceAlt,
+            panel: "#DDFBFDFF", input: "#E8FFFFFF",
+            border: highContrast ? "#60758A" : lightBorder,
+            glassBorder: "#BFFFFFFF",
             text: highContrast ? "#071522" : lightText,
-            muted: highContrast ? "#40546A" : lightMuted,
+            muted: highContrast ? "#344B62" : lightMuted,
             accent: lightBlue, accentHover: lightBlueHover,
             accentSoft: lightBlueSoft, onAccent: "#FFFFFF",
             accentInk: lightBlueInk,
-            success: "#16845D", warning: "#99600D", danger: "#B73550",
-            shadow: "#260D2940",
-            glassTop: "#F8FFFFFF", glassBottom: "#B8EAF2FA",
+            success: "#13845D", warning: "#A66A0B", danger: "#B52D4B",
+            shadow: "#32112B48",
+            glassTop: "#F8FFFFFF", glassBottom: "#B9DCE9F7",
             glassHighlight: "#FFFFFFFF", glassEdge: "#FFFFFFFF"
         }
     }

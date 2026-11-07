@@ -214,16 +214,15 @@ ApplicationWindow {
                 anchors.rightMargin: 15
                 spacing: 9
                 Item { Layout.fillWidth: true }
-                Rectangle {
+                Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                     visible: root.currentMode !== ""
                     Layout.preferredWidth: modeLabel.implicitWidth + 27
                     Layout.preferredHeight: 36
-                    radius: 18
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: root.colors.glassTop }
-                        GradientStop { position: 1.0; color: root.colors.panel }
-                    }
-                    border.color: root.colors.glassHighlight
+                    cornerRadius: 18
                     RowLayout {
                         anchors.centerIn: parent
                         spacing: 7
@@ -822,27 +821,18 @@ ApplicationWindow {
                             { title: "Espace élève", detail: "Accéder à une classe et à un profil.", icon: "◎" },
                             { title: "Espace professeur", detail: "Gérer les classes et les entraînements.", icon: "▤" }
                         ]
-                        delegate: Rectangle {
+                        delegate: Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
+    hovered: hoverArea.hovered
                             required property var modelData
                             Layout.fillWidth: true
                             Layout.preferredWidth: 300
                             Layout.minimumWidth: 0
                             height: 190
-                            radius: 18
-                            layer.enabled: true
-                            layer.effect: MultiEffect {
-                                shadowEnabled: true
-                                shadowColor: root.colors.shadow
-                                shadowBlur: hoverArea.hovered ? 0.38 : 0.24
-                                shadowOpacity: hoverArea.hovered ? 0.20 : 0.12
-                                shadowVerticalOffset: hoverArea.hovered ? 6 : 3
-                            }
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: root.colors.glassTop }
-                                GradientStop { position: 1.0; color: hoverArea.hovered ? root.colors.surfaceHover : root.colors.panel }
-                            }
-                            border.width: hoverArea.hovered ? 1.5 : 1
-                            border.color: hoverArea.hovered ? root.colors.accent : root.colors.glassHighlight
+                            cornerRadius: 18
                             Rectangle {
                                 anchors.fill: parent
                                 anchors.margins: 1
@@ -957,16 +947,15 @@ ApplicationWindow {
                         onActivated: appBridge.selectStudent(currentValue)
                     }
 
-                    Rectangle {
+                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                         visible: !!studentProfileSelect.currentValue
                         Layout.fillWidth: true
                         implicitHeight: studentSummary.implicitHeight + 34
-                        radius: 14
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: root.colors.glassTop }
-                            GradientStop { position: 1.0; color: root.colors.surfaceHover }
-                        }
-                        border.color: root.colors.border
+                        cornerRadius: 14
                         Rectangle {
                             width: 3
                             anchors.left: parent.left
@@ -1252,15 +1241,14 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                             }
                         }
-                        Rectangle {
+                        Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                             Layout.preferredWidth: 118
                             Layout.preferredHeight: 38
-                            radius: 19
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: root.colors.glassTop }
-                                GradientStop { position: 1.0; color: root.colors.panel }
-                            }
-                            border.color: root.colors.glassHighlight
+                            cornerRadius: 19
                             RowLayout {
                                 anchors.centerIn: parent
                                 spacing: 7
@@ -1292,16 +1280,15 @@ ApplicationWindow {
                                 { label: "ÉLÈVES", value: teacherClassSelect.currentValue ? appBridge.teacherStudentsForClass(teacherClassSelect.currentValue, "").length : 0, detail: teacherClassSelect.currentValue ? "dans la classe sélectionnée" : "sélectionnez une classe" },
                                 { label: "EXERCICES", value: teacherClassSelect.currentValue ? appBridge.teacherPlansForClass(teacherClassSelect.currentValue).length : 0, detail: "pour la classe sélectionnée" }
                             ]
-                            delegate: Rectangle {
+                            delegate: Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                                 required property var modelData
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 88
-                                radius: 16
-                                gradient: Gradient {
-                                    GradientStop { position: 0.0; color: root.colors.glassTop }
-                                    GradientStop { position: 1.0; color: root.colors.panel }
-                                }
-                                border.color: root.colors.glassHighlight
+                                cornerRadius: 16
                                 ColumnLayout {
                                     anchors.fill: parent
                                     anchors.leftMargin: 15
@@ -1629,13 +1616,15 @@ ApplicationWindow {
                         }
                         Repeater {
                             model: root.progressSummary.skills
-                            delegate: Rectangle {
+                            delegate: Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                                 required property var modelData
                                 Layout.fillWidth: true
                                 implicitHeight: 58
-                                radius: 10
-                                color: root.colors.surfaceHover
-                                border.color: root.colors.border
+                                cornerRadius: 10
                                 RowLayout {
                                     anchors.fill: parent
                                     anchors.leftMargin: 12
@@ -1800,12 +1789,14 @@ ApplicationWindow {
                     columns: root.width >= 1050 ? 3 : 1
                     columnSpacing: 12
                     rowSpacing: 12
-                    Rectangle {
+                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                         Layout.fillWidth: true
                         Layout.preferredHeight: 154
-                        radius: 14
-                        color: root.colors.surfaceHover
-                        border.color: root.colors.border
+                        cornerRadius: 14
                         ColumnLayout {
                             anchors.fill: parent
                             anchors.margins: 13
@@ -1829,12 +1820,14 @@ ApplicationWindow {
                             AppLabel { text: "Choisissez ce que vous souhaitez travailler."; color: root.colors.muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                         }
                     }
-                    Rectangle {
+                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                         Layout.fillWidth: true
                         Layout.preferredHeight: 154
-                        radius: 14
-                        color: root.colors.surfaceHover
-                        border.color: root.colors.border
+                        cornerRadius: 14
                         ColumnLayout {
                             anchors.fill: parent
                             anchors.margins: 13
@@ -1859,12 +1852,14 @@ ApplicationWindow {
                             AppLabel { text: "De 5 à 30 questions par séance."; color: root.colors.muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                         }
                     }
-                    Rectangle {
+                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                         Layout.fillWidth: true
                         Layout.preferredHeight: 154
-                        radius: 14
-                        color: root.colors.surfaceHover
-                        border.color: root.colors.border
+                        cornerRadius: 14
                         ColumnLayout {
                             anchors.fill: parent
                             anchors.margins: 13
@@ -1918,11 +1913,14 @@ ApplicationWindow {
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 12
-                        Rectangle {
+                        Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "control"
+    elevated: true
                             Layout.preferredWidth: 42
                             Layout.preferredHeight: 42
-                            radius: 13
-                            color: root.colors.accentSoft
+                            cornerRadius: 13
                             AppLabel {
                                 anchors.centerIn: parent
                                 text: "✦"
@@ -1946,11 +1944,14 @@ ApplicationWindow {
                                 font.pixelSize: 12
                             }
                         }
-                        Rectangle {
+                        Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "control"
+    elevated: true
                             Layout.preferredWidth: 62
                             Layout.preferredHeight: 30
-                            radius: 15
-                            color: root.colors.surfaceHover
+                            cornerRadius: 15
                             AppLabel {
                                 anchors.centerIn: parent
                                 text: Math.round(appBridge.questionNumber / Math.max(1, appBridge.questionTotal) * 100) + "%"
@@ -1976,25 +1977,16 @@ ApplicationWindow {
                         }
                     }
 
-                    Rectangle {
+                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                         Layout.fillWidth: true
                         Layout.topMargin: 2
                         Layout.bottomMargin: 2
                         implicitHeight: 190
-                        radius: 18
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowColor: root.colors.shadow
-                            shadowBlur: 0.42
-                            shadowOpacity: 0.16
-                            shadowVerticalOffset: 6
-                        }
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: root.colors.glassTop }
-                            GradientStop { position: 1.0; color: root.colors.accentSoft }
-                        }
-                        border.color: root.colors.glassHighlight
+                        cornerRadius: 18
                         clip: true
                         Rectangle {
                             width: 190; height: 190; radius: 95
@@ -2052,13 +2044,16 @@ ApplicationWindow {
                         font.pixelSize: 23
                         onAccepted: if (!appBridge.answerSubmitted) appBridge.submitAnswer(text)
                     }
-                    Rectangle {
+                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "control"
+    elevated: true
+    tint: appBridge.feedback === "Bonne réponse !" ? root.colors.accentSoft : root.colors.surfaceHover
                         visible: appBridge.answerSubmitted
                         Layout.fillWidth: true
                         implicitHeight: feedbackLabel.implicitHeight + 24
-                        radius: 11
-                        color: appBridge.feedback === "Bonne réponse !" ? root.colors.accentSoft : root.colors.surfaceHover
-                        border.color: appBridge.feedback === "Bonne réponse !" ? root.colors.success : root.colors.warning
+                        cornerRadius: 11
                         AppLabel {
                             id: feedbackLabel
                             anchors.fill: parent
@@ -2106,12 +2101,15 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
                     contentSpacing: 18
-                    Rectangle {
+                    Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "accent"
+    elevated: true
+    tint: root.colors.accentSoft
                         Layout.fillWidth: true
                         implicitHeight: 170
-                        radius: 16
-                        color: root.colors.accentSoft
-                        border.color: root.colors.border
+                        cornerRadius: 16
                         ColumnLayout {
                             anchors.centerIn: parent
                             spacing: 9
@@ -2255,14 +2253,16 @@ ApplicationWindow {
                             { title: "Importer un export", detail: "Ajouter des données depuis un fichier JSON.", action: "import" },
                             { title: "Restaurer une sauvegarde", detail: "Revenir à une sauvegarde existante.", action: "restore" }
                         ]
-                        delegate: Rectangle {
+                        delegate: Components.GlassSurface {
+    backdropItem: ambientBackground
+    palette: root.colors
+    variant: "glass"
+    elevated: true
                             required property var modelData
                             Layout.fillWidth: true
                             Layout.minimumWidth: 0
                             implicitHeight: 132
-                            radius: 13
-                            color: root.colors.surfaceHover
-                            border.color: root.colors.border
+                            cornerRadius: 13
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.margins: 13
