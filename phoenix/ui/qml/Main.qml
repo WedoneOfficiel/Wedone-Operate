@@ -22,7 +22,6 @@ ApplicationWindow {
     property string currentMode: appBridge.mode
     property string page: currentMode === "" ? "welcome" : currentMode === "individual" ? "practice" : "home"
     property string classroomArea: ""
-    property bool navigationOpen: true
     property string themeMode: appBridge.themeMode
     property bool darkTheme: themeMode === "dark" || (themeMode === "system" && appBridge.systemDark)
     property var colors: {
@@ -196,28 +195,30 @@ ApplicationWindow {
                     }
                 }
                 ToolButton {
-                    id: navToggle
-                    Layout.preferredWidth: 38
-                    Layout.preferredHeight: 38
+                    id: settingsButton
+                    Layout.preferredWidth: 40
+                    Layout.preferredHeight: 40
                     visible: root.page !== "welcome"
-                    onClicked: root.navigationOpen = !root.navigationOpen
+                    onClicked: {
+                        root.settingsReturnPage = root.page
+                        root.page = "settings"
+                    }
                     background: Rectangle {
-                        radius: 12
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: navToggle.hovered ? root.colors.accentSoft : root.colors.glassTop }
-                            GradientStop { position: 1.0; color: root.colors.panel }
-                        }
-                        border.color: navToggle.hovered ? root.colors.accent : root.colors.glassHighlight
+                        radius: 13
+                        color: settingsButton.down ? root.colors.accentSoft : settingsButton.hovered ? root.colors.surfaceHover : "transparent"
+                        border.color: settingsButton.hovered || settingsButton.activeFocus ? root.colors.border : "transparent"
+                        border.width: 1
+                        Behavior on color { ColorAnimation { duration: 130 } }
                     }
                     contentItem: AppLabel {
-                        text: "☰"
-                        color: root.colors.text
-                        font.pixelSize: 18
+                        text: "⚙"
+                        color: settingsButton.hovered ? root.colors.accent : root.colors.textSecondary
+                        font.pixelSize: 20
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
                     ToolTip.visible: hovered
-                    ToolTip.text: root.navigationOpen ? "Masquer la navigation" : "Afficher la navigation"
+                    ToolTip.text: "Paramètres"
                 }
             }
         }
@@ -619,169 +620,10 @@ ApplicationWindow {
         }
     }
 
-    Rectangle {
-        id: navigationPanel
-        visible: root.page !== "welcome" && root.page !== "practice" && root.navigationOpen
-        x: 18
-        y: 14
-        width: 248
-        height: parent.height - 28
-        radius: 19
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: root.colors.shadow
-            shadowBlur: 0.46
-            shadowOpacity: 0.2
-            shadowVerticalOffset: 7
-        }
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: root.colors.glassTop }
-            GradientStop { position: 1.0; color: root.colors.panel }
-        }
-        border.color: root.colors.glassHighlight
-        border.width: 1
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 11
-            anchors.rightMargin: 11
-            anchors.topMargin: 16
-            anchors.bottomMargin: 13
-            spacing: 7
-            AppLabel {
-                text: "VOTRE ESPACE"
-                color: root.colors.muted
-                font.pixelSize: 10
-                font.weight: Font.Bold
-                Layout.leftMargin: 10
-                Layout.bottomMargin: 5
-            }
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 58
-                radius: 14
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowColor: root.colors.shadow
-                    shadowBlur: 0.22
-                    shadowOpacity: 0.10
-                    shadowVerticalOffset: 3
-                }
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: root.colors.glassTop }
-                    GradientStop { position: 1.0; color: root.colors.panel }
-                }
-                border.color: root.colors.glassHighlight
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 1
-                    radius: parent.radius - 1
-                    color: "transparent"
-                    border.color: root.colors.border
-                    opacity: 0.65
-                }
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 11
-                    anchors.rightMargin: 10
-                    spacing: 9
-                    Rectangle {
-                        Layout.preferredWidth: 28
-                        Layout.preferredHeight: 28
-                        radius: 8
-                        color: root.colors.accentSoft
-                        AppLabel {
-                            anchors.centerIn: parent
-                            text: root.currentMode === "individual" ? "↗" : "▦"
-                            color: root.colors.accent
-                            font.pixelSize: 15
-                            font.weight: Font.Bold
-                        }
-                    }
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 1
-                        AppLabel {
-                            text: root.currentMode === "individual" ? "Individuel" : "Classe"
-                            color: root.colors.text
-                            font.family: "Manrope"
-                            font.pixelSize: 12
-                            font.weight: Font.Bold
-                        }
-                        AppLabel {
-                            text: "Wedone Operate"
-                            color: root.colors.muted
-                            font.pixelSize: 10
-                        }
-                    }
-                }
-            }
-            Item { Layout.preferredHeight: 10 }
-            AppLabel {
-                text: "ESPACE DE TRAVAIL"
-                color: root.colors.muted
-                font.pixelSize: 9
-                font.weight: Font.Bold
-                font.letterSpacing: 1.1
-                Layout.leftMargin: 10
-                Layout.bottomMargin: 3
-            }
-            NavButton { text: "Vue d'ensemble"; symbol: "⌂"; active: root.page === "home"; Layout.fillWidth: true; onClicked: root.page = "home" }
-            NavButton {
-                visible: root.currentMode === "classroom"
-                text: "Espace professeur"
-                symbol: "▤"
-                active: root.page === "area" && root.classroomArea === "teacher"
-                Layout.fillWidth: true
-                onClicked: { root.classroomArea = "teacher"; root.page = "area" }
-            }
-            NavButton {
-                visible: root.currentMode === "classroom"
-                text: "Espace élève"
-                symbol: "◎"
-                active: root.page === "area" && root.classroomArea === "student"
-                Layout.fillWidth: true
-                onClicked: { root.classroomArea = "student"; root.page = "area" }
-            }
-            NavButton { text: "Entraînement"; symbol: "↗"; active: root.page === "practice"; Layout.fillWidth: true; onClicked: root.page = "practice" }
-            Item { Layout.preferredHeight: 7 }
-            AppLabel {
-                text: "PRÉFÉRENCES"
-                color: root.colors.muted
-                font.pixelSize: 9
-                font.weight: Font.Bold
-                font.letterSpacing: 1.1
-                Layout.leftMargin: 10
-                Layout.bottomMargin: 3
-            }
-            NavButton {
-                text: "Paramètres"
-                symbol: "⚙"
-                active: root.page === "settings"
-                Layout.fillWidth: true
-                onClicked: { root.settingsReturnPage = root.page; root.page = "settings" }
-            }
-            Item { Layout.fillHeight: true }
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: "transparent" }
-                    GradientStop { position: 0.5; color: root.colors.border }
-                    GradientStop { position: 1.0; color: "transparent" }
-                }
-                Layout.topMargin: 7
-                Layout.bottomMargin: 7
-            }
-            NavButton { text: "Changer de mode"; symbol: "⇄"; Layout.fillWidth: true; onClicked: appBridge.returnToModeChoice() }
-        }
-    }
-
     StackLayout {
-        x: (root.page === "welcome" || root.page === "practice" || !root.navigationOpen ? 32 : 282) / root.uiScale
+        x: 30 / root.uiScale
         y: 14 / root.uiScale
-        width: (parent.width - (root.page === "welcome" || root.page === "practice" || !root.navigationOpen ? 64 : 300)) / root.uiScale
+        width: (parent.width - 60) / root.uiScale
         height: (parent.height - 28) / root.uiScale
         scale: root.uiScale
         transformOrigin: Item.TopLeft
@@ -1032,6 +874,28 @@ ApplicationWindow {
                     font.weight: Font.DemiBold
                     Layout.alignment: Qt.AlignLeft
                     font.family: "Manrope"
+                }
+
+                RowLayout {
+                    visible: root.page === "area" && root.currentMode === "classroom"
+                    Layout.fillWidth: true
+                    spacing: 8
+                    QuietButton {
+                        text: "Vue d'ensemble"
+                        onClicked: root.page = "home"
+                    }
+                    QuietButton {
+                        text: "Espace élève"
+                        onClicked: {
+                            root.classroomArea = "student"
+                            appBridge.selectStudent("")
+                        }
+                    }
+                    QuietButton {
+                        text: "Espace professeur"
+                        onClicked: root.classroomArea = "teacher"
+                    }
+                    Item { Layout.fillWidth: true }
                 }
 
                 Components.FormPanel {
