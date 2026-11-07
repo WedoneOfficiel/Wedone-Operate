@@ -115,6 +115,41 @@ ApplicationWindow {
             }
             opacity: 0.34
         }
+
+        // Soft, saturated background forms give the glass real visual detail
+        // to refract and blur, as in the upstream component showcase.
+        Repeater {
+            model: [
+                { x: 0.18, y: 0.16, size: 300, hue: 0 },
+                { x: 0.72, y: 0.36, size: 380, hue: 1 },
+                { x: 0.42, y: 0.82, size: 260, hue: 2 },
+                { x: 0.91, y: 0.88, size: 220, hue: 3 }
+            ]
+            delegate: Rectangle {
+                required property var modelData
+                x: parent.width * modelData.x - width / 2
+                y: parent.height * modelData.y - height / 2
+                width: modelData.size
+                height: modelData.size
+                radius: width / 2
+                opacity: root.darkTheme ? 0.42 : 0.28
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0.0
+                        color: modelData.hue === 0 ? "#A65C9FE8"
+                              : modelData.hue === 1 ? "#A65C77D8"
+                              : modelData.hue === 2 ? "#A64EBDD0" : "#A67C8DEB"
+                    }
+                    GradientStop { position: 1.0; color: "transparent" }
+                }
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    blurEnabled: true
+                    blur: 0.72
+                    blurMax: 56
+                }
+            }
+        }
     }
 
     header: ToolBar {
