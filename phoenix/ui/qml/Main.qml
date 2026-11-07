@@ -699,7 +699,10 @@ ApplicationWindow {
                     spacing: 18
 
                 AppLabel {
-                    text: root.currentMode === "individual" ? "Votre espace de pratique" : "Espace classe"
+                    visible: root.page === "home" || root.page === "area"
+                    text: root.page === "area"
+                          ? (root.classroomArea === "student" ? "Espace élève" : "Espace professeur")
+                          : root.currentMode === "individual" ? "Votre espace de pratique" : "Espace classe"
                     color: root.colors.text
                     font.pixelSize: 36
                     font.weight: Font.Bold
@@ -708,6 +711,7 @@ ApplicationWindow {
                 }
 
                 AppLabel {
+                    visible: root.page === "home"
                     text: root.currentMode === "individual"
                           ? "Retrouvez vos statistiques et lancez une nouvelle séance."
                           : "Accédez aux espaces élèves et professeurs pour organiser le travail de la classe."
@@ -813,7 +817,7 @@ ApplicationWindow {
                 }
 
                 GridLayout {
-                    visible: root.currentMode === "classroom"
+                    visible: root.currentMode === "classroom" && root.page === "home"
                     Layout.fillWidth: true
                     columns: root.width >= 1050 ? 2 : 1
                     columnSpacing: 18
