@@ -1707,66 +1707,108 @@ ApplicationWindow {
                 GridLayout {
                     visible: appBridge.questionTotal === 0
                     Layout.fillWidth: true
-                    columns: 2
-                    columnSpacing: 22
+                    columns: root.width >= 1050 ? 3 : 1
+                    columnSpacing: 12
                     rowSpacing: 12
-                    AppLabel {
-                        text: "Compétence"
-                        color: root.colors.textSecondary
-                        font.pixelSize: 14
-                        font.weight: Font.DemiBold
+                    Rectangle {
                         Layout.fillWidth: true
+                        Layout.preferredHeight: 154
+                        radius: 14
+                        color: root.colors.surfaceHover
+                        border.color: root.colors.border
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 13
+                            spacing: 8
+                            RowLayout {
+                                Layout.fillWidth: true
+                                AppLabel { text: "01"; color: root.colors.accent; font.pixelSize: 10; font.weight: Font.Bold }
+                                AppLabel { text: "CONTENU"; color: root.colors.muted; font.pixelSize: 10; font.weight: Font.Bold; font.letterSpacing: 1.0 }
+                                Item { Layout.fillWidth: true }
+                                AppLabel { text: "◎"; color: root.colors.accent; font.pixelSize: 15 }
+                            }
+                            AppLabel { text: "Compétence"; color: root.colors.text; font.pixelSize: 13; font.weight: Font.DemiBold }
+                            AppComboBox {
+                                id: skillSelect
+                                Layout.fillWidth: true
+                                implicitHeight: 44
+                                textRole: "label"
+                                valueRole: "id"
+                                model: JSON.parse(appBridge.skillsJson)
+                            }
+                            AppLabel { text: "Choisissez ce que vous souhaitez travailler."; color: root.colors.muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                        }
                     }
-                    AppComboBox {
-                        id: skillSelect
+                    Rectangle {
                         Layout.fillWidth: true
-                        implicitHeight: 48
-                        textRole: "label"
-                        valueRole: "id"
-                        model: JSON.parse(appBridge.skillsJson)
+                        Layout.preferredHeight: 154
+                        radius: 14
+                        color: root.colors.surfaceHover
+                        border.color: root.colors.border
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 13
+                            spacing: 8
+                            RowLayout {
+                                Layout.fillWidth: true
+                                AppLabel { text: "02"; color: root.colors.accent; font.pixelSize: 10; font.weight: Font.Bold }
+                                AppLabel { text: "FORMAT"; color: root.colors.muted; font.pixelSize: 10; font.weight: Font.Bold; font.letterSpacing: 1.0 }
+                                Item { Layout.fillWidth: true }
+                                AppLabel { text: "▤"; color: root.colors.accent; font.pixelSize: 15 }
+                            }
+                            AppLabel { text: "Nombre de questions"; color: root.colors.text; font.pixelSize: 13; font.weight: Font.DemiBold }
+                            AppSpinBox {
+                                id: countSelect
+                                from: 5
+                                to: 30
+                                value: 10
+                                editable: true
+                                implicitHeight: 44
+                                Layout.fillWidth: true
+                            }
+                            AppLabel { text: "De 5 à 30 questions par séance."; color: root.colors.muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                        }
                     }
-                    AppLabel {
-                        text: "Nombre de questions"
-                        color: root.colors.textSecondary
-                        font.pixelSize: 14
-                        font.weight: Font.DemiBold
+                    Rectangle {
                         Layout.fillWidth: true
-                    }
-                    AppSpinBox {
-                        id: countSelect
-                        from: 5
-                        to: 30
-                        value: 10
-                        editable: true
-                        implicitHeight: 48
-                        Layout.fillWidth: true
-                    }
-                    AppLabel {
-                        text: "Difficulté"
-                        color: root.colors.textSecondary
-                        font.pixelSize: 14
-                        font.weight: Font.DemiBold
-                        Layout.fillWidth: true
-                    }
-                    AppComboBox {
-                        id: difficultySelect
-                        Layout.fillWidth: true
-                        implicitHeight: 48
-                        model: [
-                            { label: "1 · Très accessible", value: 1 },
-                            { label: "2 · Accessible", value: 2 },
-                            { label: "3 · Intermédiaire", value: 3 },
-                            { label: "4 · Soutenue", value: 4 },
-                            { label: "5 · Avancée", value: 5 }
-                        ]
-                        textRole: "label"
-                        valueRole: "value"
+                        Layout.preferredHeight: 154
+                        radius: 14
+                        color: root.colors.surfaceHover
+                        border.color: root.colors.border
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 13
+                            spacing: 8
+                            RowLayout {
+                                Layout.fillWidth: true
+                                AppLabel { text: "03"; color: root.colors.accent; font.pixelSize: 10; font.weight: Font.Bold }
+                                AppLabel { text: "INTENSITÉ"; color: root.colors.muted; font.pixelSize: 10; font.weight: Font.Bold; font.letterSpacing: 1.0 }
+                                Item { Layout.fillWidth: true }
+                                AppLabel { text: "↗"; color: root.colors.accent; font.pixelSize: 15 }
+                            }
+                            AppLabel { text: "Difficulté"; color: root.colors.text; font.pixelSize: 13; font.weight: Font.DemiBold }
+                            AppComboBox {
+                                id: difficultySelect
+                                Layout.fillWidth: true
+                                implicitHeight: 44
+                                model: [
+                                    { label: "1 · Très accessible", value: 1 },
+                                    { label: "2 · Accessible", value: 2 },
+                                    { label: "3 · Intermédiaire", value: 3 },
+                                    { label: "4 · Soutenue", value: 4 },
+                                    { label: "5 · Avancée", value: 5 }
+                                ]
+                                textRole: "label"
+                                valueRole: "value"
+                            }
+                            AppLabel { text: "Ajustez le niveau à votre rythme."; color: root.colors.muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                        }
                     }
                     PrimaryButton {
-                        text: "Lancer l'entraînement"
+                        text: "Lancer l'entraînement  →"
                         Layout.fillWidth: true
-                        Layout.columnSpan: 2
-                        Layout.topMargin: 10
+                        Layout.columnSpan: root.width >= 1050 ? 3 : 1
+                        Layout.topMargin: 4
                         implicitHeight: 52
                         onClicked: appBridge.startPractice(skillSelect.currentValue, countSelect.value, difficultySelect.currentValue)
                     }
@@ -1847,27 +1889,57 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         Layout.topMargin: 2
                         Layout.bottomMargin: 2
-                        implicitHeight: 174
-                        radius: 16
-                        color: root.colors.surfaceHover
-                        border.color: root.colors.border
+                        implicitHeight: 190
+                        radius: 18
+                        layer.enabled: true
+                        layer.effect: MultiEffect {
+                            shadowEnabled: true
+                            shadowColor: root.colors.shadow
+                            shadowBlur: 0.42
+                            shadowOpacity: 0.16
+                            shadowVerticalOffset: 6
+                        }
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: root.colors.glassTop }
+                            GradientStop { position: 1.0; color: root.colors.accentSoft }
+                        }
+                        border.color: root.colors.glassHighlight
+                        clip: true
+                        Rectangle {
+                            width: 190; height: 190; radius: 95
+                            anchors.right: parent.right; anchors.rightMargin: -62
+                            anchors.top: parent.top; anchors.topMargin: -76
+                            color: root.colors.accent; opacity: 0.055
+                        }
+                        Rectangle {
+                            width: 130; height: 130; radius: 65
+                            anchors.left: parent.left; anchors.leftMargin: -58
+                            anchors.bottom: parent.bottom; anchors.bottomMargin: -76
+                            color: root.colors.accent; opacity: 0.045
+                        }
                         ColumnLayout {
                             anchors.centerIn: parent
-                            spacing: 8
+                            spacing: 9
                             AppLabel {
-                                text: "CALCULEZ"
-                                color: root.colors.muted
+                                text: "À VOUS DE JOUER"
+                                color: root.colors.accent
                                 font.pixelSize: 10
                                 font.weight: Font.Bold
-                                font.letterSpacing: 1.5
+                                font.letterSpacing: 1.8
                                 Layout.alignment: Qt.AlignHCenter
                             }
                             AppLabel {
                                 text: appBridge.questionPrompt
                                 color: root.colors.text
-                                font.pixelSize: 46
+                                font.pixelSize: 50
                                 font.weight: Font.Bold
                                 font.family: "Manrope"
+                                Layout.alignment: Qt.AlignHCenter
+                            }
+                            AppLabel {
+                                text: "Prenez votre temps et trouvez le résultat."
+                                color: root.colors.textSecondary
+                                font.pixelSize: 11
                                 Layout.alignment: Qt.AlignHCenter
                             }
                         }
@@ -2080,26 +2152,51 @@ ApplicationWindow {
                 GridLayout {
                     columns: 2
                     columnSpacing: 12
-                    rowSpacing: 10
-                    PrimaryButton {
-                        text: "Créer une sauvegarde"
-                        Layout.fillWidth: true
-                        onClicked: appBridge.createBackup()
-                    }
-                    PrimaryButton {
-                        text: "Exporter en JSON"
-                        Layout.fillWidth: true
-                        onClicked: exportDialog.open()
-                    }
-                    PrimaryButton {
-                        text: "Importer un export"
-                        Layout.fillWidth: true
-                        onClicked: importDialog.open()
-                    }
-                    PrimaryButton {
-                        text: "Restaurer une sauvegarde"
-                        Layout.fillWidth: true
-                        onClicked: restoreDialog.open()
+                    rowSpacing: 12
+                    Repeater {
+                        model: [
+                            { title: "Créer une sauvegarde", detail: "Enregistrer une copie de sécurité.", action: "backup" },
+                            { title: "Exporter en JSON", detail: "Récupérer une copie portable des données.", action: "export" },
+                            { title: "Importer un export", detail: "Ajouter des données depuis un fichier JSON.", action: "import" },
+                            { title: "Restaurer une sauvegarde", detail: "Revenir à une sauvegarde existante.", action: "restore" }
+                        ]
+                        delegate: Rectangle {
+                            required property var modelData
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            implicitHeight: 132
+                            radius: 13
+                            color: root.colors.surfaceHover
+                            border.color: root.colors.border
+                            ColumnLayout {
+                                anchors.fill: parent
+                                anchors.margins: 13
+                                spacing: 5
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    AppLabel {
+                                        text: modelData.action === "backup" ? "◫" : modelData.action === "export" ? "↗" : modelData.action === "import" ? "↙" : "⟲"
+                                        color: root.colors.accent
+                                        font.pixelSize: 17
+                                    }
+                                    Item { Layout.fillWidth: true }
+                                    AppLabel { text: "DONNÉES"; color: root.colors.muted; font.pixelSize: 9; font.weight: Font.Bold; font.letterSpacing: 0.9 }
+                                }
+                                AppLabel { text: modelData.title; color: root.colors.text; font.pixelSize: 12; font.weight: Font.DemiBold; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                                AppLabel { text: modelData.detail; color: root.colors.muted; font.pixelSize: 10; Layout.fillWidth: true; wrapMode: Text.WordWrap; Layout.fillHeight: true; verticalAlignment: Text.AlignVCenter }
+                                PrimaryButton {
+                                    text: modelData.action === "backup" ? "Créer" : modelData.action === "export" ? "Exporter" : modelData.action === "import" ? "Importer" : "Restaurer"
+                                    Layout.fillWidth: true
+                                    implicitHeight: 36
+                                    onClicked: {
+                                        if (modelData.action === "backup") appBridge.createBackup()
+                                        else if (modelData.action === "export") exportDialog.open()
+                                        else if (modelData.action === "import") importDialog.open()
+                                        else restoreDialog.open()
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                     }
@@ -2172,10 +2269,29 @@ ApplicationWindow {
         padding: 22
         spacing: 16
         background: Rectangle {
-            radius: 18
-            color: root.colors.surface
+            radius: 19
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: root.colors.shadow
+                shadowBlur: 0.55
+                shadowOpacity: 0.24
+                shadowVerticalOffset: 10
+            }
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: root.colors.glassTop }
+                GradientStop { position: 1.0; color: root.colors.surface }
+            }
             border.color: root.colors.border
             border.width: 1
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 1
+                radius: parent.radius - 1
+                color: "transparent"
+                border.color: root.colors.glassHighlight
+                opacity: 0.55
+            }
         }
         AppLabel {
             width: archiveConfirmation.availableWidth
@@ -2220,10 +2336,29 @@ ApplicationWindow {
         padding: 22
         spacing: 16
         background: Rectangle {
-            radius: 18
-            color: root.colors.surface
+            radius: 19
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: root.colors.shadow
+                shadowBlur: 0.55
+                shadowOpacity: 0.24
+                shadowVerticalOffset: 10
+            }
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: root.colors.glassTop }
+                GradientStop { position: 1.0; color: root.colors.surface }
+            }
             border.color: root.colors.danger
             border.width: 1
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 1
+                radius: parent.radius - 1
+                color: "transparent"
+                border.color: root.colors.glassHighlight
+                opacity: 0.55
+            }
         }
         AppLabel {
             width: resetConfirmation.availableWidth
