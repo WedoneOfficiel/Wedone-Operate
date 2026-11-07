@@ -35,6 +35,11 @@ def main() -> int:
         print("Phoenix Main.qml was not included in the distribution.", file=sys.stderr)
         return 1
 
+    glass_shaders = list(root.rglob("glass.frag.qsb"))
+    if not glass_shaders:
+        print("Compiled Liquid Glass shader is missing from the distribution.", file=sys.stderr)
+        return 1
+
     controls = [
         path for path in root.rglob("qmldir")
         if path.parent.name == "Controls" and path.parent.parent.name == "QtQuick"
@@ -44,7 +49,7 @@ def main() -> int:
         return 1
 
     print(f"Validated Phoenix distribution: {root}")
-    print("Phoenix QML entry point and QtQuick.Controls runtime are present.")
+    print("Phoenix QML entry point, QtQuick.Controls runtime and Liquid Glass shader are present.")
     print("No QtWebEngine or standalone Qt desktop tools are bundled.")
     return 0
 
