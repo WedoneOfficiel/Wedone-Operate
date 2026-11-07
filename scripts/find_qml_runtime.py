@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import importlib.util
 import sys
 
 try:
@@ -10,7 +11,11 @@ try:
 except ImportError as exc:
     raise SystemExit(f"PySide6 Essentials is not installed: {exc}") from exc
 
-package_root = Path(PySide6.__file__).resolve().parent
+spec = importlib.util.find_spec("PySide6")
+locations = list(spec.submodule_search_locations or []) if spec else []
+if not locations:
+    raise SystemExit("PySide6 package location could not be resolved.")
+package_root = Path(locations[0]).resolve()
 matches = [
     qmldir for qmldir in package_root.rglob("qmldir")
     if qmldir.parent.name == "Controls"
