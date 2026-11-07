@@ -1291,6 +1291,127 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
 
+                ColumnLayout {
+                    visible: root.page === "area" && root.classroomArea === "teacher" && appBridge.teacherAuthenticated
+                    Layout.fillWidth: true
+                    spacing: 14
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 16
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 4
+                            AppLabel {
+                                text: "ESPACE ENSEIGNANT"
+                                color: root.colors.accent
+                                font.pixelSize: 10
+                                font.weight: Font.Bold
+                                font.letterSpacing: 1.5
+                            }
+                            AppLabel {
+                                text: "Votre espace de gestion"
+                                color: root.colors.text
+                                font.family: "Manrope"
+                                font.pixelSize: 25
+                                font.weight: Font.Bold
+                            }
+                            AppLabel {
+                                text: "Classes, élèves et entraînements réunis au même endroit."
+                                color: root.colors.textSecondary
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                            }
+                        }
+                        Rectangle {
+                            Layout.preferredWidth: 118
+                            Layout.preferredHeight: 38
+                            radius: 19
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: root.colors.glassTop }
+                                GradientStop { position: 1.0; color: root.colors.panel }
+                            }
+                            border.color: root.colors.glassHighlight
+                            RowLayout {
+                                anchors.centerIn: parent
+                                spacing: 7
+                                Rectangle {
+                                    Layout.preferredWidth: 7
+                                    Layout.preferredHeight: 7
+                                    radius: 4
+                                    color: root.colors.success
+                                }
+                                AppLabel {
+                                    text: "Connecté"
+                                    color: root.colors.textSecondary
+                                    font.pixelSize: 12
+                                    font.weight: Font.DemiBold
+                                }
+                            }
+                        }
+                    }
+
+                    GridLayout {
+                        Layout.fillWidth: true
+                        columns: width >= 900 ? 3 : 1
+                        columnSpacing: 12
+                        rowSpacing: 10
+
+                        Repeater {
+                            model: [
+                                { label: "CLASSES", value: JSON.parse(appBridge.classesJson).length, detail: "espaces créés" },
+                                { label: "ÉLÈVES", value: teacherClassSelect.currentValue ? appBridge.teacherStudentsForClass(teacherClassSelect.currentValue, "").length : 0, detail: teacherClassSelect.currentValue ? "dans la classe sélectionnée" : "sélectionnez une classe" },
+                                { label: "EXERCICES", value: teacherClassSelect.currentValue ? appBridge.teacherPlansForClass(teacherClassSelect.currentValue).length : 0, detail: "pour la classe sélectionnée" }
+                            ]
+                            delegate: Rectangle {
+                                required property var modelData
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 88
+                                radius: 16
+                                gradient: Gradient {
+                                    GradientStop { position: 0.0; color: root.colors.glassTop }
+                                    GradientStop { position: 1.0; color: root.colors.panel }
+                                }
+                                border.color: root.colors.glassHighlight
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 15
+                                    anchors.rightMargin: 15
+                                    anchors.topMargin: 11
+                                    anchors.bottomMargin: 10
+                                    spacing: 2
+                                    AppLabel {
+                                        text: modelData.label
+                                        color: root.colors.muted
+                                        font.pixelSize: 9
+                                        font.weight: Font.Bold
+                                        font.letterSpacing: 1.2
+                                    }
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 8
+                                        AppLabel {
+                                            text: modelData.value
+                                            color: root.colors.text
+                                            font.family: "Manrope"
+                                            font.pixelSize: 23
+                                            font.weight: Font.Bold
+                                        }
+                                        AppLabel {
+                                            text: modelData.detail
+                                            color: root.colors.textSecondary
+                                            font.pixelSize: 11
+                                            elide: Text.ElideRight
+                                            Layout.fillWidth: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 GridLayout {
                     visible: root.page === "area" && root.classroomArea === "teacher" && appBridge.teacherAuthenticated
                     Layout.fillWidth: true
