@@ -11,6 +11,7 @@ on:
       - "requirements-phoenix.txt"
       - "scripts/validate_phoenix_distribution.py"
       - "scripts/find_qml_runtime.py"
+      - "scripts/compile_qml_shaders.py"
       - ".github/workflows/build-phoenix.yml"
 
 permissions:
@@ -35,6 +36,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-phoenix.txt pyinstaller
           python -c "import importlib.metadata as m; print('Qt packages:', [(d.metadata['Name'], d.version) for d in m.distributions() if d.metadata['Name'].lower().startswith('pyside6')])"
+      - name: Compile Qt Quick glass shaders
+        run: python scripts/compile_qml_shaders.py --required
       - name: Prepare application icon
         shell: pwsh
         run: Copy-Item icon.png phoenix.ico
@@ -93,7 +96,7 @@ jobs:
           PY
           iconutil -c icns Phoenix.iconset -o phoenix.icns
       - name: Build macOS application bundle
-        run: pyinstaller --noconfirm --clean phoenix-macos.spec
+        run: pyinstaller --noconfirm --clean --hidden-import AppKit --hidden-import Foundation phoenix-macos.spec
       - name: Normalize nested macOS code signatures
         run: |
           app="dist/Wedone Operate Phoenix.app"

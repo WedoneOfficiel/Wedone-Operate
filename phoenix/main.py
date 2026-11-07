@@ -749,6 +749,11 @@ def main(argv: list[str] | None = None) -> int:
     except (AttributeError, TypeError):
         pass
 
+    from .ui.platform_effects import PlatformEffects
+
+    platform_effects = PlatformEffects()
+    platform_effects.prepare_shader_assets()
+
     engine = QQmlApplicationEngine()
     # Keep the bridge owned by the engine for the entire QML lifetime. This
     # avoids a packaged-runtime wrapper being released while QML still binds it.
@@ -776,8 +781,11 @@ def main(argv: list[str] | None = None) -> int:
     if icon_path.is_file():
         engine.addImageProvider("branding", BrandingImageProvider())
     engine.rootContext().setContextProperty("appBridge", bridge)
+    engine.rootContext().setContextProperty("platformEffects", platform_effects)
     qml_file = Path(__file__).parent / "ui" / "qml" / "Main.qml"
     engine.load(QUrl.fromLocalFile(str(qml_file.resolve())))
+    if engine.rootObjects():
+        platform_effects.applyToWindow(engine.rootObjects()[0])
     if not engine.rootObjects():
         if smoke_test and qt_qml_errors:
             print("Smoke test failed: the QML engine could not create the application window:")

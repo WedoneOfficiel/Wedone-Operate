@@ -14,7 +14,7 @@ ApplicationWindow {
     minimumHeight: 680
     visible: true
     title: "Wedone Operate"
-    color: root.colors.bg
+    color: platformEffects.nativeBackdropApplied ? "transparent" : root.colors.bg
 
     property real uiScale: appBridge.uiScale
     property var progressSummary: JSON.parse(appBridge.progressJson)
@@ -82,7 +82,9 @@ ApplicationWindow {
     }
 
     Rectangle {
+        id: ambientBackground
         anchors.fill: parent
+        opacity: platformEffects.nativeBackdropApplied ? 0.86 : 1.0
         gradient: Gradient {
             GradientStop { position: 0.0; color: root.darkTheme ? "#111D2C" : "#F8FBFF" }
             GradientStop { position: 0.52; color: root.colors.bg }
@@ -119,38 +121,17 @@ ApplicationWindow {
         implicitHeight: 78
         padding: 0
         background: Item {}
-        Rectangle {
+        Components.LiquidGlassSurface {
             anchors.horizontalCenter: parent.horizontalCenter
             y: 6
             width: parent.width - 36
             height: 66
-            radius: 22
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: root.colors.shadow
-                shadowBlur: 0.52
-                shadowOpacity: 0.17
-                shadowVerticalOffset: 6
-            }
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: root.colors.glassTop }
-                GradientStop { position: 0.48; color: root.colors.panel }
-                GradientStop { position: 1.0; color: root.darkTheme ? "#A91A293B" : "#DDFBFDFF" }
-            }
-            border.color: root.colors.glassHighlight
-            border.width: 1
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.leftMargin: 2
-                anchors.rightMargin: 2
-                anchors.topMargin: 1
-                height: 1
-                radius: 1
-                color: root.darkTheme ? "#66FFFFFF" : "#DFFFFFFF"
-            }
+            cornerRadius: 22
+            backdropItem: ambientBackground
+            tint: root.darkTheme ? "#A91A293B" : "#DDFBFDFF"
+            refraction: 5.0
+            blurAmount: 1.35
+            materialOpacity: 0.98
             RowLayout {
                 anchors.centerIn: parent
                 spacing: 9
@@ -229,12 +210,15 @@ ApplicationWindow {
                         else
                             root.openSettings()
                     }
-                    background: Rectangle {
-                        radius: 13
-                        color: settingsButton.down ? root.colors.accentSoft : settingsButton.hovered ? root.colors.surfaceHover : "transparent"
-                        border.color: settingsButton.hovered || settingsButton.activeFocus ? root.colors.border : "transparent"
-                        border.width: 1
-                        Behavior on color { ColorAnimation { duration: 130 } }
+                    background: Components.LiquidGlassSurface {
+                        anchors.fill: parent
+                        cornerRadius: 13
+                        backdropItem: ambientBackground
+                        tint: root.darkTheme ? "#9D25364A" : "#C8FFFFFF"
+                        refraction: 3.2
+                        blurAmount: 0.9
+                        materialOpacity: settingsButton.hovered ? 0.98 : 0.84
+                        borderOpacity: settingsButton.hovered || settingsButton.activeFocus ? 0.95 : 0.58
                     }
                     contentItem: AppLabel {
                         text: root.page === "settings" ? "‹" : "⚙"
