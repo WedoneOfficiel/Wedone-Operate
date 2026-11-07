@@ -123,13 +123,15 @@ class PlatformEffects(QObject):
         if not hwnd:
             return False
         dwmapi = ctypes.WinDLL("dwmapi")
-        backdrop = wintypes.DWORD(3)  # DWMSBT_TRANSIENTWINDOW / Desktop Acrylic
-        result = dwmapi.DwmSetWindowAttribute(
-            wintypes.HWND(hwnd), 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop)
-        )
-        if result != 0:
-            return False
-        return True
+        handle = wintypes.HWND(hwnd)
+        for backdrop_type in (3, 2):  # Desktop Acrylic, then Mica on older Windows 11
+            backdrop = wintypes.DWORD(backdrop_type)
+            result = dwmapi.DwmSetWindowAttribute(
+                handle, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop)
+            )
+            if result == 0:
+                return True
+        return False
 
     @staticmethod
     def _apply_macos(window: QObject) -> bool:

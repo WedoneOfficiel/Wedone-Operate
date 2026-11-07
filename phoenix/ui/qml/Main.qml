@@ -635,6 +635,7 @@ ApplicationWindow {
     }
 
     StackLayout {
+        id: pageStack
         x: 30 / root.uiScale
         y: 14 / root.uiScale
         width: (parent.width - 60) / root.uiScale
@@ -2351,7 +2352,7 @@ ApplicationWindow {
         background: Components.LiquidGlassSurface {
             anchors.fill: parent
             cornerRadius: 19
-            backdropItem: ambientBackground
+            backdropItem: pageStack
             tint: root.darkTheme ? "#C51B293B" : "#BFFFFFFF"
             refraction: 5.5
             blurAmount: 1.8
@@ -2406,7 +2407,7 @@ ApplicationWindow {
         background: Components.LiquidGlassSurface {
             anchors.fill: parent
             cornerRadius: 19
-            backdropItem: ambientBackground
+            backdropItem: pageStack
             tint: root.darkTheme ? "#C51B293B" : "#BFFFFFFF"
             refraction: 5.5
             blurAmount: 1.8
