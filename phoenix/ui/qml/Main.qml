@@ -705,6 +705,17 @@ ApplicationWindow {
                 }
 
                 RowLayout {
+                    visible: root.page === "home"
+                    Layout.fillWidth: true
+                    Layout.topMargin: -3
+                    QuietButton {
+                        text: "⇄  Changer de mode"
+                        onClicked: appBridge.returnToModeChoice()
+                    }
+                    Item { Layout.fillWidth: true }
+                }
+
+                RowLayout {
                     visible: root.currentMode === "individual"
                     Layout.fillWidth: true
                     spacing: 14
