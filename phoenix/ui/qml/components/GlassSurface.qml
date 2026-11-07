@@ -58,9 +58,9 @@ Item {
         highlightIntensity: root.borderOpacity
         edgeFresnelPower: 2.1
         edgeHighlightColor: root.rimColor
-        elevation: root.shadowEnabled ? (root.hovered ? 13 : 8) : 0
+        elevation: root.shadowEnabled ? (root.hovered || pointerTracker.hovered ? 13 : 8) : 0
         shadowColor: root.palette.shadow || "#33000000"
-        hovered: root.hovered
+        hovered: root.hovered || pointerTracker.hovered
         pressed: root.pressed || pressTracker.pressed
         pointerPosition: root.pointerPosition
         reduceMotion: root.reduceMotion
