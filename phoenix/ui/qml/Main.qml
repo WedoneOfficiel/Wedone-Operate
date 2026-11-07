@@ -570,7 +570,6 @@ ApplicationWindow {
 
     component ModeCard: Components.GlassSurface {
         backdropItem: ambientBackground
-            backdropItem: ambientBackground
         id: card
         property string heading
         property string subtitle
