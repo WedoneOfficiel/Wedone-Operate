@@ -321,10 +321,10 @@ Item {
                     float edgeBand = 1.0 - smoothstep(0.015, 0.24, nearestEdge);
 
                     vec2 edgeNormal = vec2(0.0);
-                    if (nearestEdge == edgeLeft) edgeNormal = vec2(-1.0, 0.0);
-                    else if (nearestEdge == edgeRight) edgeNormal = vec2(1.0, 0.0);
-                    else if (nearestEdge == edgeTop) edgeNormal = vec2(0.0, -1.0);
-                    else edgeNormal = vec2(0.0, 1.0);
+                    if (nearestEdge == edgeLeft) edgeNormal = vec2(1.0, 0.0);
+                    else if (nearestEdge == edgeRight) edgeNormal = vec2(-1.0, 0.0);
+                    else if (nearestEdge == edgeTop) edgeNormal = vec2(0.0, 1.0);
+                    else edgeNormal = vec2(0.0, -1.0);
 
                     // Edge bending plus a mild convex bulge toward the centre.
                     // Offsets are normalized UV units, so they scale with the surface.
@@ -342,8 +342,7 @@ Item {
                     // === Real-time Edge Chromatic Dispersion ===
                     // Stronger chromatic aberration at edges, calculated in real-time
                     // Edge distance factor - stronger dispersion at glass perimeter
-                    float edgeDispersionFactor = pow(distFromCenter * 2.0, 1.5);
-                    edgeDispersionFactor = clamp(edgeDispersionFactor, 0.0, 1.0);
+                    // Reuse the perimeter mask above for both refraction and dispersion.
                     
                     // Dynamic time-based modulation for living glass effect
                     float timeModulation = 1.0 + 0.1 * sin(time * 2.0 + distFromCenter * 6.0);
